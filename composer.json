@@ -12,6 +12,7 @@
         "laravel/framework": "~5.7.7"
     },
     "require-dev": {
+        "mockery/mockery": "^1.2",
         "orchestra/testbench": "^3.0"
     },
     "autoload": {
@@ -33,5 +34,12 @@
     ],
     "config": {
         "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "vicgonvt\\LaraPress\\LaraPressServiceProvider"
+            ]
+        }
     }
 }

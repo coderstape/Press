@@ -17,10 +17,10 @@ class InitTest extends TestCase
     }
 
     /** @test */
-    public function experiment()
-    {
-        $data = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'));
-
-        die(var_dump($data->parse()));
-    }
+//    public function experiment()
+//    {
+//        $data = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'));
+//
+//        die(var_dump($data->head()));
+//    }
 }

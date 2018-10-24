@@ -20,7 +20,7 @@ class PressFileParserTest extends TestCase
     /** @test */
     public function it_can_parse_the_head()
     {
-        $head = $this->parser->head();
+        $head = $this->parser->getData();
 
         $this->assertEquals('Title in Title Bar', $head['title']);
         $this->assertEquals('keyword1, keyword2, keyword3', $head['keywords']);

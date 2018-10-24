@@ -2,13 +2,11 @@
 
 namespace vicgonvt\LaraPress\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 class InitTest extends TestCase
 {
-    /** @test */
-    public function test_inits()
-    {
-        $this->artisan('migrate', ['--database' => 'testdb'])->run();
+    use RefreshDatabase;
 
-        $this->assertTrue(true);
-    }
+    //
 }

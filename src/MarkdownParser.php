@@ -8,7 +8,7 @@ class MarkdownParser
 {
     /**
      * Given a markdown string, it will pass back a parsed string.
-     * 
+     *
      * @param $text
      *
      * @return string

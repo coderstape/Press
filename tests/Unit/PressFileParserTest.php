@@ -4,7 +4,6 @@ namespace vicgonvt\LaraPress\Tests;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use vicgonvt\LaraPress\Field\Extra;
 use vicgonvt\LaraPress\PressFileParser;
 use vicgonvt\LaraPress\Series;
 

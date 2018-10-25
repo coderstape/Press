@@ -72,4 +72,11 @@ class PressFileParserTest extends TestCase
         $data = (new PressFileParser("---\nPermalink: something-else\nTitle: A Cool Title---\nSomething"))->getData();
         $this->assertEquals('something-else', $data['slug']);
     }
+
+    /** @test */
+    public function the_body_gets_markdown_parsed()
+    {
+        $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();
+        $this->assertEquals('<h1>Title Here</h1>', $data['body']);
+    }
 }

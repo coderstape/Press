@@ -4,6 +4,7 @@ namespace vicgonvt\LaraPress\Tests;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use vicgonvt\LaraPress\Field\Extra;
 use vicgonvt\LaraPress\PressFileParser;
 use vicgonvt\LaraPress\Series;
 
@@ -92,6 +93,27 @@ class PressFileParserTest extends TestCase
         $data = (new PressFileParser("---\nSeries: Adventure, adventure, aDvEnTuRE---\nSomething"))->getData();
 
         $this->assertCount(1, Series::all());
+    }
+
+    /** @test */
+    public function single_extra_field_is_parsed_into_a_json()
+    {
+        $data = (new PressFileParser("---\nCustom Field: Some data---\nSomething"))->getData();
+
+        $this->assertEquals(json_encode(['Custom Field' => 'Some data']), $data['extra']);
+    }
+
+    /** @test */
+    public function two_or_more_extra_fields_are_parsed_into_a_json()
+    {
+        $data = (new PressFileParser("---\nCustom Field: Some data\nKeywords: one, two, three\nimages: img/path/file.jpg---\nSomething"))->getData();
+
+        $expectedArray = [
+            'Custom Field' => 'Some data',
+            'Keywords' => 'one, two, three',
+            'images' => 'img/path/file.jpg',
+        ];
+        $this->assertEquals(json_encode($expectedArray), $data['extra']);
     }
 
     /** @test */

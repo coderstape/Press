@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress;
 
 use Illuminate\Support\Facades\File;
+use vicgonvt\LaraPress\Field\Extra;
 
 class PressFileParser
 {
@@ -33,12 +34,14 @@ class PressFileParser
         foreach ($this->parsedData as $fieldType => $fieldData) {
             $class = 'vicgonvt\LaraPress\Field\\' . ucfirst(camel_case($fieldType));
 
-            if (class_exists($class) && method_exists($class, 'process')) {
-                $this->parsedData = array_merge(
-                    $this->parsedData,
-                    $class::process($fieldType, $fieldData, $this->parsedData)
-                );
+            if ( ! class_exists($class) && ! method_exists($class, 'process')) {
+                $class = 'vicgonvt\LaraPress\Field\Extra';
             }
+
+            $this->parsedData = array_merge(
+                $this->parsedData,
+                $class::process($fieldType, $fieldData, $this->parsedData)
+            );
         }
     }
 

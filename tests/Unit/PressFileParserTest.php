@@ -3,25 +3,14 @@
 namespace vicgonvt\LaraPress\Tests;
 
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\File;
 use vicgonvt\LaraPress\PressFileParser;
 
 class PressFileParserTest extends TestCase
 {
-    private $parser;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->parser = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'));
-    }
-
     /** @test */
     public function it_can_parse_the_head()
     {
-        $data = $this->parser->getData();
+        $data = $this->getSampleMarkdownParser()->getData();
 
         $this->assertEquals('Title in Title Bar', $data['title']);
         $this->assertEquals('keyword1, keyword2, keyword3', $data['keywords']);
@@ -35,7 +24,7 @@ class PressFileParserTest extends TestCase
     /** @test */
     public function it_parse_the_date_into_a_carbon_instance()
     {
-        $data = $this->parser->getData();
+        $data = $this->getSampleMarkdownParser()->getData();
 
         $this->assertInstanceOf(Carbon::class, $data['published_at']);
         $this->assertEquals('1988-05-14 00:00:00', $data['published_at']->toDatetimeString());
@@ -78,5 +67,10 @@ class PressFileParserTest extends TestCase
     {
         $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();
         $this->assertEquals('<h1>Title Here</h1>', $data['body']);
+    }
+
+    private function getSampleMarkdownParser()
+    {
+        return (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'));
     }
 }

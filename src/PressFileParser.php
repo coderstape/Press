@@ -16,7 +16,9 @@ class PressFileParser
 
         $this->splitFile();
 
-        $this->parse();
+        $this->explodeData();
+        
+        $this->processFields();
     }
 
     public function getData()
@@ -24,7 +26,18 @@ class PressFileParser
         return $this->parsedData;
     }
 
-    protected function parse()
+    protected function processFields()
+    {
+        foreach ($this->parsedData as $fieldType => $fieldData) {
+            $class = 'vicgonvt\LaraPress\Field\\' . ucfirst(camel_case($fieldType));
+
+            if (class_exists($class) && method_exists($class, 'process')) {
+                $this->parsedData = array_merge($this->parsedData, $class::process($fieldType, $fieldData));
+            }
+        }
+    }
+
+    protected function explodeData()
     {
         foreach (explode("\n", trim($this->splitFile[1])) as $fieldString) {
             $fieldString = trim($fieldString);
@@ -39,6 +52,10 @@ class PressFileParser
 
     protected function splitFile()
     {
-        preg_match('/^\-{3}(.*?)\-{3}(.*)/s', File::get($this->filename), $this->splitFile);
+        preg_match(
+            '/^\-{3}(.*?)\-{3}(.*)/s',
+            File::exists($this->filename) ? File::get($this->filename) : $this->filename,
+            $this->splitFile
+        );
     }
 }

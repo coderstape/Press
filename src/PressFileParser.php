@@ -32,7 +32,10 @@ class PressFileParser
             $class = 'vicgonvt\LaraPress\Field\\' . ucfirst(camel_case($fieldType));
 
             if (class_exists($class) && method_exists($class, 'process')) {
-                $this->parsedData = array_merge($this->parsedData, $class::process($fieldType, $fieldData));
+                $this->parsedData = array_merge(
+                    $this->parsedData,
+                    $class::process($fieldType, $fieldData, $this->parsedData)
+                );
             }
         }
     }

@@ -49,4 +49,27 @@ class PressFileParserTest extends TestCase
         $this->assertInstanceOf(Carbon::class, $data['published_at']);
         $this->assertEquals(Carbon::now()->startOfDay(), $data['published_at']->toDatetimeString());
     }
+
+    /** @test */
+    public function it_parses_permalink_into_slug_with_fallback()
+    {
+        $data = (new PressFileParser("---\nPermalink: some-random-string-here---\nSomething"))->getData();
+        $this->assertEquals('some-random-string-here', $data['slug']);
+
+        $data = (new PressFileParser("---\nPermalink: Another random sTrINg---\nSomething"))->getData();
+        $this->assertEquals('another-random-string', $data['slug']);
+    }
+
+    /** @test */
+    public function a_title_is_used_as_default_slug()
+    {
+        $data = (new PressFileParser("---\nTitle: A Cool Title---\nSomething"))->getData();
+        $this->assertEquals('a-cool-title', $data['slug']);
+
+        $data = (new PressFileParser("---\nTitle: A Cool Title\nPermalink: something-else---\nSomething"))->getData();
+        $this->assertEquals('something-else', $data['slug']);
+
+        $data = (new PressFileParser("---\nPermalink: something-else\nTitle: A Cool Title---\nSomething"))->getData();
+        $this->assertEquals('something-else', $data['slug']);
+    }
 }

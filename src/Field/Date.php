@@ -7,7 +7,7 @@ use Exception;
 
 class Date extends FieldContract
 {
-    public static function process($fieldType, $fieldValue)
+    public static function process($fieldType, $fieldValue, $fields)
     {
         try {
 

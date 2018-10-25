@@ -2,10 +2,10 @@
 
 namespace vicgonvt\LaraPress\Field;
 
-abstract class FieldContract
+class Permalink
 {
     public static function process($fieldType, $fieldValue, $fields)
     {
-        return [$fieldType => $fieldValue];
+        return ['slug' => str_slug($fieldValue)];
     }
 }

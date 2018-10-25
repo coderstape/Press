@@ -16,5 +16,7 @@ class LaraPressServiceProvider extends ServiceProvider
         $this->commands([
             ProcessCommand::class,
         ]);
+
+        $this->mergeConfigFrom( __DIR__.'/../config/larapress.php', strtolower($this->packageName));
     }
 }

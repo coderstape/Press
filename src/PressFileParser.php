@@ -3,7 +3,6 @@
 namespace vicgonvt\LaraPress;
 
 use Illuminate\Support\Facades\File;
-use vicgonvt\LaraPress\Field\Extra;
 
 class PressFileParser
 {

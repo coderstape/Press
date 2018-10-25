@@ -117,6 +117,14 @@ class PressFileParserTest extends TestCase
     }
 
     /** @test */
+    public function an_explicit_identifier_gets_added()
+    {
+        $data = (new PressFileParser("---\nIdentifier: 123456---\nSomething"))->getData();
+
+        $this->assertEquals('123456', $data['identifier']);
+    }
+
+    /** @test */
     public function the_body_gets_markdown_parsed()
     {
         $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();

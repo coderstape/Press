@@ -13,7 +13,7 @@ class CreateSeriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('post_tags', function (Blueprint $table) {
+        Schema::create('series', function (Blueprint $table) {
             $table->increments('id');
             $table->string('slug')->unique()->index();
             $table->string('title');
@@ -31,6 +31,6 @@ class CreateSeriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('post_tags');
+        Schema::dropIfExists('series');
     }
 }

@@ -3,10 +3,14 @@
 namespace vicgonvt\LaraPress\Tests;
 
 use Carbon\Carbon;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use vicgonvt\LaraPress\PressFileParser;
+use vicgonvt\LaraPress\Series;
 
 class PressFileParserTest extends TestCase
 {
+    use RefreshDatabase;
+
     /** @test */
     public function it_can_parse_the_head()
     {
@@ -60,6 +64,34 @@ class PressFileParserTest extends TestCase
 
         $data = (new PressFileParser("---\nPermalink: something-else\nTitle: A Cool Title---\nSomething"))->getData();
         $this->assertEquals('something-else', $data['slug']);
+    }
+    
+    /** @test */
+    public function the_series_get_added_to_the_db()
+    {
+        $data = (new PressFileParser("---\nSeries: Adventure, Traveling---\nSomething"))->getData();
+
+        $this->assertCount(2, Series::all());
+    }
+
+    /** @test */
+    public function it_doesnt_add_duplicate_series()
+    {
+        $data = (new PressFileParser("---\nSeries: Adventure, Adventure---\nSomething"))->getData();
+
+        $this->assertCount(1, Series::all());
+
+        $data = (new PressFileParser("---\nSeries: Adventure, Adventure---\nSomething"))->getData();
+
+        $this->assertCount(1, Series::all()->fresh());
+    }
+    
+    /** @test */
+    public function series_edge_cases_with_different_case()
+    {
+        $data = (new PressFileParser("---\nSeries: Adventure, adventure, aDvEnTuRE---\nSomething"))->getData();
+
+        $this->assertCount(1, Series::all());
     }
 
     /** @test */

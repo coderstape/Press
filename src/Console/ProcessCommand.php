@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress\Console;
 
 use Illuminate\Console\Command;
+use vicgonvt\LaraPress\Actions\Database;
 
 class ProcessCommand extends Command
 {
@@ -27,6 +28,16 @@ class ProcessCommand extends Command
      */
     public function handle()
     {
-        //
+        $driver = 'vicgonvt\LaraPress\Drivers\\' . title_case(config('larapress.driver')) . 'Driver';
+
+        try {
+
+            $posts = (new $driver)->fetchPosts();
+
+            $database = (new Database())->savePosts($posts);
+
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
     }
 }

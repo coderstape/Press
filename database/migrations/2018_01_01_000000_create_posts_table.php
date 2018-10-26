@@ -15,22 +15,22 @@ class CreatePostsTable extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('series_id')->default(0)->index();
+//            $table->unsignedInteger('series_id')->default(0)->index();
             $table->string('identifier')->nullable()->index();
             $table->string('slug')->unique()->index();
             $table->string('title');
             $table->text('body');
-            $table->text('meta');
-            $table->enum('type', ['page', 'post', 'redirect'])->default('post');
-            $table->enum('status', ['active', 'deleted'])->default('active')->index();
+            $table->text('extra');
+            $table->tinyInteger('status')->default(1)->index();
             $table->unsignedInteger('views_count')->default(0)->index();
-            $table->datetime('published_at')->index()->nullable();
+            $table->datetime('published_at')->index();
             $table->timestamps();
 
             $table->index('created_at');
             $table->index('updated_at');
         });
     }
+
     /**
      * Reverse the migrations.
      *

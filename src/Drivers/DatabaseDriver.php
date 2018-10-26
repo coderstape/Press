@@ -4,6 +4,7 @@ namespace vicgonvt\LaraPress\Drivers;
 
 use Illuminate\Support\Facades\Schema;
 use vicgonvt\LaraPress\Blog;
+use vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException;
 
 class DatabaseDriver extends Driver
 {
@@ -26,7 +27,7 @@ class DatabaseDriver extends Driver
     protected function validateSource()
     {
         if ( ! Schema::hasTable($this->config['table'])) {
-            throw new \Exception('Unable to find the table \'' . $this->config['table'] . '\' in your database. Please publish the database migration and run php artisan migrate.');
+            throw new DatabaseTableNotFoundException('Unable to find the table \'' . $this->config['table'] . '\' in your database. Please publish the database migration and run php artisan migrate.');
         }
     }
 }

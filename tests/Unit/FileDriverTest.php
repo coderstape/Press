@@ -5,6 +5,7 @@ namespace vicgonvt\LaraPress\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use vicgonvt\LaraPress\Drivers\FileDriver;
+use vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException;
 
 class FileDriverTest extends TestCase
 {
@@ -17,7 +18,7 @@ class FileDriverTest extends TestCase
             'path' => 'some/fake/path',
         ]]);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(FileDriverDirectoryNotFoundException::class);
 
         new FileDriver();
     }

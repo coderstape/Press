@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\File;
 use vicgonvt\LaraPress\Blog;
 use vicgonvt\LaraPress\Drivers\DatabaseDriver;
 use vicgonvt\LaraPress\Drivers\FileDriver;
+use vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException;
 
-class DatabseDriverTest extends TestCase
+class DatabaseDriverTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,11 +18,11 @@ class DatabseDriverTest extends TestCase
     {
         config(['larapress.database' => [
             'table' => 'fake_table_name',
-        ]]);
+        ], ['larapress.driver' => 'database']]);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(DatabaseTableNotFoundException::class);
 
-        new FileDriver();
+        new DatabaseDriver();
     }
 
     /** @test */
@@ -29,7 +30,7 @@ class DatabseDriverTest extends TestCase
     {
         config(['larapress.database' => [
             'table' => 'blogs',
-        ]]);
+        ], ['larapress.driver' => 'database']]);
 
         foreach (File::files(__DIR__ . '/../stubs') as $file) {
             Blog::create([

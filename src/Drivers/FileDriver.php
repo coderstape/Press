@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress\Drivers;
 
 use Illuminate\Support\Facades\File;
+use vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException;
 use vicgonvt\LaraPress\PressFileParser;
 
 class FileDriver extends Driver
@@ -26,7 +27,7 @@ class FileDriver extends Driver
     protected function validateSource()
     {
         if ( ! File::exists($this->config['path'])) {
-            throw new \Exception('Directory at ' . $this->config['path'] . ' does not exist.');
+            throw new FileDriverDirectoryNotFoundException('Directory at ' . $this->config['path'] . ' does not exist.');
         }
     }
 }

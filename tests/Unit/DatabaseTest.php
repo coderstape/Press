@@ -18,7 +18,7 @@ class DatabaseTest extends TestCase
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
 
-        $db = (new Database())->savePosts(
+        (new Database())->savePosts(
             [array_merge($post, ['identifier' => 'test'])]
         );
 
@@ -31,7 +31,7 @@ class DatabaseTest extends TestCase
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
 
-        $db = (new Database())->savePosts(
+        (new Database())->savePosts(
             [array_merge($post, ['identifier' => 'test'])]
         );
 
@@ -49,7 +49,7 @@ class DatabaseTest extends TestCase
             array_merge($post, ['identifier' => 'test']),
         ];
 
-        $db = (new Database())->savePosts($posts);
+        (new Database())->savePosts($posts);
 
         $this->assertCount(1, Post::all());
     }
@@ -60,13 +60,13 @@ class DatabaseTest extends TestCase
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
 
-        $db = (new Database())->savePosts(
+        (new Database())->savePosts(
             [array_merge($post, ['identifier' => 'test'])]
         );
 
         $this->assertCount(1, Post::active()->get());
 
-        $db = (new Database())->savePosts([]);
+        (new Database())->savePosts([]);
         $this->assertCount(0, Post::active()->get());
     }
 
@@ -76,13 +76,13 @@ class DatabaseTest extends TestCase
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
 
-        $db = (new Database())->savePosts(
+        (new Database())->savePosts(
             [array_merge($post, ['identifier' => 'test'])]
         );
 
         $this->assertCount(1, Series::all());
 
-        $db = (new Database())->savePosts([]);
+        (new Database())->savePosts([]);
         $this->assertCount(0, Series::all());
     }
 }

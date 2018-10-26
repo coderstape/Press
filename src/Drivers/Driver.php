@@ -2,13 +2,36 @@
 
 namespace vicgonvt\LaraPress\Drivers;
 
-interface Driver
+use vicgonvt\LaraPress\PressFileParser;
+
+abstract class Driver
 {
-    public function fetchPosts();
+    protected $config;
+    protected $posts;
 
-    public function parse($content, $filename);
+    public function __construct()
+    {
+        $this->setConfig();
+        $this->validateSource();
+    }
 
-    public function setConfig();
+    public abstract function fetchPosts();
 
-    public function validateSource();
+    protected function parse($content, $identifier)
+    {
+        $this->posts[] = array_merge(
+            (new PressFileParser($content))->getData(),
+            ['identifier' => str_slug($identifier)]
+        );
+    }
+
+    protected function setConfig()
+    {
+        //
+    }
+
+    protected function validateSource()
+    {
+        //
+    }
 }

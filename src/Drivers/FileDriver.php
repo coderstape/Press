@@ -5,18 +5,8 @@ namespace vicgonvt\LaraPress\Drivers;
 use Illuminate\Support\Facades\File;
 use vicgonvt\LaraPress\PressFileParser;
 
-class FileDriver implements Driver
+class FileDriver extends Driver
 {
-    protected $config;
-
-    protected $posts;
-
-    public function __construct()
-    {
-        $this->setConfig();
-        $this->validateSource();
-    }
-
     public function fetchPosts()
     {
         $files = File::files($this->config['path']);
@@ -28,20 +18,12 @@ class FileDriver implements Driver
         return $this->posts;
     }
 
-    public function parse($content, $filename)
-    {
-        $this->posts[] = array_merge(
-            (new PressFileParser($content))->getData(),
-            ['identifier' => str_slug($filename)]
-        );
-    }
-
-    public function setConfig()
+    protected function setConfig()
     {
         $this->config = config('larapress.file');
     }
 
-    public function validateSource()
+    protected function validateSource()
     {
         if ( ! File::exists($this->config['path'])) {
             throw new \Exception('Directory at ' . $this->config['path'] . ' does not exist.');

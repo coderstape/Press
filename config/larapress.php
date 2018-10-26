@@ -18,7 +18,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | File Options
+    | File Driver Options
     |--------------------------------------------------------------------------
     |
     | Here you can specify any configuration options that should be used with
@@ -28,5 +28,19 @@ return [
 
     'file' => [
         'path' => 'blogs',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Driver Options
+    |--------------------------------------------------------------------------
+    |
+    | Here you can specify any configuration options that should be used with
+    | the database driver.
+    |
+    */
+
+    'database' => [
+        'table' => 'blogs',
     ],
 ];

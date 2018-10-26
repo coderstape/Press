@@ -34,7 +34,9 @@ class ProcessCommand extends Command
 
             $posts = (new $driver)->fetchPosts();
 
-            $database = (new Database())->savePosts($posts);
+            if ((new Database())->savePosts($posts)) {
+                $this->info('LaraPress Updated Successfully');
+            }
 
         } catch (\Exception $e) {
             $this->error($e->getMessage());

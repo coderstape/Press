@@ -38,4 +38,19 @@ class DatabaseTest extends TestCase
         $this->assertCount(1, Series::all());
         $this->assertEquals('my-first-post', Post::first()->series->slug);
     }
+
+    /** @test */
+    public function a_post_is_updated_and_not_duplicated()
+    {
+        $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
+            ->getData();
+        $posts = [
+            array_merge($post, ['identifier' => 'test']),
+            array_merge($post, ['identifier' => 'test']),
+        ];
+
+        $db = (new Database())->savePosts($posts);
+
+        $this->assertCount(1, Post::all());
+    }
 }

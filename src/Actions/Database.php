@@ -27,6 +27,18 @@ class Database
 
         }
 
+        $this->cleanPosts(array_pluck($posts, 'identifier'));
+
         return true;
+    }
+
+    protected function cleanPosts($identifiers)
+    {
+        return Post::whereNotIn('identifier', $identifiers)
+            ->get()
+            ->each(function ($post) {
+                $post->active = 0;
+                $post->save();
+            });
     }
 }

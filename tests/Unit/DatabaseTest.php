@@ -53,4 +53,20 @@ class DatabaseTest extends TestCase
 
         $this->assertCount(1, Post::all());
     }
+    
+    /** @test */
+    public function a_post_gets_deactivated_if_not_present()
+    {
+        $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
+            ->getData();
+
+        $db = (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'test'])]
+        );
+
+        $this->assertCount(1, Post::active()->get());
+
+        $db = (new Database())->savePosts([]);
+        $this->assertCount(0, Post::active()->get());
+    }
 }

@@ -83,6 +83,6 @@ class DatabaseTest extends TestCase
         $this->assertCount(1, Series::all());
 
         $db = (new Database())->savePosts([]);
-        $this->assertCount(0, Series::get());
+        $this->assertCount(0, Series::all());
     }
 }

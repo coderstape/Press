@@ -11,7 +11,7 @@ class Database
     {
         foreach ($posts as $post) {
 
-            $series = Series::slug($post['series']);
+            $series = (isset($post['series'])) ? Series::slug($post['series']) : null;
 
             Post::create([
                 'identifier' => $post['identifier'],

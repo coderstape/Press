@@ -2,11 +2,14 @@
 
 namespace vicgonvt\LaraPress\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use vicgonvt\LaraPress\Drivers\FileDriver;
 
 class FileDriverTest extends TestCase
 {
+    use RefreshDatabase;
+
     /** @test */
     public function it_throws_an_exception_if_file_directory_is_not_found()
     {

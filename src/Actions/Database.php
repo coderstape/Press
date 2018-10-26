@@ -28,6 +28,7 @@ class Database
         }
 
         $this->cleanPosts(array_pluck($posts, 'identifier'));
+        $this->cleanSeries(array_pluck($posts, 'series'));
 
         return true;
     }
@@ -39,6 +40,19 @@ class Database
             ->each(function ($post) {
                 $post->active = 0;
                 $post->save();
+            });
+    }
+
+    protected function cleanSeries($series)
+    {
+        $series = array_map(function ($series) {
+            return str_slug($series);
+        }, $series);
+
+        return Series::whereNotIn('slug', $series)
+            ->get()
+            ->each(function ($series) {
+                $series->delete();
             });
     }
 }

@@ -69,4 +69,20 @@ class DatabaseTest extends TestCase
         $db = (new Database())->savePosts([]);
         $this->assertCount(0, Post::active()->get());
     }
+
+    /** @test */
+    public function series_are_removed_if_no_longer_used()
+    {
+        $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
+            ->getData();
+
+        $db = (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'test'])]
+        );
+
+        $this->assertCount(1, Series::all());
+
+        $db = (new Database())->savePosts([]);
+        $this->assertCount(0, Series::get());
+    }
 }

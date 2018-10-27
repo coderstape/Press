@@ -10,7 +10,6 @@ class Database
     public function savePosts($posts)
     {
         foreach ($posts as $post) {
-
             $series = (isset($post['series'])) ? Series::slug($post['series']) : null;
 
             Post::updateOrCreate(
@@ -24,7 +23,6 @@ class Database
                     'published_at' => $post['published_at'],
                 ]
             );
-
         }
 
         $this->cleanPosts(array_pluck($posts, 'identifier'));

@@ -28,18 +28,54 @@ class ProcessCommand extends Command
      */
     public function handle()
     {
-        $driver = 'vicgonvt\LaraPress\Drivers\\' . title_case(config('larapress.driver')) . 'Driver';
+        if ($this->configNotPublished()) {
+            $this->warn('Please publish the config file by running \'php artisan vendor:publish\'');
+
+            return;
+        }
 
         try {
 
+            $driver = $this->getDriverClassName();
+            
             $posts = (new $driver)->fetchPosts();
 
             if ((new Database())->savePosts($posts)) {
-                return $this->info('LaraPress Updated Successfully');
+                return $this->info('LaraPress process complete.');
             }
 
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
+    }
+
+    /**
+     * Get the driver.
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    protected function getDriver()
+    {
+        return config('larapress.driver');
+    }
+
+    /**
+     * Parse the driver class name.
+     *
+     * @return string
+     */
+    protected function getDriverClassName()
+    {
+        return 'vicgonvt\LaraPress\Drivers\\' . title_case($this->getDriver()) . 'Driver';
+    }
+
+    /**
+     * Check if config file has been set.
+     *
+     * @return bool
+     */
+    protected function configNotPublished()
+    {
+        return is_null($this->getDriver());
     }
 }

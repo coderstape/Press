@@ -36,9 +36,11 @@ class ProcessCommand extends Command
 
             $posts = LaraPress::driver()->fetchPosts();
 
-            if (LaraPress::database()->savePosts($posts)) {
+            if ($posts && LaraPress::database()->savePosts($posts)) {
                 return $this->info('LaraPress process complete.');
             }
+
+            $this->warn('No posts were updated.');
 
         } catch (\Exception $e) {
             $this->error($e->getMessage());

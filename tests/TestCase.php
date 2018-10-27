@@ -33,7 +33,8 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('database.connections.testdb', [
             'driver'   => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
         ]);
+        $app['config']->set('larapress.prefix', '');
+        $app['config']->set('larapress.driver', 'file');
     }
 }

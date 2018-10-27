@@ -6,8 +6,16 @@ use Illuminate\Support\Str;
 
 class Model extends \Illuminate\Database\Eloquent\Model
 {
+    /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
     protected $prefix;
 
+    /**
+     * Model constructor.
+     *
+     * @param array $attributes
+     */
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

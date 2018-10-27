@@ -6,10 +6,21 @@ use Illuminate\Support\Facades\File;
 
 class PressFileParser
 {
+    /**
+     * @var
+     */
     private $splitFile;
 
+    /**
+     * @var
+     */
     private $parsedData;
 
+    /**
+     * PressFileParser constructor.
+     *
+     * @param $filename
+     */
     public function __construct($filename)
     {
         $this->filename = $filename;
@@ -21,11 +32,21 @@ class PressFileParser
         $this->processFields();
     }
 
+    /**
+     * Get the underlying parsed data.
+     *
+     * @return mixed
+     */
     public function getData()
     {
         return $this->parsedData;
     }
 
+    /**
+     * Takes each field and tries to find a class with matching name. If found, it will try to call
+     * the process() method on it. Any other fields that don't have matching classes get sent to
+     * a catch all class of Extra, where they will be JSON Encoded into the 'extra' field.
+     */
     protected function processFields()
     {
         foreach ($this->parsedData as $fieldType => $fieldData) {
@@ -42,6 +63,9 @@ class PressFileParser
         }
     }
 
+    /**
+     * It separates the head on each new line, trims it and saves it to parsedData variable.
+     */
     protected function explodeData()
     {
         foreach (explode("\n", trim($this->splitFile[1])) as $fieldString) {
@@ -55,6 +79,9 @@ class PressFileParser
         $this->parsedData['body'] = trim($this->splitFile[2]);
     }
 
+    /**
+     * It separates the head from the body for further manipulation.
+     */
     protected function splitFile()
     {
         preg_match(

@@ -8,6 +8,13 @@ use vicgonvt\LaraPress\Tag;
 
 class Database
 {
+    /**
+     * Takes an array of posts and persists them to the database.
+     *
+     * @param $posts
+     *
+     * @return bool
+     */
     public function savePosts($posts)
     {
         foreach ($posts as $post) {
@@ -32,6 +39,13 @@ class Database
         return true;
     }
 
+    /**
+     * Takes an array of identifiers and deactivates any posts not in the given array.
+     *
+     * @param $identifiers
+     *
+     * @return mixed
+     */
     protected function cleanPosts($identifiers)
     {
         return Post::whereNotIn('identifier', $identifiers)
@@ -42,6 +56,13 @@ class Database
             });
     }
 
+    /**
+     * Finds all unused series in the database and deletes them.
+     *
+     * @param $series
+     *
+     * @return mixed
+     */
     protected function cleanSeries($series)
     {
         $series = array_map(function ($series) {
@@ -55,6 +76,11 @@ class Database
             });
     }
 
+    /**
+     * Finds all tags not being used by a post and deletes them.
+     *
+     * @return mixed
+     */
     protected function cleanTags()
     {
         return Tag::doesntHave('posts')

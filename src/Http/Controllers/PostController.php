@@ -7,6 +7,11 @@ use vicgonvt\LaraPress\Post;
 
 class PostController extends Controller
 {
+    /**
+     * List all of the active posts.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
         $posts = Post::active()->get();
@@ -14,6 +19,14 @@ class PostController extends Controller
         return view('larapress::posts.index', compact('posts'));
     }
 
+    /**
+     * Show a given post.
+     *
+     * @param $post
+     * @param $slug
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($post, $slug)
     {
         $post = Post::active()->whereId($post)->whereSlug($slug)->get();

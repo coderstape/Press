@@ -4,6 +4,7 @@ namespace vicgonvt\LaraPress\Actions;
 
 use vicgonvt\LaraPress\Post;
 use vicgonvt\LaraPress\Series;
+use vicgonvt\LaraPress\Tag;
 
 class Database
 {
@@ -26,6 +27,7 @@ class Database
 
         $this->cleanPosts(array_pluck($posts, 'identifier'));
         $this->cleanSeries(array_pluck($posts, 'series'));
+        $this->cleanTags();
 
         return true;
     }
@@ -50,6 +52,15 @@ class Database
             ->get()
             ->each(function ($series) {
                 $series->delete();
+            });
+    }
+
+    protected function cleanTags()
+    {
+        return Tag::doesntHave('posts')
+            ->get()
+            ->each(function ($tag) {
+                $tag->delete();
             });
     }
 }

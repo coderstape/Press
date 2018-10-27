@@ -125,4 +125,21 @@ class DatabaseTest extends TestCase
 
         $this->assertCount(3, Tag::all());
     }
+
+    /** @test */
+    public function tags_are_removed_if_no_longer_used()
+    {
+        $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
+            ->getData();
+
+        (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'test'])]
+        );
+
+        $this->assertCount(2, Tag::all());
+
+        Post::truncate();
+        (new Database())->savePosts([]);
+        $this->assertCount(0, Tag::all()->fresh());
+    }
 }

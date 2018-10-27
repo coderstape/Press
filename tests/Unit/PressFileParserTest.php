@@ -21,7 +21,7 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('Description here', $data['description']);
         $this->assertEquals('May 14 1988', $data['date']);
         $this->assertEquals('Tag 1, Tag 2', $data['tags']);
-        $this->assertEquals('/blog/title-in-title-bar', $data['permalink']);
+        $this->assertEquals('title-in-title-bar', $data['permalink']);
         $this->assertEquals('https://via.placeholder.com/500x140', $data['img']);
     }
 

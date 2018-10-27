@@ -2,6 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('larapress::test');
-});
+Route::resource('posts', 'PostController');

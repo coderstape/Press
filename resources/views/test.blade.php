@@ -1,1 +1,0 @@
-Hot off the press.

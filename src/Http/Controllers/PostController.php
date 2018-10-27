@@ -29,7 +29,7 @@ class PostController extends Controller
      */
     public function show($post, $slug)
     {
-        $post = Post::active()->whereId($post)->whereSlug($slug)->get();
+        $post = Post::active()->whereId($post)->whereSlug($slug)->first();
 
         return view('larapress::posts.show', compact('post'));
     }

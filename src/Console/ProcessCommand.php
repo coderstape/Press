@@ -3,7 +3,6 @@
 namespace vicgonvt\LaraPress\Console;
 
 use Illuminate\Console\Command;
-use vicgonvt\LaraPress\Actions\Database;
 use vicgonvt\LaraPress\LaraPress;
 
 class ProcessCommand extends Command
@@ -30,9 +29,7 @@ class ProcessCommand extends Command
     public function handle()
     {
         if (LaraPress::configNotPublished()) {
-            $this->warn('Please publish the config file by running \'php artisan vendor:publish\'');
-
-            return;
+            return $this->warn('Please publish the config file by running \'php artisan vendor:publish\'');
         }
 
         try {

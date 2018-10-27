@@ -26,8 +26,21 @@ class DatabaseDriver extends Driver
 
     protected function validateSource()
     {
-        if ( ! Schema::hasTable(config('larapress.prefix') . $this->config['table'])) {
-            throw new DatabaseTableNotFoundException('Unable to find the table \'' . $this->config['table'] . '\' in your database. Please publish the database migration and run php artisan migrate.');
+        if ( ! Schema::hasTable($this->tablePrefix() . $this->config['table'])) {
+            throw new DatabaseTableNotFoundException(
+                'The \'' . $this->tablePrefix() . $this->config['table'] . '\' table was not found in your database. ' .
+                'Run \'php artisan migrate\' to create it.'
+            );
         }
+    }
+
+    /**
+     * Table prefix used.
+     *
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    protected function tablePrefix()
+    {
+        return config('larapress.prefix');
     }
 }

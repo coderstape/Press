@@ -26,7 +26,10 @@ class FileDriver extends Driver
     protected function validateSource()
     {
         if ( ! File::exists($this->config['path'])) {
-            throw new FileDriverDirectoryNotFoundException('Directory at ' . $this->config['path'] . ' does not exist.');
+            throw new FileDriverDirectoryNotFoundException(
+                'Directory at \'' . $this->config['path'] . '\' does not exist. ' .
+                'Check the directory path in the config file.'
+            );
         }
     }
 }

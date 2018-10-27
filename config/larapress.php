@@ -10,7 +10,7 @@ return [
     | the blog posts. By default, the file driver is used, however, other
     | drivers are available, or write your own custom driver to suite.
     |
-    | Supported: "file", "database"
+    | Supported: "file", "database", "gist"
     |
     */
 
@@ -42,6 +42,20 @@ return [
 
     'database' => [
         'table' => 'blogs',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | GitHub Gist Driver Options
+    |--------------------------------------------------------------------------
+    |
+    | Here you can specify any configuration options that should be used with
+    | the gist driver.
+    |
+    */
+
+    'gist' => [
+        'source' => ''
     ],
 
     /*

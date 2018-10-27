@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use vicgonvt\LaraPress\Migration;
 
 class CreatePostsTable extends Migration
 {
@@ -13,7 +13,7 @@ class CreatePostsTable extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create($this->prefix . 'posts', function (Blueprint $table) {
             $table->increments('id');
             $table->string('identifier')->index();
             $table->string('slug')->unique()->index();
@@ -39,6 +39,6 @@ class CreatePostsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists($this->prefix . 'posts');
     }
 }

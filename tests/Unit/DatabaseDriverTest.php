@@ -18,7 +18,7 @@ class DatabaseDriverTest extends TestCase
     {
         config(['larapress.database' => [
             'table' => 'fake_table_name',
-        ], ['larapress.driver' => 'database']]);
+        ], 'larapress.driver' => 'database']);
 
         $this->expectException(DatabaseTableNotFoundException::class);
 
@@ -26,11 +26,14 @@ class DatabaseDriverTest extends TestCase
     }
 
     /** @test */
-    public function file_driver_can_fetch_posts()
+    public function database_driver_can_fetch_posts()
     {
-        config(['larapress.database' => [
-            'table' => 'blogs',
-        ], ['larapress.driver' => 'database']]);
+        config([
+            'larapress.database' => [
+                'table' => 'blogs',
+            ],
+            'larapress.driver' => 'database',
+        ]);
 
         foreach (File::files(__DIR__ . '/../stubs') as $file) {
             Blog::create([

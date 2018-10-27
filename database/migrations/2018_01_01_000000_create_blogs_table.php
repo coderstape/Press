@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use vicgonvt\LaraPress\Migration;
 
 class CreateBlogsTable extends Migration
 {
@@ -13,7 +13,7 @@ class CreateBlogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('blogs', function (Blueprint $table) {
+        Schema::create($this->prefix . 'blogs', function (Blueprint $table) {
             $table->increments('id');
             $table->longText('data');
             $table->timestamps();
@@ -26,6 +26,6 @@ class CreateBlogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('blogs');
+        Schema::dropIfExists($this->prefix . 'blogs');
     }
 }

@@ -43,4 +43,17 @@ return [
     'database' => [
         'table' => 'blogs',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Prefix
+    |--------------------------------------------------------------------------
+    |
+    | Adding a prefix to all of the tables used by this package avoids any
+    | collisions with any existing tables you may already have for your
+    | project. We have set a sensible default of 'larapress_TABLENAME'.
+    |
+    */
+
+    'prefix' => 'larapress_',
 ];

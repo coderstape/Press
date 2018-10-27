@@ -23,7 +23,7 @@ class Post extends Model
      */
     public function path()
     {
-        return url(LaraPress::path() . "/posts/{$this->id}");
+        return url(LaraPress::path() . "/posts/{$this->id}-{$this->slug}");
     }
 
     /**

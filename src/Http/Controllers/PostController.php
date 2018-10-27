@@ -14,9 +14,9 @@ class PostController extends Controller
         return view('larapress::posts.index', compact('posts'));
     }
 
-    public function show($post)
+    public function show($post, $slug)
     {
-        $post = Post::active()->findOrFail($post);
+        $post = Post::active()->whereId($post)->whereSlug($slug)->get();
 
         return view('larapress::posts.show', compact('post'));
     }

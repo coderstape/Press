@@ -2,4 +2,5 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::resource('posts', 'PostController');
+Route::get('posts', 'PostController@index');
+Route::get('posts/{post}-{slug}', 'PostController@show');

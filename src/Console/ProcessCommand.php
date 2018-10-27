@@ -37,7 +37,7 @@ class ProcessCommand extends Command
         try {
 
             $driver = $this->getDriverClassName();
-            
+
             $posts = (new $driver)->fetchPosts();
 
             if ((new Database())->savePosts($posts)) {

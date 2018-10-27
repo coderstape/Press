@@ -4,7 +4,6 @@ namespace vicgonvt\LaraPress\Drivers;
 
 use Illuminate\Support\Facades\File;
 use vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException;
-use vicgonvt\LaraPress\PressFileParser;
 
 class FileDriver extends Driver
 {

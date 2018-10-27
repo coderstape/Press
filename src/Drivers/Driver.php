@@ -49,7 +49,7 @@ abstract class Driver
      */
     protected function setConfig()
     {
-        throw new \Exception('Configuration has not been implemented.');
+        $this->config = config('larapress.' . config('larapress.driver'));
     }
 
     /**

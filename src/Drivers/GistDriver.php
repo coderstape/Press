@@ -36,14 +36,6 @@ class GistDriver extends Driver
     }
 
     /**
-     * Fetch the appropriate config array for this source.
-     */
-    protected function setConfig()
-    {
-        $this->config = config('larapress.gist');
-    }
-
-    /**
      * URI partial for GitHub Gist API.
      *
      * @return string

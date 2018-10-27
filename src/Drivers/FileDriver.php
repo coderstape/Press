@@ -24,14 +24,6 @@ class FileDriver extends Driver
     }
 
     /**
-     * Fetch the appropriate config array for this source.
-     */
-    protected function setConfig()
-    {
-        $this->config = config('larapress.file');
-    }
-
-    /**
      * Perform any validation necessary to assert source is valid.
      *
      * @return bool|void

@@ -7,6 +7,11 @@ use vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException;
 
 class FileDriver extends Driver
 {
+    /**
+     * Fetch and parse all of the posts for the given source.
+     *
+     * @return mixed
+     */
     public function fetchPosts()
     {
         $files = File::files($this->config['path']);
@@ -18,11 +23,20 @@ class FileDriver extends Driver
         return $this->posts;
     }
 
+    /**
+     * Fetch the appropriate config array for this source.
+     */
     protected function setConfig()
     {
         $this->config = config('larapress.file');
     }
 
+    /**
+     * Perform any validation necessary to assert source is valid.
+     *
+     * @return bool|void
+     * @throws \vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException
+     */
     protected function validateSource()
     {
         if ( ! File::exists($this->config['path'])) {

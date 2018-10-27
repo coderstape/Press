@@ -8,6 +8,11 @@ use vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException;
 
 class DatabaseDriver extends Driver
 {
+    /**
+     * Fetch and parse all of the posts for the given source.
+     *
+     * @return mixed
+     */
     public function fetchPosts()
     {
         $blogs = Blog::all();
@@ -19,11 +24,20 @@ class DatabaseDriver extends Driver
         return $this->posts;
     }
 
+    /**
+     * Fetch the appropriate config array for this source.
+     */
     protected function setConfig()
     {
         $this->config = config('larapress.database');
     }
 
+    /**
+     * Perform any validation necessary to assert source is valid.
+     *
+     * @return bool|void
+     * @throws \vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException
+     */
     protected function validateSource()
     {
         if ( ! Schema::hasTable($this->tablePrefix() . $this->config['table'])) {

@@ -7,6 +7,7 @@ use vicgonvt\LaraPress\Actions\Database;
 use vicgonvt\LaraPress\Post;
 use vicgonvt\LaraPress\PressFileParser;
 use vicgonvt\LaraPress\Series;
+use vicgonvt\LaraPress\Tag;
 
 class DatabaseTest extends TestCase
 {
@@ -84,5 +85,25 @@ class DatabaseTest extends TestCase
 
         (new Database())->savePosts([]);
         $this->assertCount(0, Series::all());
+    }
+
+    /** @test */
+    public function tags_get_added_and_associated()
+    {
+        $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
+            ->getData();
+
+        $this->assertCount(2, Tag::all());
+    }
+    
+    /** @test */
+    public function tags_dont_get_duplicated()
+    {
+        $post1 = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
+            ->getData();
+        $post2 = (new PressFileParser(__DIR__ . '/../stubs/MarkFile2.md'))
+            ->getData();
+
+        $this->assertCount(3, Tag::all());
     }
 }

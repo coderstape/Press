@@ -17,7 +17,6 @@ class CreateTagsTable extends Migration
             $table->increments('id');
             $table->string('slug')->unique()->index();
             $table->string('name');
-            $table->integer('posts_count')->unsigned()->default(0)->index();
             $table->timestamps();
 
             $table->index('created_at');

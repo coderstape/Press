@@ -56,4 +56,17 @@ return [
     */
 
     'prefix' => 'larapress_',
+
+    /*
+    |--------------------------------------------------------------------------
+    | URI Address Path
+    |--------------------------------------------------------------------------
+    |
+    | Use this path value to determine on what URI we are going to serve
+    | the blog. For example, if you wanted to serve it at a differnet location
+    | like www.example.com/my-blog, change the value to '/my-blog'.
+    |
+    */
+
+    'path' => '/blog',
 ];

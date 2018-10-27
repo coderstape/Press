@@ -70,7 +70,7 @@ class LaraPressServiceProvider extends ServiceProvider
     {
         return [
             'namespace' => 'vicgonvt\LaraPress\Http\Controllers',
-            'prefix' => 'blog',
+            'prefix' => LaraPress::path(),
         ];
     }
 

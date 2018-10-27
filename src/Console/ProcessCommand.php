@@ -4,6 +4,7 @@ namespace vicgonvt\LaraPress\Console;
 
 use Illuminate\Console\Command;
 use vicgonvt\LaraPress\Actions\Database;
+use vicgonvt\LaraPress\LaraPress;
 
 class ProcessCommand extends Command
 {
@@ -28,7 +29,7 @@ class ProcessCommand extends Command
      */
     public function handle()
     {
-        if ($this->configNotPublished()) {
+        if (LaraPress::configNotPublished()) {
             $this->warn('Please publish the config file by running \'php artisan vendor:publish\'');
 
             return;
@@ -36,46 +37,14 @@ class ProcessCommand extends Command
 
         try {
 
-            $driver = $this->getDriverClassName();
+            $posts = LaraPress::driver()->fetchPosts();
 
-            $posts = (new $driver)->fetchPosts();
-
-            if ((new Database())->savePosts($posts)) {
+            if (LaraPress::database()->savePosts($posts)) {
                 return $this->info('LaraPress process complete.');
             }
 
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
-    }
-
-    /**
-     * Get the driver.
-     *
-     * @return \Illuminate\Config\Repository|mixed
-     */
-    protected function getDriver()
-    {
-        return config('larapress.driver');
-    }
-
-    /**
-     * Parse the driver class name.
-     *
-     * @return string
-     */
-    protected function getDriverClassName()
-    {
-        return 'vicgonvt\LaraPress\Drivers\\' . title_case($this->getDriver()) . 'Driver';
-    }
-
-    /**
-     * Check if config file has been set.
-     *
-     * @return bool
-     */
-    protected function configNotPublished()
-    {
-        return is_null($this->getDriver());
     }
 }

@@ -22,7 +22,6 @@ class CreatePostsTable extends Migration
             $table->text('extra');
             $table->unsignedInteger('series_id')->nullable()->index();
             $table->unsignedInteger('active')->default(1)->index();
-            $table->tinyInteger('status')->default(1)->index();
             $table->unsignedInteger('views_count')->default(0)->index();
             $table->timestamp('published_at')->index();
             $table->timestamps();

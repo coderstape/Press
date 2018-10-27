@@ -17,7 +17,6 @@ class CreateSeriesTable extends Migration
             $table->increments('id');
             $table->string('slug')->unique()->index();
             $table->string('title');
-            $table->unsignedInteger('posts_count')->default(0)->index();
             $table->timestamps();
 
             $table->index('created_at');

@@ -17,6 +17,4 @@ abstract class FieldContract
     {
         return [$fieldType => $fieldValue];
     }
-
-    public static function handle($fieldType, $fieldValue) {}
 }

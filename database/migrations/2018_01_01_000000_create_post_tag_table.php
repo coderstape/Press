@@ -4,7 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use vicgonvt\LaraPress\Migration;
 
-class CreatePostTagsTable extends Migration
+class CreatePostTagTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePostTagsTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->prefix . 'post_tags', function (Blueprint $table) {
+        Schema::create($this->prefix . 'post_tag', function (Blueprint $table) {
             $table->integer('post_id')->unsigned()->index();
             $table->integer('tag_id')->unsigned()->index();
             $table->timestamps();
@@ -26,6 +26,6 @@ class CreatePostTagsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists($this->prefix . 'post_tags');
+        Schema::dropIfExists($this->prefix . 'post_tag');
     }
 }

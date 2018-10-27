@@ -6,41 +6,31 @@ use vicgonvt\LaraPress\Tag;
 
 class Tags extends FieldContract
 {
-    public static function handle($fieldType, $fieldValue)
+    public static function process($fieldType, $fieldValue, $fields)
     {
         $tags = array_map(function ($tag) {
             return trim($tag);
         }, explode(',', $fieldValue));
 
         foreach ($tags as $tag) {
-            if (self::isNewTag($tag)) {
-                self::addTag($tag);
-            }
+            $tagModels[] = self::getOrCreateTag($tag);
         }
+
+        return ['tag_ids' => array_pluck($tagModels, 'id')];
     }
 
     /**
      * Creates an entry in the DB for the given tag.
      *
      * @param $tag
+     *
+     * @return \vicgonvt\LaraPress\Tag
      */
-    private static function addtag($tag)
+    private static function getOrCreateTag($tag)
     {
-        Tag::create([
+        return Tag::firstOrCreate([
             'slug' => str_slug($tag),
             'name' => $tag,
         ]);
-    }
-
-    /**
-     * Checks if the tag exists in the DB.
-     *
-     * @param $tag
-     *
-     * @return bool
-     */
-    private static function isNewTag($tag)
-    {
-        return ! Tag::where('slug', str_slug($tag))->exists();
     }
 }

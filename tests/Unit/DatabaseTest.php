@@ -86,6 +86,19 @@ class DatabaseTest extends TestCase
         (new Database())->savePosts([]);
         $this->assertCount(0, Series::all());
     }
+    
+    /** @test */
+    public function a_post_without_a_series_can_still_be_added()
+    {
+        $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile2.md'))
+            ->getData();
+
+        (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'test'])]
+        );
+
+        $this->assertCount(1, Post::all());
+    }
 
     /** @test */
     public function tags_get_added_and_associated()
@@ -93,7 +106,13 @@ class DatabaseTest extends TestCase
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
 
+        (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'test'])]
+        );
+
         $this->assertCount(2, Tag::all());
+        $this->assertCount(1, Tag::first()->posts);
+        $this->assertCount(2, Post::first()->tags);
     }
     
     /** @test */

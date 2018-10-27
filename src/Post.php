@@ -17,4 +17,9 @@ class Post extends Model
     {
         return $this->belongsTo(Series::class);
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, $this->prefix . 'post_tag');
+    }
 }

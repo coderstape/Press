@@ -69,19 +69,22 @@ class PressFileParserTest extends TestCase
     /** @test */
     public function the_series_get_added_to_the_db()
     {
-        $data = (new PressFileParser("---\nSeries: Adventure, Traveling---\nSomething"))->getData();
+        $data = (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
 
-        $this->assertCount(2, Series::all());
+        $series = Series::all();
+
+        $this->assertCount(1, $series);
+        $this->assertEquals('Adventure', $series->first()->title);
     }
 
     /** @test */
     public function it_doesnt_add_duplicate_series()
     {
-        $data = (new PressFileParser("---\nSeries: Adventure, Adventure---\nSomething"))->getData();
+        $data = (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
 
         $this->assertCount(1, Series::all());
 
-        $data = (new PressFileParser("---\nSeries: Adventure, Adventure---\nSomething"))->getData();
+        $data = (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
 
         $this->assertCount(1, Series::all()->fresh());
     }
@@ -89,9 +92,14 @@ class PressFileParserTest extends TestCase
     /** @test */
     public function series_edge_cases_with_different_case()
     {
-        $data = (new PressFileParser("---\nSeries: Adventure, adventure, aDvEnTuRE---\nSomething"))->getData();
-
+        (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
         $this->assertCount(1, Series::all());
+
+        (new PressFileParser("---\nSeries: adventure---\nSomething"))->getData();
+        $this->assertCount(1, Series::all()->fresh());
+
+        (new PressFileParser("---\nSeries: aDvEnTuRE---\nSomething"))->getData();
+        $this->assertCount(1, Series::all()->fresh());
     }
 
     /** @test */

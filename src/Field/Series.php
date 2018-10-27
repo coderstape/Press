@@ -6,41 +6,23 @@ use vicgonvt\LaraPress\Series as SeriesModel;
 
 class Series extends FieldContract
 {
-    public static function handle($fieldType, $fieldValue)
+    public static function process($fieldType, $fieldValue, $fields)
     {
-        $series = array_map(function ($field) {
-            return trim($field);
-        }, explode(',', $fieldValue));
-
-        foreach ($series as $series) {
-            if (self::isNewSeries($series)) {
-                self::addSeries($series);
-            }
-        }
+        return ['series_id' => (self::getOrCreateSeries(trim($fieldValue)))->id];
     }
 
     /**
      * Creates an entry in the DB for the given series.
      *
      * @param $series
-     */
-    private static function addSeries($series)
-    {
-        SeriesModel::create([
-            'slug' => str_slug($series),
-            'title' => $series,
-        ]);
-    }
-
-    /**
-     * Checks if the series exists in the DB.
      *
-     * @param $series
-     *
-     * @return bool
+     * @return \vicgonvt\LaraPress\Tag
      */
-    private static function isNewSeries($series)
+    private static function getOrCreateSeries($series)
     {
-        return ! SeriesModel::where('slug', str_slug($series))->exists();
+        return SeriesModel::firstOrCreate(
+            ['slug' => str_slug($series)],
+            ['title' => $series]
+        );
     }
 }

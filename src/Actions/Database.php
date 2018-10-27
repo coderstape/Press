@@ -10,7 +10,6 @@ class Database
     public function savePosts($posts)
     {
         foreach ($posts as $post) {
-            $series = (isset($post['series'])) ? Series::slug($post['series']) : null;
 
             Post::updateOrCreate(
                 ['identifier' => $post['identifier']],
@@ -19,10 +18,10 @@ class Database
                     'title' => $post['title'],
                     'body' => $post['body'],
                     'extra' => $post['extra'],
-                    'series_id' => ($series) ? $series->id : null,
+                    'series_id' => (isset($post['series_id'])) ? $post['series_id'] : null,
                     'published_at' => $post['published_at'],
                 ]
-            );
+            )->tags()->sync($post['tag_ids']);
         }
 
         $this->cleanPosts(array_pluck($posts, 'identifier'));

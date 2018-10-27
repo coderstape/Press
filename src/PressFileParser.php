@@ -19,8 +19,6 @@ class PressFileParser
         $this->explodeData();
         
         $this->processFields();
-
-        $this->handleFields();
     }
 
     public function getData()
@@ -41,17 +39,6 @@ class PressFileParser
                 $this->parsedData,
                 $class::process($fieldType, $fieldData, $this->parsedData)
             );
-        }
-    }
-
-    protected function handleFields()
-    {
-        foreach ($this->parsedData as $fieldType => $fieldData) {
-            $class = 'vicgonvt\LaraPress\Field\\' . ucfirst(camel_case($fieldType));
-
-            if (class_exists($class) && method_exists($class, 'handle')) {
-                $class::handle($fieldType, $fieldData);
-            }
         }
     }
 

@@ -2,6 +2,7 @@
 
 namespace vicgonvt\LaraPress;
 
+use ReflectionClass;
 use vicgonvt\LaraPress\Actions\Database;
 
 class LaraPress
@@ -82,30 +83,32 @@ class LaraPress
     }
 
     /**
-     * Accepts two types of parameters. If an array is passed in, it will merge it with the
+     * Accepts three types of parameters. If an array is passed in, it will merge it with the
      * existing meta array. If a string is passed in, then it will return the value stored
-     * at the given key.
+     * at the given key. If an object is passed in, it will attempt to new up a class
+     * of matching name in the Transformers namespace and call transform() on it.
      *
-     * @param $attribute
+     * @param $attributes
      *
      * @return array|mixed|string
+     * @throws \ReflectionException
      */
-    public function meta($attribute)
+    public function meta($attributes)
     {
-        if (is_array($attribute)) {
-            return $this->meta = array_merge($this->meta, $attribute);
+        if (is_array($attributes)) {
+            return $this->meta = array_merge($this->meta, $attributes);
         }
 
-        if (is_a($attribute, Post::class)) {
-            return $this->meta = array_merge($this->meta, [
-                'title' => $attribute->title,
-                'description' => $attribute->extra('description'),
-                'keywords' => $attribute->extra('keywords'),
-                'image' => $attribute->extra('img'),
-                'url' => $attribute->path(),
-            ]);
+        if (is_object($attributes)) {
+            $class = 'vicgonvt\LaraPress\Transformers\\' . (new ReflectionClass($attributes))->getShortName();
+
+            if ( ! class_exists($class) && ! method_exists($class, 'transform')) {
+                return;
+            }
+
+            return $this->meta = array_merge($this->meta, (new $class)->transform($attributes));
         }
 
-        return (isset($this->meta[$attribute])) ? $this->meta[$attribute] : '';
+        return (isset($this->meta[$attributes])) ? $this->meta[$attributes] : '';
     }
 }

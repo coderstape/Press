@@ -49,6 +49,14 @@ class Post extends Model
     }
 
     /**
+     * Record a visit for this post.
+     */
+    public function recordVisit()
+    {
+        $this->visits()->create();
+    }
+
+    /**
      * Scope the posts to only those set to active.
      *
      * @param $query
@@ -78,5 +86,15 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class, $this->prefix . 'post_tag');
+    }
+
+    /**
+     * Gets all the visits for this post.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function visits()
+    {
+        return $this->hasMany(Trending::class, 'post_id');
     }
 }

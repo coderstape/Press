@@ -31,6 +31,8 @@ class PostController extends Controller
     {
         $post = Post::active()->with(['tags', 'series'])->whereId($post)->whereSlug($slug)->first();
 
+        $post->recordVisit();
+
         return theme('posts.show', compact('post'));
     }
 }

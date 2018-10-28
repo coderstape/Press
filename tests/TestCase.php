@@ -6,6 +6,13 @@ use vicgonvt\LaraPress\LaraPressServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->withFactories(__DIR__.'/../database/factories');
+    }
+
     /**
      * Bootstrap any service providers here.
      *

@@ -73,7 +73,9 @@ class PressFileParser
 
             preg_match('/(.*?)\:(.*)/', $fieldString, $fieldArray);
 
-            $this->parsedData[trim($fieldArray[1])] = trim($fieldArray[2]);
+            if (isset($fieldArray[1])) {
+                $this->parsedData[trim($fieldArray[1])] = trim($fieldArray[2]);
+            }
         }
 
         $this->parsedData['body'] = trim($this->splitFile[2]);

@@ -2,6 +2,8 @@
 
 namespace vicgonvt\LaraPress;
 
+use vicgonvt\LaraPress\Facades\LaraPress;
+
 class Tag extends Model
 {
     /**

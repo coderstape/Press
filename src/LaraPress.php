@@ -23,16 +23,6 @@ class LaraPress
     }
 
     /**
-     * Get the URI path prefix.
-     *
-     * @return string
-     */
-    public static function path()
-    {
-        return config('larapress.path', '/blog');
-    }
-
-    /**
      * Check if config file has been set.
      *
      * @return bool
@@ -80,6 +70,16 @@ class LaraPress
             ->get();
 
         return ($limit) ? $trending->take($limit) : $trending;
+    }
+
+    /**
+     * Get the URI path prefix.
+     *
+     * @return string
+     */
+    public function path()
+    {
+        return config('larapress.path', '/blog');
     }
 
     /**

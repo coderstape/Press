@@ -4,6 +4,7 @@ namespace vicgonvt\LaraPress;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use vicgonvt\LaraPress\Facades\LaraPress;
 
 class LaraPressBaseServiceProvider extends ServiceProvider
 {
@@ -31,9 +32,9 @@ class LaraPressBaseServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'larapress');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
-        $this->registerRoutes();
         $this->registerHelpers();
         $this->registerFacades();
+        $this->registerRoutes();
     }
 
     /**
@@ -79,7 +80,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
     protected function registerFacades()
     {
         $this->app->singleton('LaraPress', function ($app) {
-            return new LaraPress();
+            return new \vicgonvt\LaraPress\LaraPress();
         });
     }
 

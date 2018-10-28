@@ -35,6 +35,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
         $this->registerHelpers();
         $this->registerFacades();
         $this->registerRoutes();
+        $this->registerFields();
     }
 
     /**
@@ -65,7 +66,28 @@ class LaraPressBaseServiceProvider extends ServiceProvider
     }
 
     /**
+     * Bootstrap package fields.
+     *
+     * @return void
+     */
+    protected function registerFields()
+    {
+        LaraPress::fields(array_merge([
+            Field\Body::class,
+            Field\Date::class,
+            Field\Extra::class,
+            Field\Identifier::class,
+            Field\Permalink::class,
+            Field\Series::class,
+            Field\Tags::class,
+            Field\Title::class,
+        ], $this->fields()));
+    }
+
+    /**
      * Register the additional helpers needed.
+     *
+     * @return void
      */
     protected function registerHelpers()
     {
@@ -76,6 +98,8 @@ class LaraPressBaseServiceProvider extends ServiceProvider
 
     /**
      * Register any bindings to the app.
+     *
+     * @return void
      */
     protected function registerFacades()
     {

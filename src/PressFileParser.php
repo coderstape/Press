@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress;
 
 use Illuminate\Support\Facades\File;
+use vicgonvt\LaraPress\Facades\LaraPress;
 
 class PressFileParser
 {
@@ -50,7 +51,9 @@ class PressFileParser
     protected function processFields()
     {
         foreach ($this->parsedData as $fieldType => $fieldData) {
-            $class = 'vicgonvt\LaraPress\Field\\' . ucfirst(camel_case($fieldType));
+
+            $class = $this->class($fieldType);
+            $class = array_pop($class);
 
             if ( ! class_exists($class) && ! method_exists($class, 'process')) {
                 $class = 'vicgonvt\LaraPress\Field\Extra';
@@ -91,5 +94,21 @@ class PressFileParser
             File::exists($this->filename) ? File::get($this->filename) : $this->filename,
             $this->splitFile
         );
+    }
+
+    /**
+     * @param $fieldType
+     *
+     * @return string
+     */
+    private function class($fieldType)
+    {
+        $baseClass = ucfirst(camel_case($fieldType));
+
+        return array_filter(LaraPress::availableFields(), function ($class) use ($baseClass) {
+            if (preg_match('/\\\\' . $baseClass . '$/', $class)) {
+                return $class;
+            }
+        });
     }
 }

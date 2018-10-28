@@ -13,6 +13,11 @@ class LaraPress
     protected $meta = [];
 
     /**
+     * @var array
+     */
+    protected $fields = [];
+
+    /**
      * LaraPress constructor.
      */
     public function __construct()
@@ -110,5 +115,20 @@ class LaraPress
         }
 
         return (isset($this->meta[$attributes])) ? $this->meta[$attributes] : '';
+    }
+
+    /**
+     * Bootstrap Field parsers.
+     *
+     * @param array $fields
+     */
+    public function fields(array $fields)
+    {
+        $this->fields = array_merge($this->fields, $fields);
+    }
+
+    public function availableFields()
+    {
+        return $this->fields;
     }
 }

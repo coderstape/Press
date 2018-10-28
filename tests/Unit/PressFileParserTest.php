@@ -4,6 +4,8 @@ namespace vicgonvt\LaraPress\Tests;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use vicgonvt\LaraPress\Facades\LaraPress;
+use vicgonvt\LaraPress\Field\FieldContract;
 use vicgonvt\LaraPress\PressFileParser;
 use vicgonvt\LaraPress\Series;
 
@@ -138,8 +140,42 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('<h1>Title Here</h1>', $data['body']);
     }
 
+    /** @test */
+    public function it_can_use_a_users_class()
+    {
+        LaraPress::fields(['\vicgonvt\LaraPress\Tests\Other']);
+
+        $data = (new PressFileParser("---\nOther: A Cool Title---\n#Title Here"))->getData();
+        $this->assertEquals('A Cool Title', $data['other']);
+    }
+
+    /** @test */
+    public function it_fulfills_the_full_class_name()
+    {
+        LaraPress::fields(['\vicgonvt\LaraPress\Tests\TitleTitle']);
+
+        $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();
+        $this->assertEquals('A Cool Title', $data['title']);
+    }
+
     private function getSampleMarkdownParser()
     {
         return (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'));
+    }
+}
+
+class Other extends FieldContract
+{
+    public static function process($fieldType, $fieldValue, $fields)
+    {
+        return ['other' => $fieldValue];
+    }
+}
+
+class TitleTitle extends FieldContract
+{
+    public static function process($fieldType, $fieldValue, $fields)
+    {
+        return ['titletitle' => $fieldValue];
     }
 }

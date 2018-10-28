@@ -27,4 +27,16 @@ class LaraPressServiceProvider extends LaraPressBaseServiceProvider
 
         //
     }
+
+    /**
+     * Bootstrap any additional custom field parsers.
+     *
+     * @return array
+     */
+    public function fields()
+    {
+        return [
+            //
+        ];
+    }
 }

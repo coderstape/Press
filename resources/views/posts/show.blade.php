@@ -6,6 +6,8 @@
     <h2><a href="#">{{ $post->series->title }}</a></h2>
     <p><a href="{{ url(config('larapress.path') . '/posts') }}">All posts</a></p>
 
+    <img src="{{ $post->image() }}" alt="Cover image for the post {{ $post->title }}">
+
     <h3>Tags</h3>
     <ul>
         @foreach ($post->tags as $tag)

@@ -3,7 +3,6 @@
 namespace vicgonvt\LaraPress\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use vicgonvt\LaraPress\Post;
 use vicgonvt\LaraPress\Tag;
 
 class TagController extends Controller

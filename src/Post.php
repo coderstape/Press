@@ -27,6 +27,28 @@ class Post extends Model
     }
 
     /**
+     * Parse the 'extra' column and return the appropriate field.
+     *
+     * @param $field
+     *
+     * @return mixed
+     */
+    public function extra($field)
+    {
+        return optional(json_decode($this->extra))->$field;
+    }
+
+    /**
+     * Returns the image path from the extras field.
+     *
+     * @return mixed
+     */
+    public function image()
+    {
+        return $this->extra('img');
+    }
+
+    /**
      * Scope the posts to only those set to active.
      *
      * @param $query

@@ -16,7 +16,7 @@ class PostController extends Controller
     {
         $posts = Post::active()->get();
 
-        return view('larapress::posts.index', compact('posts'));
+        return theme('posts.index', compact('posts'));
     }
 
     /**
@@ -31,6 +31,6 @@ class PostController extends Controller
     {
         $post = Post::active()->with(['tags', 'series'])->whereId($post)->whereSlug($slug)->first();
 
-        return view('larapress::posts.show', compact('post'));
+        return theme('posts.show', compact('post'));
     }
 }

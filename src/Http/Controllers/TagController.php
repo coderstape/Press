@@ -16,7 +16,7 @@ class TagController extends Controller
     {
         $tags = Tag::whereHas('posts')->with('posts')->get();
 
-        return view('larapress::tags.index', compact('tags'));
+        return theme('tags.index', compact('tags'));
     }
 
     /**
@@ -31,6 +31,6 @@ class TagController extends Controller
     {
         $tag = Tag::with('posts')->whereId($tag)->whereSlug($slug)->first();
 
-        return view('larapress::tags.show', compact('tag'));
+        return theme('tags.show', compact('tag'));
     }
 }

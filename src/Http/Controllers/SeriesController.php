@@ -16,7 +16,7 @@ class SeriesController extends Controller
     {
         $series = Series::with('posts')->get();
 
-        return view('larapress::series.index', compact('series'));
+        return theme('series.index', compact('series'));
     }
 
     /**
@@ -31,6 +31,6 @@ class SeriesController extends Controller
     {
         $series = Series::with('posts')->whereId($series)->whereSlug($slug)->first();
 
-        return view('larapress::series.show', compact('series'));
+        return theme('series.show', compact('series'));
     }
 }

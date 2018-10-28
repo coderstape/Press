@@ -32,6 +32,7 @@ class LaraPressServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->registerRoutes();
+        $this->registerHelpers();
     }
 
     /**
@@ -59,6 +60,16 @@ class LaraPressServiceProvider extends ServiceProvider
         Route::group($this->routeConfiguration(), function () {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
         });
+    }
+
+    /**
+     * Register the additional helpers needed.
+     */
+    protected function registerHelpers()
+    {
+        if (file_exists($file = __DIR__.'/Helpers/helpers.php')) {
+            require $file;
+        }
     }
 
     /**

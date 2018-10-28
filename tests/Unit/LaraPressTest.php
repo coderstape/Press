@@ -2,10 +2,14 @@
 
 namespace vicgonvt\LaraPress\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use vicgonvt\LaraPress\LaraPress;
+use vicgonvt\LaraPress\Post;
 
 class LaraPressTest extends TestCase
 {
+    use RefreshDatabase;
+
     /** @test */
     public function it_can_store_meta_information()
     {
@@ -46,5 +50,20 @@ class LaraPressTest extends TestCase
         $laraPress->meta(['field1' => 'new value']);
 
         $this->assertEquals('new value', $laraPress->meta('field1'));
+    }
+
+    /** @test */
+    public function it_can_parse_a_post_model_and_override_meta_tags()
+    {
+        $post = factory(Post::class)->create();
+
+        $laraPress = new LaraPress();
+        $laraPress->meta($post);
+
+        $this->assertEquals($post->title, $laraPress->meta('title'));
+        $this->assertEquals($post->extra('description'), $laraPress->meta('description'));
+        $this->assertEquals($post->extra('keywords'), $laraPress->meta('keywords'));
+        $this->assertEquals($post->extra('img'), $laraPress->meta('image'));
+        $this->assertEquals($post->path(), $laraPress->meta('url'));
     }
 }

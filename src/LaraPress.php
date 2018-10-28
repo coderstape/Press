@@ -17,6 +17,8 @@ class LaraPress
     public function __construct()
     {
         $this->meta = config('larapress.blog');
+
+        $this->meta['url'] = url(config('larapress.path'));
     }
 
     /**
@@ -84,16 +86,26 @@ class LaraPress
      * existing meta array. If a string is passed in, then it will return the value stored
      * at the given key.
      *
-     * @param $field
+     * @param $attribute
      *
      * @return array|mixed|string
      */
-    public function meta($field)
+    public function meta($attribute)
     {
-        if (is_array($field)) {
-            return $this->meta = array_merge($this->meta, $field);
+        if (is_array($attribute)) {
+            return $this->meta = array_merge($this->meta, $attribute);
         }
 
-        return (isset($this->meta[$field])) ? $this->meta[$field] : '';
+        if (is_a($attribute, Post::class)) {
+            return $this->meta = array_merge($this->meta, [
+                'title' => $attribute->title,
+                'description' => $attribute->extra('description'),
+                'keywords' => $attribute->extra('keywords'),
+                'image' => $attribute->extra('img'),
+                'url' => $attribute->path(),
+            ]);
+        }
+
+        return (isset($this->meta[$attribute])) ? $this->meta[$attribute] : '';
     }
 }

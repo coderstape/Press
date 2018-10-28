@@ -1,6 +1,7 @@
 <?php
 
 return [
+    
     /*
     |--------------------------------------------------------------------------
     | LaraPress Source Driver
@@ -86,13 +87,30 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Custom Attributes
+    | Custom Theme
     |--------------------------------------------------------------------------
     |
-    | Allows for customization of the blog pages.
+    | Specify any directory here where LaraPress should grab its themed view
+    | files from. You must implement all of the views that LaraPress calls
+    | behind the scenes.
+    |
+    | Default: 'larapress::'
     |
     */
 
     // 'theme' => '',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Trending Limit
+    |--------------------------------------------------------------------------
+    |
+    | When fetching the trendings for the blog post, you can limit how many
+    | visits you would like to have LaraPress use to calculate the trends.
+    | Depending on your blog's popularity, this number may need to be
+    | adjusted.
+    |
+    */
+
     'trending_limit' => 1000,
 ];

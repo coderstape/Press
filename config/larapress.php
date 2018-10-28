@@ -94,4 +94,5 @@ return [
     */
 
     // 'theme' => '',
+    'trending_limit' => 1000,
 ];

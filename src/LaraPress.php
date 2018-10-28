@@ -48,4 +48,21 @@ class LaraPress
     {
         return new Database();
     }
+
+    /**
+     * Returns a collection of tending posts.
+     *
+     * @param null $limit
+     *
+     * @return mixed
+     */
+    public static function trending($limit = null)
+    {
+        $trending = Trending::orderBy('id', 'desc')
+            ->groupBy('post_id')
+            ->limit(config('larapress.trending_limit'))
+            ->get();
+
+        return ($limit) ? $trending->take($limit) : $trending;
+    }
 }

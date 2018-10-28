@@ -10,16 +10,19 @@
     <!-- Fonts -->
 
     <!-- Styles -->
-    <link rel="stylesheet" href="#">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body>
+<body class="font-sans">
 
-<div id="larapress">
+@include('larapress::nav')
+
+<div id="larapress" class="container">
     @yield('content')
 </div>
 
 <!-- Scripts -->
+
 
 </body>
 </html>

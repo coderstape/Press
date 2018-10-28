@@ -8,10 +8,10 @@
 
     <h3>Tags</h3>
     <ul>
-        @foreach ($post->tags as $tags)
+        @foreach ($post->tags as $tag)
             <li>
-                <a href="#">
-                    {{ $tags->name }}
+                <a href="{{ $tag->path() }}">
+                    {{ $tag->name }}
                 </a>
             </li>
         @endforeach

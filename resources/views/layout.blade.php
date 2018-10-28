@@ -18,8 +18,10 @@
 
 @include('larapress::nav')
 
-<div id="larapress" class="container">
-    @yield('content')
+<div id="larapress" class="container mx-auto">
+    <div class="">
+        @yield('content')
+    </div>
 </div>
 
 <!-- Scripts -->

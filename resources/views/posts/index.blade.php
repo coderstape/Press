@@ -8,7 +8,7 @@
         @foreach ($posts as $post)
             <li>
                 <a href="{{ $post->path() }}">
-                    <img src="{{ $post->image() }}" alt="Cover image for the post {{ $post->title }}">
+                    <img src="{{ $post->image() }}" alt="Cover image for the post {{ $post->title }}" class="w-10 h-10">
                     {{ $post->title }}
                 </a>
             </li>

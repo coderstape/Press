@@ -4,6 +4,13 @@ namespace vicgonvt\LaraPress\Transformers;
 
 class Post implements Transformer
 {
+    /**
+     * Transform a post model for setting proper meta tags on the view.
+     *
+     * @param $post
+     *
+     * @return array
+     */
     public function transform($post)
     {
         return [

@@ -5,6 +5,7 @@ namespace vicgonvt\LaraPress\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use vicgonvt\LaraPress\LaraPress;
 use vicgonvt\LaraPress\Post;
+use vicgonvt\LaraPress\Series;
 use vicgonvt\LaraPress\Tag;
 
 class LaraPressTest extends TestCase
@@ -83,5 +84,22 @@ class LaraPressTest extends TestCase
         );
         $this->assertEquals(str_replace(' ', ', ', $tag->name), $laraPress->meta('keywords'));
         $this->assertEquals($tag->path(), $laraPress->meta('url'));
+    }
+    
+    /** @test */
+    public function it_can_parse_a_series_and_override_meta_tags()
+    {
+        $series = factory(Series::class)->create();
+
+        $laraPress = new LaraPress();
+        $laraPress->meta($series);
+
+        $this->assertEquals($series->title, $laraPress->meta('title'));
+        $this->assertEquals(
+            'Showing all posts in the series titled ' . $series->title,
+            $laraPress->meta('description')
+        );
+        $this->assertEquals(str_replace(' ', ', ', $series->title), $laraPress->meta('keywords'));
+        $this->assertEquals($series->path(), $laraPress->meta('url'));
     }
 }

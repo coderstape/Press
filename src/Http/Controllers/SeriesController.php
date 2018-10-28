@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use vicgonvt\LaraPress\Facades\LaraPress;
 use vicgonvt\LaraPress\Series;
 
 class SeriesController extends Controller
@@ -30,6 +31,8 @@ class SeriesController extends Controller
     public function show($series, $slug)
     {
         $series = Series::with('posts')->whereId($series)->whereSlug($slug)->first();
+
+        LaraPress::meta($series);
 
         return theme('series.show', compact('series'));
     }

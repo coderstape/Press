@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use vicgonvt\LaraPress\Facades\LaraPress;
 use vicgonvt\LaraPress\Tag;
 
 class TagController extends Controller
@@ -30,6 +31,8 @@ class TagController extends Controller
     public function show($tag, $slug)
     {
         $tag = Tag::with('posts')->whereId($tag)->whereSlug($slug)->first();
+
+        LaraPress::meta($tag);
 
         return theme('tags.show', compact('tag'));
     }

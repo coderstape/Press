@@ -5,6 +5,7 @@ namespace vicgonvt\LaraPress\Tests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use vicgonvt\LaraPress\LaraPress;
 use vicgonvt\LaraPress\Post;
+use vicgonvt\LaraPress\Tag;
 
 class LaraPressTest extends TestCase
 {
@@ -65,5 +66,22 @@ class LaraPressTest extends TestCase
         $this->assertEquals($post->extra('keywords'), $laraPress->meta('keywords'));
         $this->assertEquals($post->extra('img'), $laraPress->meta('image'));
         $this->assertEquals($post->path(), $laraPress->meta('url'));
+    }
+    
+    /** @test */
+    public function it_can_parse_a_tag_and_override_meta_tags()
+    {
+        $tag = factory(Tag::class)->create();
+
+        $laraPress = new LaraPress();
+        $laraPress->meta($tag);
+
+        $this->assertEquals($tag->name, $laraPress->meta('title'));
+        $this->assertEquals(
+            'Showing all posts associated with the tag ' . $tag->name,
+            $laraPress->meta('description')
+        );
+        $this->assertEquals(str_replace(' ', ', ', $tag->name), $laraPress->meta('keywords'));
+        $this->assertEquals($tag->path(), $laraPress->meta('url'));
     }
 }

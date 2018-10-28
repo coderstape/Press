@@ -2,7 +2,7 @@
 
 namespace vicgonvt\LaraPress\Field;
 
-class Extra
+class Extra extends FieldContract
 {
     /**
      * Process the field and make any needed modifications.

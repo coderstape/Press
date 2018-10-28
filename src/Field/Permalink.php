@@ -2,7 +2,7 @@
 
 namespace vicgonvt\LaraPress\Field;
 
-class Permalink
+class Permalink extends FieldContract
 {
     /**
      * Process the field and make any needed modifications.

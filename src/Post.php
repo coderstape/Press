@@ -45,7 +45,7 @@ class Post extends Model
      */
     public function image()
     {
-        return $this->extra('img');
+        return $this->extra('img') ?: config('larapress.blog.image');
     }
 
     /**

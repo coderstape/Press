@@ -4,6 +4,28 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Global Blog Configs
+    |--------------------------------------------------------------------------
+    |
+    | In this section we are going to configure your blog with all of the
+    | information pertaining to you and your blog. This information is
+    | used throughout for meta tags, page titles and other things.
+    |
+    */
+
+    'blog' => [
+        'title' => 'My LaraPress Blog',
+        'site_name' => 'My LaraPress Blog',
+        'description' => 'An elegant markdown blog powered by Laravel.',
+        'author' => 'LaraPress',
+        'keywords' => 'laravel, markdown, blog',
+        'image' => 'path/to/logo.png',
+        'copyright' => 'Copyright Information',
+        'locale' => 'en_US',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Source Driver
     |--------------------------------------------------------------------------
     |

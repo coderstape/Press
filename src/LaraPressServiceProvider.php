@@ -33,6 +33,7 @@ class LaraPressServiceProvider extends ServiceProvider
 
         $this->registerRoutes();
         $this->registerHelpers();
+        $this->registerFacades();
     }
 
     /**
@@ -70,6 +71,16 @@ class LaraPressServiceProvider extends ServiceProvider
         if (file_exists($file = __DIR__.'/Helpers/helpers.php')) {
             require $file;
         }
+    }
+
+    /**
+     * Register any bindings to the app.
+     */
+    protected function registerFacades()
+    {
+        $this->app->singleton('LaraPress', function ($app) {
+            return new LaraPress();
+        });
     }
 
     /**

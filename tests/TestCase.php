@@ -28,6 +28,20 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     }
 
     /**
+     * Bootstrap any aliases here.
+     *
+     * @param \Illuminate\Foundation\Application $app
+     *
+     * @return array
+     */
+    protected function getPackageAliases($app)
+    {
+        return [
+            'LaraPress' => 'vicgonvt\LaraPress\Facades\Larapress',
+        ];
+    }
+
+    /**
      * Define environment setup.
      *
      * @param  \Illuminate\Foundation\Application  $app

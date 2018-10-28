@@ -41,7 +41,10 @@
         "laravel": {
             "providers": [
                 "vicgonvt\\LaraPress\\LaraPressServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "LaraPress": "vicgonvt\\LaraPress\\Facades\\LaraPress"
+            }
         }
     }
 }

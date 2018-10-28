@@ -7,6 +7,19 @@ use vicgonvt\LaraPress\Actions\Database;
 class LaraPress
 {
     /**
+     * @var array
+     */
+    protected $meta = [];
+
+    /**
+     * LaraPress constructor.
+     */
+    public function __construct()
+    {
+        $this->meta = config('larapress.blog');
+    }
+
+    /**
      * Get the URI path prefix.
      *
      * @return string
@@ -64,5 +77,23 @@ class LaraPress
             ->get();
 
         return ($limit) ? $trending->take($limit) : $trending;
+    }
+
+    /**
+     * Accepts two types of parameters. If an array is passed in, it will merge it with the
+     * existing meta array. If a string is passed in, then it will return the value stored
+     * at the given key.
+     *
+     * @param $field
+     *
+     * @return array|mixed|string
+     */
+    public function meta($field)
+    {
+        if (is_array($field)) {
+            return $this->meta = array_merge($this->meta, $field);
+        }
+
+        return (isset($this->meta[$field])) ? $this->meta[$field] : '';
     }
 }

@@ -3,6 +3,7 @@
 namespace vicgonvt\LaraPress\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use vicgonvt\LaraPress\Facades\LaraPress;
 use vicgonvt\LaraPress\Post;
 
 class PostController extends Controller

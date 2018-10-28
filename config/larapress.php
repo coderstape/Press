@@ -1,10 +1,10 @@
 <?php
 
 return [
-    
+
     /*
     |--------------------------------------------------------------------------
-    | LaraPress Source Driver
+    | Source Driver
     |--------------------------------------------------------------------------
     |
     | LaraPress allows you to select a driver that will be used for storing
@@ -51,7 +51,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you can specify any configuration options that should be used with
-    | the gist driver.
+    | the gist driver. The source can be a string or an array and should
+    | correspond to each author's listing of available gist unique IDs.
     |
     */
 

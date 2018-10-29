@@ -1,6 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace App\Providers;
+
+use vicgonvt\LaraPress\LaraPressBaseServiceProvider;
 
 class LaraPressServiceProvider extends LaraPressBaseServiceProvider
 {

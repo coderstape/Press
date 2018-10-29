@@ -127,6 +127,11 @@ class LaraPress
         $this->fields = array_merge($this->fields, $fields);
     }
 
+    /**
+     * Get the available fields.
+     *
+     * @return array
+     */
     public function availableFields()
     {
         return $this->fields;

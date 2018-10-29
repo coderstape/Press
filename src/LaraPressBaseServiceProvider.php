@@ -46,7 +46,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
     protected function registerPublishing()
     {
         $this->publishes([
-            __DIR__.'/LaraPressServiceProvider.php' => app_path('Providers/LaraPressServiceProvider.php'),
+            __DIR__.'/Console/stubs/LaraPressServiceProvider.stub' => app_path('Providers/LaraPressServiceProvider.php'),
         ], 'larapress-provider');
         $this->publishes([
             __DIR__.'/../config/larapress.php' => config_path('larapress.php'),
@@ -72,7 +72,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
      */
     protected function registerFields()
     {
-        LaraPress::fields(array_merge([
+        LaraPress::fields([
             Field\Body::class,
             Field\Date::class,
             Field\Extra::class,
@@ -81,7 +81,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
             Field\Series::class,
             Field\Tags::class,
             Field\Title::class,
-        ], $this->fields()));
+        ]);
     }
 
     /**

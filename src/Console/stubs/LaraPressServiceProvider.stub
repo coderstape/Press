@@ -2,9 +2,10 @@
 
 namespace App\Providers;
 
-use vicgonvt\LaraPress\LaraPressBaseServiceProvider;
+use Illuminate\Support\ServiceProvider;
+use vicgonvt\LaraPress\Facades\LaraPress;
 
-class LaraPressServiceProvider extends LaraPressBaseServiceProvider
+class LaraPressServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any package services.
@@ -13,9 +14,7 @@ class LaraPressServiceProvider extends LaraPressBaseServiceProvider
      */
     public function boot()
     {
-        parent::boot();
-
-        //
+        LaraPress::fields($this->fields());
     }
 
     /**
@@ -25,8 +24,6 @@ class LaraPressServiceProvider extends LaraPressBaseServiceProvider
      */
     public function register()
     {
-        parent::register();
-
         //
     }
 

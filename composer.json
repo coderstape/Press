@@ -40,7 +40,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "vicgonvt\\LaraPress\\LaraPressServiceProvider"
+                "vicgonvt\\LaraPress\\LaraPressBaseServiceProvider"
             ],
             "aliases": {
                 "LaraPress": "vicgonvt\\LaraPress\\Facades\\LaraPress"

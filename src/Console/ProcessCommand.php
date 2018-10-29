@@ -29,7 +29,8 @@ class ProcessCommand extends Command
     public function handle()
     {
         if (LaraPress::configNotPublished()) {
-            return $this->warn('Please publish the config file by running \'php artisan vendor:publish\'');
+            return $this->warn('Please publish the config file by running' .
+                ' \'php artisan vendor:publish --tag=larapress-config\'');
         }
 
         try {

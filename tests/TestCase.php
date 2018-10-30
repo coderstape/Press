@@ -2,7 +2,7 @@
 
 namespace vicgonvt\LaraPress\Tests;
 
-use vicgonvt\LaraPress\LaraPressServiceProvider;
+use vicgonvt\LaraPress\LaraPressBaseServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -23,7 +23,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            LaraPressServiceProvider::class,
+            LaraPressBaseServiceProvider::class,
         ];
     }
 

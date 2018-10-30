@@ -47,6 +47,8 @@ class PressFileParser
      * Takes each field and tries to find a class with matching name. If found, it will try to call
      * the process() method on it. Any other fields that don't have matching classes get sent to
      * a catch all class of Extra, where they will be JSON Encoded into the 'extra' field.
+     * 
+     * @return void
      */
     protected function processFields()
     {
@@ -68,6 +70,8 @@ class PressFileParser
 
     /**
      * It separates the head on each new line, trims it and saves it to parsedData variable.
+     *
+     * @return void
      */
     protected function explodeData()
     {
@@ -86,6 +90,8 @@ class PressFileParser
 
     /**
      * It separates the head from the body for further manipulation.
+     *
+     * @return void
      */
     protected function splitFile()
     {

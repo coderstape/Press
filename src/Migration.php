@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 abstract class Migration extends \Illuminate\Database\Migrations\Migration
 {
@@ -14,6 +14,6 @@ abstract class Migration extends \Illuminate\Database\Migrations\Migration
      */
     public function __construct()
     {
-        $this->prefix = config('larapress.prefix');
+        $this->prefix = config('press.prefix');
     }
 }

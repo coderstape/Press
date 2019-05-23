@@ -1,6 +1,6 @@
 <?php
 
-use vicgonvt\LaraPress\Tag;
+use coderstape\Press\Tag;
 
 $factory->define(Tag::class, function (Faker\Generator $faker) {
     $name = $faker->sentence(4);

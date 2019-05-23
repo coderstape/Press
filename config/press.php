@@ -14,10 +14,10 @@ return [
     */
 
     'blog' => [
-        'title' => 'My LaraPress Blog',
-        'site_name' => 'My LaraPress Blog',
+        'title' => 'My Laravel Press Blog',
+        'site_name' => 'My Laravel Press Blog',
         'description' => 'An elegant markdown blog powered by Laravel.',
-        'author' => 'LaraPress',
+        'author' => 'Coder\'s Tape',
         'keywords' => 'laravel, markdown, blog',
         'image' => 'path/to/logo.png',
         'copyright' => 'Copyright Information',
@@ -29,7 +29,7 @@ return [
     | Source Driver
     |--------------------------------------------------------------------------
     |
-    | LaraPress allows you to select a driver that will be used for storing
+    | Press allows you to select a driver that will be used for storing
     | the blog posts. By default, the file driver is used, however, other
     | drivers are available, or write your own custom driver to suite.
     |
@@ -89,11 +89,11 @@ return [
     |
     | Adding a prefix to all of the tables used by this package avoids any
     | collisions with any existing tables you may already have for your
-    | project. We have set a sensible default of 'larapress_TABLENAME'.
+    | project. We have set a sensible default of 'press_TABLENAME'.
     |
     */
 
-    'prefix' => 'larapress_',
+    'prefix' => 'press_',
 
     /*
     |--------------------------------------------------------------------------
@@ -113,11 +113,11 @@ return [
     | Custom Theme
     |--------------------------------------------------------------------------
     |
-    | Specify any directory here where LaraPress should grab its themed view
-    | files from. You must implement all of the views that LaraPress calls
+    | Specify any directory here where Press should grab its themed view
+    | files from. You must implement all of the views that Press calls
     | behind the scenes.
     |
-    | Default: 'larapress::'
+    | Default: 'press::'
     |
     */
 
@@ -129,7 +129,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | When fetching the trendings for the blog post, you can limit how many
-    | visits you would like to have LaraPress use to calculate the trends.
+    | visits you would like to have Press use to calculate the trends.
     | Depending on your blog's popularity, this number may need to be
     | adjusted.
     |

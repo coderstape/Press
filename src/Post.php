@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
-use vicgonvt\LaraPress\Facades\LaraPress;
+use coderstape\Press\Facades\Press;
 
 class Post extends Model
 {
@@ -25,7 +25,7 @@ class Post extends Model
      */
     public function path()
     {
-        return url(LaraPress::path() . "/posts/{$this->id}-{$this->slug}");
+        return url(press::path() . "/posts/{$this->id}-{$this->slug}");
     }
 
     /**
@@ -47,7 +47,7 @@ class Post extends Model
      */
     public function image()
     {
-        return $this->extra('img') ?: config('larapress.blog.image');
+        return $this->extra('img') ?: config('press.blog.image');
     }
 
     /**

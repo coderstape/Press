@@ -12,6 +12,6 @@ if ( ! function_exists('theme')) {
      */
     function theme($view = null, $data = [], $mergeData = [])
     {
-        return view(config('larapress.theme', 'larapress::') . '.' . $view, $data, $mergeData);
+        return view(config('press.theme', 'press::') . '.' . $view, $data, $mergeData);
     }
 }

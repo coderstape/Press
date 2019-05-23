@@ -1,12 +1,12 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use vicgonvt\LaraPress\LaraPress;
-use vicgonvt\LaraPress\Post;
-use vicgonvt\LaraPress\Series;
-use vicgonvt\LaraPress\Tag;
+use coderstape\Press\Press;
+use coderstape\Press\Post;
+use coderstape\Press\Series;
+use coderstape\Press\Tag;
 
 class LaraPressTest extends TestCase
 {
@@ -15,7 +15,7 @@ class LaraPressTest extends TestCase
     /** @test */
     public function it_can_store_meta_information()
     {
-        config(['larapress.blog' => [
+        config(['press.blog' => [
             'field1' => 'test1',
             'field2' => 'test2',
         ]]);
@@ -29,7 +29,7 @@ class LaraPressTest extends TestCase
     /** @test */
     public function it_can_set_a_parameter_with_an_array()
     {
-        config(['larapress.blog' => [
+        config(['press.blog' => [
             'field1' => 'test1',
             'field2' => 'test2',
         ]]);
@@ -43,7 +43,7 @@ class LaraPressTest extends TestCase
     /** @test */
     public function it_can_overwrite_an_existing_field()
     {
-        config(['larapress.blog' => [
+        config(['press.blog' => [
             'field1' => 'test1',
             'field2' => 'test2',
         ]]);

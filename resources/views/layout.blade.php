@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=1280">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @include('larapress::meta')
+    @include('press::meta')
 
-    <title>@yield('title', 'LaraPress - Hot off the press')</title>
+    <title>@yield('title', 'Press - Hot off the press')</title>
 
     <!-- Fonts -->
 
@@ -16,9 +16,9 @@
 
 <body class="font-sans">
 
-@include('larapress::nav')
+@include('press::nav')
 
-<div id="larapress" class="container mx-auto">
+<div id="press" class="container mx-auto">
     <div class="">
         @yield('content')
     </div>

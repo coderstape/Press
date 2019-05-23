@@ -1,13 +1,13 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use vicgonvt\LaraPress\Actions\Database;
-use vicgonvt\LaraPress\Post;
-use vicgonvt\LaraPress\PressFileParser;
-use vicgonvt\LaraPress\Series;
-use vicgonvt\LaraPress\Tag;
+use coderstape\Press\Actions\Database;
+use coderstape\Press\Post;
+use coderstape\Press\PressFileParser;
+use coderstape\Press\Series;
+use coderstape\Press\Tag;
 
 class DatabaseTest extends TestCase
 {

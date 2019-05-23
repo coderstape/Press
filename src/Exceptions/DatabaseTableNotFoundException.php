@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress\Exceptions;
+namespace coderstape\Press\Exceptions;
 
 use Exception;
 

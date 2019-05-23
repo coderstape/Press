@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress\Http\Controllers;
+namespace coderstape\Press\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use vicgonvt\LaraPress\Facades\LaraPress;
-use vicgonvt\LaraPress\Series;
+use coderstape\Press\Facades\Press;
+use coderstape\Press\Series;
 
 class SeriesController extends Controller
 {
@@ -32,7 +32,7 @@ class SeriesController extends Controller
     {
         $series = Series::with('posts')->whereId($series)->whereSlug($slug)->first();
 
-        LaraPress::meta($series);
+        Press::meta($series);
 
         return theme('series.show', compact('series'));
     }

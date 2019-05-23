@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
-use vicgonvt\LaraPress\Facades\LaraPress;
+use coderstape\Press\Facades\Press;
 
 class Series extends Model
 {
@@ -18,7 +18,7 @@ class Series extends Model
      */
     public function path()
     {
-        return url(LaraPress::path() . "/series/{$this->id}-{$this->slug}");
+        return url(Press::path() . "/series/{$this->id}-{$this->slug}");
     }
 
     /**

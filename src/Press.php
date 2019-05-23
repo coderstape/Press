@@ -1,11 +1,11 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 use ReflectionClass;
-use vicgonvt\LaraPress\Actions\Database;
+use coderstape\Press\Actions\Database;
 
-class LaraPress
+class Press
 {
     /**
      * @var array
@@ -18,13 +18,13 @@ class LaraPress
     protected $fields = [];
 
     /**
-     * LaraPress constructor.
+     * Press constructor.
      */
     public function __construct()
     {
-        $this->meta = config('larapress.blog');
+        $this->meta = config('press.blog');
 
-        $this->meta['url'] = url(config('larapress.path'));
+        $this->meta['url'] = url(config('press.path'));
     }
 
     /**
@@ -34,7 +34,7 @@ class LaraPress
      */
     public static function configNotPublished()
     {
-        return is_null(config('larapress'));
+        return is_null(config('press'));
     }
 
     /**
@@ -44,8 +44,8 @@ class LaraPress
      */
     public static function driver()
     {
-        $driver = title_case(config('larapress.driver', 'file'));
-        $class = 'vicgonvt\LaraPress\Drivers\\' . $driver . 'Driver';
+        $driver = title_case(config('press.driver', 'file'));
+        $class = "coderstape\\Press\\Drivers\\{$driver}Driver";
 
         return new $class;
     }
@@ -53,7 +53,7 @@ class LaraPress
     /**
      * Get an instance of database class.
      *
-     * @return \vicgonvt\LaraPress\Actions\Database
+     * @return \coderstape\Press\Actions\Database
      */
     public static function database()
     {
@@ -71,7 +71,7 @@ class LaraPress
     {
         $trending = Trending::orderBy('id', 'desc')
             ->groupBy('post_id')
-            ->limit(config('larapress.trending_limit'))
+            ->limit(config('press.trending_limit'))
             ->get();
 
         return ($limit) ? $trending->take($limit) : $trending;
@@ -84,7 +84,7 @@ class LaraPress
      */
     public function path()
     {
-        return config('larapress.path', '/blog');
+        return config('press.path', '/blog');
     }
 
     /**
@@ -105,7 +105,7 @@ class LaraPress
         }
 
         if (is_object($attributes)) {
-            $class = 'vicgonvt\LaraPress\Transformers\\' . (new ReflectionClass($attributes))->getShortName();
+            $class = 'coderstape\\Press\\Transformers\\' . (new ReflectionClass($attributes))->getShortName();
 
             if ( ! class_exists($class) && ! method_exists($class, 'transform')) {
                 return;

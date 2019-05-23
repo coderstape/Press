@@ -1,4 +1,4 @@
-@extends('larapress::layout')
+@extends('press::layout')
 
 @section('content')
 
@@ -8,7 +8,7 @@
         <h2><a href="{{ $post->series->path() }}">{{ $post->series->title }}</a></h2>
     @endif
 
-    <p><a href="{{ url(config('larapress.path') . '/posts') }}">All posts</a></p>
+    <p><a href="{{ url(config('press.path') . '/posts') }}">All posts</a></p>
 
     <img src="{{ $post->image() }}" alt="Cover image for the post {{ $post->title }}">
 

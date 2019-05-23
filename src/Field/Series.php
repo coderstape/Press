@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress\Field;
+namespace coderstape\Press\Field;
 
-use vicgonvt\LaraPress\Series as SeriesModel;
+use coderstape\Press\Series as SeriesModel;
 
 class Series extends FieldContract
 {
@@ -25,7 +25,7 @@ class Series extends FieldContract
      *
      * @param $series
      *
-     * @return \vicgonvt\LaraPress\Tag
+     * @return \coderstape\Press\Tag
      */
     private static function getOrCreateSeries($series)
     {

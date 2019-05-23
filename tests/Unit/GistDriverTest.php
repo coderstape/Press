@@ -1,9 +1,9 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use vicgonvt\LaraPress\Drivers\GistDriver;
+use coderstape\Press\Drivers\GistDriver;
 
 /**
  * @group integration
@@ -15,7 +15,7 @@ class GistDriverTest extends TestCase
     /** @test */
     public function it_can_fetch_the_gist_source()
     {
-        config(['larapress.gist' => [
+        config(['press.gist' => [
             'source' => '056ebe80f90f268bcae560d70f2c2508',
         ]]);
 

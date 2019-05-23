@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress\Http\Controllers;
+namespace coderstape\Press\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use vicgonvt\LaraPress\Facades\LaraPress;
-use vicgonvt\LaraPress\Post;
+use coderstape\Press\Facades\Press;
+use coderstape\Press\Post;
 
 class PostController extends Controller
 {
@@ -33,7 +33,7 @@ class PostController extends Controller
         $post = Post::active()->with(['tags', 'series'])->whereId($post)->whereSlug($slug)->first();
 
         $post->recordVisit();
-        LaraPress::meta($post);
+        Press::meta($post);
 
         return theme('posts.show', compact('post'));
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
-use vicgonvt\LaraPress\Facades\LaraPress;
+use coderstape\Press\Facades\Press;
 
 class Tag extends Model
 {
@@ -18,7 +18,7 @@ class Tag extends Model
      */
     public function path()
     {
-        return url(LaraPress::path() . "/tags/{$this->id}-{$this->slug}");
+        return url(Press::path() . "/tags/{$this->id}-{$this->slug}");
     }
 
     /**

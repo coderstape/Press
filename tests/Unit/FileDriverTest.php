@@ -1,11 +1,11 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
-use vicgonvt\LaraPress\Drivers\FileDriver;
-use vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException;
+use coderstape\Press\Drivers\FileDriver;
+use coderstape\Press\Exceptions\FileDriverDirectoryNotFoundException;
 
 class FileDriverTest extends TestCase
 {
@@ -14,7 +14,7 @@ class FileDriverTest extends TestCase
     /** @test */
     public function it_throws_an_exception_if_file_directory_is_not_found()
     {
-        config(['larapress.file' => [
+        config(['press.file' => [
             'path' => 'some/fake/path',
         ]]);
 
@@ -26,7 +26,7 @@ class FileDriverTest extends TestCase
     /** @test */
     public function file_driver_can_fetch_posts()
     {
-        config(['larapress.file' => [
+        config(['press.file' => [
             'path' => __DIR__ . '/../stubs',
         ]]);
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 use Illuminate\Support\Str;
 
@@ -20,7 +20,7 @@ class Model extends \Illuminate\Database\Eloquent\Model
     {
         parent::__construct($attributes);
 
-        $this->prefix = config('larapress.prefix', 'larepress_');
+        $this->prefix = config('press.prefix', 'larepress_');
     }
 
     /**

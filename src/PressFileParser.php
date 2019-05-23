@@ -1,9 +1,9 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 use Illuminate\Support\Facades\File;
-use vicgonvt\LaraPress\Facades\LaraPress;
+use coderstape\Press\Facades\Press;
 
 class PressFileParser
 {
@@ -58,7 +58,7 @@ class PressFileParser
             $class = array_pop($class);
 
             if ( ! class_exists($class) && ! method_exists($class, 'process')) {
-                $class = 'vicgonvt\LaraPress\Field\Extra';
+                $class = 'coderstape\\Press\\Field\\Extra';
             }
 
             $this->parsedData = array_merge(
@@ -111,7 +111,7 @@ class PressFileParser
     {
         $baseClass = ucfirst(camel_case($fieldType));
 
-        return array_filter(LaraPress::availableFields(), function ($class) use ($baseClass) {
+        return array_filter(Press::availableFields(), function ($class) use ($baseClass) {
             if (preg_match('/\\\\' . $baseClass . '$/', $class)) {
                 return $class;
             }

@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
-use vicgonvt\LaraPress\LaraPressBaseServiceProvider;
+use coderstape\Press\PressBaseServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -37,7 +37,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageAliases($app)
     {
         return [
-            'LaraPress' => 'vicgonvt\LaraPress\Facades\Larapress',
+            'Press' => 'coderstape\Press\Facades\Press',
         ];
     }
 
@@ -55,7 +55,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
             'driver'   => 'sqlite',
             'database' => ':memory:',
         ]);
-        $app['config']->set('larapress.prefix', '');
-        $app['config']->set('larapress.driver', 'file');
+        $app['config']->set('press.prefix', '');
+        $app['config']->set('press.driver', 'file');
     }
 }

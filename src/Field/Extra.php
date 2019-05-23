@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress\Field;
+namespace coderstape\Press\Field;
 
 class Extra extends FieldContract
 {

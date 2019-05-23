@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress\Drivers;
+namespace coderstape\Press\Drivers;
 
 use Illuminate\Support\Facades\Schema;
-use vicgonvt\LaraPress\Blog;
-use vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException;
+use coderstape\Press\Blog;
+use coderstape\Press\Exceptions\DatabaseTableNotFoundException;
 
 class DatabaseDriver extends Driver
 {
@@ -28,7 +28,7 @@ class DatabaseDriver extends Driver
      * Perform any validation necessary to assert source is valid.
      *
      * @return bool|void
-     * @throws \vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException
+     * @throws \coderstape\Press\Exceptions\DatabaseTableNotFoundException
      */
     protected function validateSource()
     {
@@ -47,6 +47,6 @@ class DatabaseDriver extends Driver
      */
     protected function tablePrefix()
     {
-        return config('larapress.prefix');
+        return config('press.prefix');
     }
 }

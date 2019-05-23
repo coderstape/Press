@@ -1,13 +1,13 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
-use vicgonvt\LaraPress\Blog;
-use vicgonvt\LaraPress\Drivers\DatabaseDriver;
-use vicgonvt\LaraPress\Drivers\FileDriver;
-use vicgonvt\LaraPress\Exceptions\DatabaseTableNotFoundException;
+use coderstape\Press\Blog;
+use coderstape\Press\Drivers\DatabaseDriver;
+use coderstape\Press\Drivers\FileDriver;
+use coderstape\Press\Exceptions\DatabaseTableNotFoundException;
 
 class DatabaseDriverTest extends TestCase
 {
@@ -16,9 +16,9 @@ class DatabaseDriverTest extends TestCase
     /** @test */
     public function it_throws_an_exception_if_the_db_table_is_not_found()
     {
-        config(['larapress.database' => [
+        config(['press.database' => [
             'table' => 'fake_table_name',
-        ], 'larapress.driver' => 'database']);
+        ], 'press.driver' => 'database']);
 
         $this->expectException(DatabaseTableNotFoundException::class);
 
@@ -29,10 +29,10 @@ class DatabaseDriverTest extends TestCase
     public function database_driver_can_fetch_posts()
     {
         config([
-            'larapress.database' => [
+            'press.database' => [
                 'table' => 'blogs',
             ],
-            'larapress.driver' => 'database',
+            'press.driver' => 'database',
         ]);
 
         foreach (File::files(__DIR__ . '/../stubs') as $file) {

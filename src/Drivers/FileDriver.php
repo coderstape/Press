@@ -1,9 +1,9 @@
 <?php
 
-namespace vicgonvt\LaraPress\Drivers;
+namespace coderstape\Press\Drivers;
 
 use Illuminate\Support\Facades\File;
-use vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException;
+use coderstape\Press\Exceptions\FileDriverDirectoryNotFoundException;
 
 class FileDriver extends Driver
 {
@@ -27,7 +27,7 @@ class FileDriver extends Driver
      * Perform any validation necessary to assert source is valid.
      *
      * @return bool|void
-     * @throws \vicgonvt\LaraPress\Exceptions\FileDriverDirectoryNotFoundException
+     * @throws \coderstape\Press\Exceptions\FileDriverDirectoryNotFoundException
      */
     protected function validateSource()
     {

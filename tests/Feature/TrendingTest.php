@@ -1,11 +1,11 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use vicgonvt\LaraPress\LaraPress;
-use vicgonvt\LaraPress\Post;
-use vicgonvt\LaraPress\Trending;
+use coderstape\Press\Press;
+use coderstape\Press\Post;
+use coderstape\Press\Trending;
 
 class TrendingTest extends TestCase
 {
@@ -29,7 +29,7 @@ class TrendingTest extends TestCase
     {
         factory(Trending::class)->create();
 
-        $trending = LaraPress::trending();
+        $trending = press::trending();
 
         $this->assertEquals(Post::first()->id, $trending->first()->post_id);
     }
@@ -39,7 +39,7 @@ class TrendingTest extends TestCase
     {
         factory(Trending::class, 100)->create();
 
-        $trending = LaraPress::trending(10);
+        $trending = press::trending(10);
 
         $this->assertCount(10, $trending);
     }

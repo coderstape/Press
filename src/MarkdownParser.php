@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 use Parsedown;
 

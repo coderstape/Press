@@ -1,9 +1,9 @@
 <?php
 
-namespace vicgonvt\LaraPress\Console;
+namespace coderstape\Press\Console;
 
 use Illuminate\Console\Command;
-use vicgonvt\LaraPress\LaraPress;
+use coderstape\Press\Press;
 
 class ProcessCommand extends Command
 {
@@ -12,7 +12,7 @@ class ProcessCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'larapress:process';
+    protected $signature = 'press:process';
 
     /**
      * The console command description.
@@ -28,17 +28,17 @@ class ProcessCommand extends Command
      */
     public function handle()
     {
-        if (LaraPress::configNotPublished()) {
+        if (Press::configNotPublished()) {
             return $this->warn('Please publish the config file by running' .
-                ' \'php artisan vendor:publish --tag=larapress-config\'');
+                ' \'php artisan vendor:publish --tag=press-config\'');
         }
 
         try {
 
-            $posts = LaraPress::driver()->fetchPosts();
+            $posts = Press::driver()->fetchPosts();
 
-            if ($posts && LaraPress::database()->savePosts($posts)) {
-                return $this->info('LaraPress process complete.');
+            if ($posts && Press::database()->savePosts($posts)) {
+                return $this->info('Press process complete.');
             }
 
             $this->warn('No posts were updated.');

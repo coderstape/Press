@@ -1,6 +1,6 @@
 <?php
 
-use vicgonvt\LaraPress\Series;
+use coderstape\Press\Series;
 
 $factory->define(Series::class, function (Faker\Generator $faker) {
     $title = $faker->sentence(4);

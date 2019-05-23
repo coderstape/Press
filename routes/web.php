@@ -1,8 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-Route::view('/', 'larapress::app');
+Route::view('/', 'press::app');
 
 Route::get('posts', 'PostController@index');
 Route::get('posts/{post}-{slug}', 'PostController@show');

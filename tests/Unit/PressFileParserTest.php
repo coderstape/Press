@@ -1,13 +1,13 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use vicgonvt\LaraPress\Facades\LaraPress;
-use vicgonvt\LaraPress\Field\FieldContract;
-use vicgonvt\LaraPress\PressFileParser;
-use vicgonvt\LaraPress\Series;
+use coderstape\Press\Facades\Press;
+use coderstape\Press\Field\FieldContract;
+use coderstape\Press\PressFileParser;
+use coderstape\Press\Series;
 
 class PressFileParserTest extends TestCase
 {
@@ -143,7 +143,7 @@ class PressFileParserTest extends TestCase
     /** @test */
     public function it_can_use_a_users_class()
     {
-        LaraPress::fields(['\vicgonvt\LaraPress\Tests\Other']);
+        press::fields(['\coderstape\Press\Tests\Other']);
 
         $data = (new PressFileParser("---\nOther: A Cool Title---\n#Title Here"))->getData();
         $this->assertEquals('A Cool Title', $data['other']);
@@ -152,7 +152,7 @@ class PressFileParserTest extends TestCase
     /** @test */
     public function it_fulfills_the_full_class_name()
     {
-        LaraPress::fields(['\vicgonvt\LaraPress\Tests\TitleTitle']);
+        press::fields(['\coderstape\Press\Tests\TitleTitle']);
 
         $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();
         $this->assertEquals('A Cool Title', $data['title']);

@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress\Field;
+namespace coderstape\Press\Field;
 
-use vicgonvt\LaraPress\Tag;
+use coderstape\Press\Tag;
 
 class Tags extends FieldContract
 {
@@ -33,7 +33,7 @@ class Tags extends FieldContract
      *
      * @param $tag
      *
-     * @return \vicgonvt\LaraPress\Tag
+     * @return \coderstape\Press\Tag
      */
     private static function getOrCreateTag($tag)
     {

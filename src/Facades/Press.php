@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress\Facades;
+namespace coderstape\Press\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class LaraPress extends Facade
+class Press extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -13,6 +13,6 @@ class LaraPress extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'LaraPress';
+        return 'Press';
     }
 }

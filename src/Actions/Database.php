@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress\Actions;
+namespace coderstape\Press\Actions;
 
-use vicgonvt\LaraPress\Post;
-use vicgonvt\LaraPress\Series;
-use vicgonvt\LaraPress\Tag;
+use coderstape\Press\Post;
+use coderstape\Press\Series;
+use coderstape\Press\Tag;
 
 class Database
 {

@@ -1,4 +1,4 @@
-@extends('larapress::layout')
+@extends('press::layout')
 
 @section('content')
 

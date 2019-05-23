@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 class Trending extends Model
 {

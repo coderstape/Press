@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress\Transformers;
+namespace coderstape\Press\Transformers;
 
 class Series implements Transformer
 {

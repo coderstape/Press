@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress;
+namespace coderstape\Press;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use vicgonvt\LaraPress\Facades\LaraPress;
+use coderstape\Press\Facades\Press;
 
 class LaraPressBaseServiceProvider extends ServiceProvider
 {
@@ -29,7 +29,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
      */
     protected function registerResources()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'larapress');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'press');
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
         $this->registerHelpers();
@@ -46,11 +46,11 @@ class LaraPressBaseServiceProvider extends ServiceProvider
     protected function registerPublishing()
     {
         $this->publishes([
-            __DIR__.'/Console/stubs/LaraPressServiceProvider.stub' => app_path('Providers/LaraPressServiceProvider.php'),
-        ], 'larapress-provider');
+            __DIR__ . '/Console/stubs/PressServiceProvider.stub' => app_path('Providers/LaraPressServiceProvider.php'),
+        ], 'press-provider');
         $this->publishes([
-            __DIR__.'/../config/larapress.php' => config_path('larapress.php'),
-        ], 'larapress-config');
+            __DIR__ . '/../config/press.php' => config_path('press.php'),
+        ], 'press-config');
     }
 
     /**
@@ -72,7 +72,7 @@ class LaraPressBaseServiceProvider extends ServiceProvider
      */
     protected function registerFields()
     {
-        LaraPress::fields([
+        press::fields([
             Field\Body::class,
             Field\Date::class,
             Field\Extra::class,
@@ -103,21 +103,21 @@ class LaraPressBaseServiceProvider extends ServiceProvider
      */
     protected function registerFacades()
     {
-        $this->app->singleton('LaraPress', function ($app) {
-            return new \vicgonvt\LaraPress\LaraPress();
+        $this->app->singleton('Press', function ($app) {
+            return new \coderstape\Press\Press();
         });
     }
 
     /**
-     * Get the LaraPress route group configuration array.
+     * Get the Press route group configuration array.
      *
      * @return array
      */
     protected function routeConfiguration()
     {
         return [
-            'namespace' => 'vicgonvt\LaraPress\Http\Controllers',
-            'prefix' => LaraPress::path(),
+            'namespace' => 'coderstape\Press\Http\Controllers',
+            'prefix' => press::path(),
         ];
     }
 

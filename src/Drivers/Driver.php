@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress\Drivers;
+namespace coderstape\Press\Drivers;
 
-use vicgonvt\LaraPress\PressFileParser;
+use coderstape\Press\PressFileParser;
 
 abstract class Driver
 {
@@ -49,7 +49,7 @@ abstract class Driver
      */
     protected function setConfig()
     {
-        $this->config = config('larapress.' . config('larapress.driver'));
+        $this->config = config('press.' . config('press.driver'));
     }
 
     /**

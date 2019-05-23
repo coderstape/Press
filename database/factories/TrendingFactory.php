@@ -1,7 +1,7 @@
 <?php
 
-use vicgonvt\LaraPress\Post;
-use vicgonvt\LaraPress\Trending;
+use coderstape\Press\Post;
+use coderstape\Press\Trending;
 
 $factory->define(Trending::class, function (Faker\Generator $faker) {
     return [

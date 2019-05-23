@@ -1,9 +1,9 @@
-@extends('larapress::layout')
+@extends('press::layout')
 
 @section('content')
 
     <h1>SERIES: {{ $series->title }}</h1>
-    <p><a href="{{ url(config('larapress.path') . '/posts') }}">All posts</a></p>
+    <p><a href="{{ url(config('press.path') . '/posts') }}">All posts</a></p>
 
     <h3>Posts</h3>
     <ul>

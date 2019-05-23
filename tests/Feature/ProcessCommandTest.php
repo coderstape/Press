@@ -1,10 +1,10 @@
 <?php
 
-namespace vicgonvt\LaraPress\Tests;
+namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
-use vicgonvt\LaraPress\Post;
+use coderstape\Press\Post;
 
 class ProcessCommandTest extends TestCase
 {
@@ -14,21 +14,21 @@ class ProcessCommandTest extends TestCase
     public function command_is_available()
     {
         try {
-            $this->artisan('larapress:process');
+            $this->artisan('press:process');
             $this->assertTrue(true);
         } catch (CommandNotFoundException $e) {
-            $this->fail('Unable to locate the command \'larapress:process\'');
+            $this->fail('Unable to locate the command \'press:process\'');
         }
     }
     
     /** @test */
     public function it_adds_the_stub_posts_to_db()
     {
-        config(['larapress.file' => [
+        config(['press.file' => [
             'path' => __DIR__ . '/../stubs',
         ]]);
 
-        $this->artisan('larapress:process');
+        $this->artisan('press:process');
 
         $this->assertCount(2, Post::all()->fresh());
     }

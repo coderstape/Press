@@ -1,8 +1,8 @@
 <?php
 
-namespace vicgonvt\LaraPress\Field;
+namespace coderstape\Press\Field;
 
-use vicgonvt\LaraPress\MarkdownParser;
+use coderstape\Press\MarkdownParser;
 
 class Body extends FieldContract
 {

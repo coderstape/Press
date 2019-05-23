@@ -1,7 +1,7 @@
 <?php
 
 use Carbon\Carbon;
-use vicgonvt\LaraPress\Post;
+use coderstape\Press\Post;
 
 $factory->define(Post::class, function (Faker\Generator $faker) {
     return [

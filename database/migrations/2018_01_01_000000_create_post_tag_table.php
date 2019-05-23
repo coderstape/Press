@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use vicgonvt\LaraPress\Migration;
+use coderstape\Press\Migration;
 
 class CreatePostTagTable extends Migration
 {

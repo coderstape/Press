@@ -1,17 +1,17 @@
 {
-    "name": "vicgonvt/lara-press",
-    "description": "An elegant markdown powered Blog for the Laravel Framework.",
+    "name": "coderstape/press",
+    "description": "An elegant markdown blog package for the Laravel Framework.",
     "keywords": [
         "laravel",
         "blog",
         "markdown"
     ],
     "require": {
-        "php": "^7.1.3",
+        "php": "^7.2.0",
         "ext-json": "*",
         "erusev/parsedown": "^1.7",
         "kitetail/zttp": "^0.4.0",
-        "laravel/framework": "~5.7.7"
+        "laravel/framework": "~5.8.0"
     },
     "require-dev": {
         "mockery/mockery": "^1.2",
@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "vicgonvt\\LaraPress\\": "src/"
+            "coderstape\\press\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "vicgonvt\\LaraPress\\Tests\\": "tests/"
+            "coderstape\\press\\Tests\\": "tests/"
         }
     },
     "license": "MIT",
@@ -40,10 +40,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "vicgonvt\\LaraPress\\LaraPressBaseServiceProvider"
+                "coderstape\\press\\LaraPressBaseServiceProvider"
             ],
             "aliases": {
-                "LaraPress": "vicgonvt\\LaraPress\\Facades\\LaraPress"
+                "LaraPress": "coderstape\\press\\Facades\\LaraPress"
             }
         }
     }

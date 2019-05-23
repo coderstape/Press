@@ -1,6 +1,6 @@
 <?php
 
-namespace vicgonvt\LaraPress\Drivers;
+namespace coderstape\Press\Drivers;
 
 use Zttp\Zttp;
 

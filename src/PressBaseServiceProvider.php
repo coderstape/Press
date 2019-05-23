@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use coderstape\Press\Facades\Press;
 
-class LaraPressBaseServiceProvider extends ServiceProvider
+class PressBaseServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any package services.

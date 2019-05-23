@@ -6,7 +6,7 @@ use coderstape\Press\PressBaseServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -23,7 +23,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            LaraPressBaseServiceProvider::class,
+            PressBaseServiceProvider::class,
         ];
     }
 
@@ -37,7 +37,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageAliases($app)
     {
         return [
-            'Press' => 'coderstape\Press\Facades\Press',
+            'Press' => 'coderstape\\Press\\Facades\\Press',
         ];
     }
 

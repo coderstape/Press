@@ -19,12 +19,12 @@
     },
     "autoload": {
         "psr-4": {
-            "coderstape\\press\\": "src/"
+            "coderstape\\Press\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "coderstape\\press\\Tests\\": "tests/"
+            "coderstape\\Press\\Tests\\": "tests/"
         }
     },
     "license": "MIT",
@@ -40,10 +40,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "coderstape\\press\\LaraPressBaseServiceProvider"
+                "coderstape\\Press\\LaraPressBaseServiceProvider"
             ],
             "aliases": {
-                "LaraPress": "coderstape\\press\\Facades\\LaraPress"
+                "LaraPress": "coderstape\\Press\\Facades\\LaraPress"
             }
         }
     }

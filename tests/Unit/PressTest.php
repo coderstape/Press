@@ -8,7 +8,7 @@ use coderstape\Press\Post;
 use coderstape\Press\Series;
 use coderstape\Press\Tag;
 
-class LaraPressTest extends TestCase
+class PressTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -20,7 +20,7 @@ class LaraPressTest extends TestCase
             'field2' => 'test2',
         ]]);
 
-        $laraPress = new LaraPress();
+        $laraPress = new Press();
 
         $this->assertEquals('test1', $laraPress->meta('field1'));
         $this->assertEquals('test2', $laraPress->meta('field2'));
@@ -34,7 +34,7 @@ class LaraPressTest extends TestCase
             'field2' => 'test2',
         ]]);
 
-        $laraPress = new LaraPress();
+        $laraPress = new Press();
         $laraPress->meta(['field3' => 'test3']);
 
         $this->assertEquals('test3', $laraPress->meta('field3'));
@@ -48,7 +48,7 @@ class LaraPressTest extends TestCase
             'field2' => 'test2',
         ]]);
 
-        $laraPress = new LaraPress();
+        $laraPress = new Press();
         $laraPress->meta(['field1' => 'new value']);
 
         $this->assertEquals('new value', $laraPress->meta('field1'));
@@ -59,7 +59,7 @@ class LaraPressTest extends TestCase
     {
         $post = factory(Post::class)->create();
 
-        $laraPress = new LaraPress();
+        $laraPress = new Press();
         $laraPress->meta($post);
 
         $this->assertEquals($post->title, $laraPress->meta('title'));
@@ -74,7 +74,7 @@ class LaraPressTest extends TestCase
     {
         $tag = factory(Tag::class)->create();
 
-        $laraPress = new LaraPress();
+        $laraPress = new Press();
         $laraPress->meta($tag);
 
         $this->assertEquals($tag->name, $laraPress->meta('title'));
@@ -91,7 +91,7 @@ class LaraPressTest extends TestCase
     {
         $series = factory(Series::class)->create();
 
-        $laraPress = new LaraPress();
+        $laraPress = new Press();
         $laraPress->meta($series);
 
         $this->assertEquals($series->title, $laraPress->meta('title'));

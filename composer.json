@@ -1,5 +1,5 @@
 {
-    "name": "coderstape/press",
+    "name": "coderstape/Press",
     "description": "An elegant markdown blog package for the Laravel Framework.",
     "keywords": [
         "laravel",
@@ -11,7 +11,7 @@
         "ext-json": "*",
         "erusev/parsedown": "^1.7",
         "kitetail/zttp": "^0.4.0",
-        "laravel/framework": "~5.8.0"
+        "laravel/framework": "^5.8"
     },
     "require-dev": {
         "mockery/mockery": "^1.2",
@@ -31,7 +31,7 @@
     "authors": [
         {
             "name": "Victor Gonzalez",
-            "email": "vicgonvt@gmail.com"
+            "email": "victor@coderstape.com"
         }
     ],
     "config": {
@@ -40,10 +40,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "coderstape\\Press\\LaraPressBaseServiceProvider"
+                "coderstape\\Press\\PressBaseServiceProvider"
             ],
             "aliases": {
-                "LaraPress": "coderstape\\Press\\Facades\\LaraPress"
+                "Press": "coderstape\\Press\\Facades\\Press"
             }
         }
     }

@@ -136,4 +136,17 @@ return [
     */
 
     'trending_limit' => 1000,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination Size
+    |--------------------------------------------------------------------------
+    |
+    | When fetching all posts, this is how many posts will be passed to the
+    | view per page. This number has a default of 15 but can be changed
+    | to any number the user would like or can even be dynamic.
+    |
+    */
+
+    'pagination' => 15,
 ];

@@ -88,6 +88,16 @@ class Press
     }
 
     /**
+     * Get the URI path prefix.
+     *
+     * @return string
+     */
+    public function pagination()
+    {
+        return config('press.pagination', '15');
+    }
+
+    /**
      * Accepts three types of parameters. If an array is passed in, it will merge it with the
      * existing meta array. If a string is passed in, then it will return the value stored
      * at the given key. If an object is passed in, it will attempt to new up a class

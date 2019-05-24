@@ -25,7 +25,7 @@ class Post extends Model
      */
     public function path()
     {
-        return url(press::path() . "/posts/{$this->id}-{$this->slug}");
+        return url(Press::path() . "/{$this->id}-{$this->slug}");
     }
 
     /**

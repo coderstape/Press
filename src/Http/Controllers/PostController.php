@@ -15,7 +15,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::active()->paginate(Press::pagination());
+        $posts = Post::active()->latest()->paginate(Press::pagination());
 
         return theme('posts.index', compact('posts'));
     }

@@ -30,7 +30,7 @@ class Series extends Model
      */
     public static function slug($string)
     {
-        return self::where('slug', str_slug($string))->first();
+        return self::where('slug', \Str::slug($string))->first();
     }
 
     /**

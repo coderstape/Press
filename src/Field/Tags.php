@@ -25,7 +25,7 @@ class Tags extends FieldContract
             $tagModels[] = self::getOrCreateTag($tag);
         }
 
-        return ['tag_ids' => array_pluck($tagModels, 'id')];
+        return ['tag_ids' => \Arr::pluck($tagModels, 'id')];
     }
 
     /**
@@ -38,7 +38,7 @@ class Tags extends FieldContract
     private static function getOrCreateTag($tag)
     {
         return Tag::firstOrCreate([
-            'slug' => str_slug($tag),
+            'slug' => \Str::slug($tag),
             'name' => $tag,
         ]);
     }

@@ -109,7 +109,7 @@ class PressFileParser
      */
     private function class($fieldType)
     {
-        $baseClass = ucfirst(camel_case($fieldType));
+        $baseClass = ucfirst(\Str::camel($fieldType));
 
         return array_filter(Press::availableFields(), function ($class) use ($baseClass) {
             if (preg_match('/\\\\' . $baseClass . '$/', $class)) {

@@ -7,6 +7,6 @@ $factory->define(Series::class, function (Faker\Generator $faker) {
 
     return [
         'title' => $title,
-        'slug' => str_slug($title),
+        'slug' => \Str::slug($title),
     ];
 });

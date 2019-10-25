@@ -7,6 +7,6 @@ $factory->define(Tag::class, function (Faker\Generator $faker) {
 
     return [
         'name' => $name,
-        'slug' => str_slug($name),
+        'slug' => \Str::slug($name),
     ];
 });

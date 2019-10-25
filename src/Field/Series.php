@@ -30,7 +30,7 @@ class Series extends FieldContract
     private static function getOrCreateSeries($series)
     {
         return SeriesModel::firstOrCreate(
-            ['slug' => str_slug($series)],
+            ['slug' => \Str::slug($series)],
             ['title' => $series]
         );
     }

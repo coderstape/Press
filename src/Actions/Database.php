@@ -32,8 +32,8 @@ class Database
             )->tags()->sync($post['tag_ids']);
         }
 
-        $this->cleanPosts(array_pluck($posts, 'identifier'));
-        $this->cleanSeries(array_pluck($posts, 'series'));
+        $this->cleanPosts(\Arr::pluck($posts, 'identifier'));
+        $this->cleanSeries(\Arr::pluck($posts, 'series'));
         $this->cleanTags();
 
         return true;
@@ -66,7 +66,7 @@ class Database
     protected function cleanSeries($series)
     {
         $series = array_map(function ($series) {
-            return str_slug($series);
+            return \Str::slug($series);
         }, $series);
 
         return Series::whereNotIn('slug', $series)

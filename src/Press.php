@@ -44,7 +44,7 @@ class Press
      */
     public static function driver()
     {
-        $driver = title_case(config('press.driver', 'file'));
+        $driver = \Str::title(config('press.driver', 'file'));
         $class = "coderstape\\Press\\Drivers\\{$driver}Driver";
 
         return new $class;

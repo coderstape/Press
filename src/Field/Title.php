@@ -16,7 +16,7 @@ class Title extends FieldContract
     public static function process($fieldType, $fieldValue, $fields)
     {
         return [
-            'slug' => (isset($fields['slug'])) ? $fields['slug'] : str_slug($fieldValue),
+            'slug' => (isset($fields['slug'])) ? $fields['slug'] : \Str::slug($fieldValue),
             'title' => $fieldValue,
         ];
     }

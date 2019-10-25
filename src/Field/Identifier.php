@@ -15,6 +15,6 @@ class Identifier extends FieldContract
      */
     public static function process($fieldType, $fieldValue, $fields)
     {
-        return ['identifier' => str_slug($fieldValue)];
+        return ['identifier' => \Str::slug($fieldValue)];
     }
 }

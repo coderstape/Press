@@ -15,6 +15,6 @@ class Permalink extends FieldContract
      */
     public static function process($fieldType, $fieldValue, $fields)
     {
-        return ['slug' => str_slug($fieldValue)];
+        return ['slug' => \Str::slug($fieldValue)];
     }
 }

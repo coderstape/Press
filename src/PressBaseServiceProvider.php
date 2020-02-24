@@ -117,7 +117,8 @@ class PressBaseServiceProvider extends ServiceProvider
     {
         return [
             'namespace' => 'coderstape\Press\Http\Controllers',
-            'prefix' => press::path(),
+            'prefix' => Press::path(),
+            'middleware' => 'web'
         ];
     }
 

@@ -20,10 +20,10 @@ class PressTest extends TestCase
             'field2' => 'test2',
         ]]);
 
-        $laraPress = new Press();
+        $press = new Press();
 
-        $this->assertEquals('test1', $laraPress->meta('field1'));
-        $this->assertEquals('test2', $laraPress->meta('field2'));
+        $this->assertEquals('test1', $press->meta('field1'));
+        $this->assertEquals('test2', $press->meta('field2'));
     }
 
     /** @test */
@@ -34,12 +34,12 @@ class PressTest extends TestCase
             'field2' => 'test2',
         ]]);
 
-        $laraPress = new Press();
-        $laraPress->meta(['field3' => 'test3']);
+        $press = new Press();
+        $press->meta(['field3' => 'test3']);
 
-        $this->assertEquals('test3', $laraPress->meta('field3'));
+        $this->assertEquals('test3', $press->meta('field3'));
     }
-    
+
     /** @test */
     public function it_can_overwrite_an_existing_field()
     {
@@ -48,10 +48,10 @@ class PressTest extends TestCase
             'field2' => 'test2',
         ]]);
 
-        $laraPress = new Press();
-        $laraPress->meta(['field1' => 'new value']);
+        $press = new Press();
+        $press->meta(['field1' => 'new value']);
 
-        $this->assertEquals('new value', $laraPress->meta('field1'));
+        $this->assertEquals('new value', $press->meta('field1'));
     }
 
     /** @test */
@@ -59,47 +59,47 @@ class PressTest extends TestCase
     {
         $post = factory(Post::class)->create();
 
-        $laraPress = new Press();
-        $laraPress->meta($post);
+        $press = new Press();
+        $press->meta($post);
 
-        $this->assertEquals($post->title, $laraPress->meta('title'));
-        $this->assertEquals($post->extra('description'), $laraPress->meta('description'));
-        $this->assertEquals($post->extra('keywords'), $laraPress->meta('keywords'));
-        $this->assertEquals($post->extra('img'), $laraPress->meta('image'));
-        $this->assertEquals($post->path(), $laraPress->meta('url'));
+        $this->assertEquals($post->title, $press->meta('title'));
+        $this->assertEquals($post->extra('description'), $press->meta('description'));
+        $this->assertEquals($post->extra('keywords'), $press->meta('keywords'));
+        $this->assertEquals($post->extra('img'), $press->meta('image'));
+        $this->assertEquals($post->path(), $press->meta('url'));
     }
-    
+
     /** @test */
     public function it_can_parse_a_tag_and_override_meta_tags()
     {
         $tag = factory(Tag::class)->create();
 
-        $laraPress = new Press();
-        $laraPress->meta($tag);
+        $press = new Press();
+        $press->meta($tag);
 
-        $this->assertEquals($tag->name, $laraPress->meta('title'));
+        $this->assertEquals($tag->name, $press->meta('title'));
         $this->assertEquals(
             'Showing all posts associated with the tag ' . $tag->name,
-            $laraPress->meta('description')
+            $press->meta('description')
         );
-        $this->assertEquals(str_replace(' ', ', ', $tag->name), $laraPress->meta('keywords'));
-        $this->assertEquals($tag->path(), $laraPress->meta('url'));
+        $this->assertEquals(str_replace(' ', ', ', $tag->name), $press->meta('keywords'));
+        $this->assertEquals($tag->path(), $press->meta('url'));
     }
-    
+
     /** @test */
     public function it_can_parse_a_series_and_override_meta_tags()
     {
         $series = factory(Series::class)->create();
 
-        $laraPress = new Press();
-        $laraPress->meta($series);
+        $press = new Press();
+        $press->meta($series);
 
-        $this->assertEquals($series->title, $laraPress->meta('title'));
+        $this->assertEquals($series->title, $press->meta('title'));
         $this->assertEquals(
             'Showing all posts in the series titled ' . $series->title,
-            $laraPress->meta('description')
+            $press->meta('description')
         );
-        $this->assertEquals(str_replace(' ', ', ', $series->title), $laraPress->meta('keywords'));
-        $this->assertEquals($series->path(), $laraPress->meta('url'));
+        $this->assertEquals(str_replace(' ', ', ', $series->title), $press->meta('keywords'));
+        $this->assertEquals($series->path(), $press->meta('url'));
     }
 }

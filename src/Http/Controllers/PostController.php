@@ -2,6 +2,7 @@
 
 namespace coderstape\Press\Http\Controllers;
 
+use coderstape\Press\Series;
 use Illuminate\Routing\Controller;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\Post;
@@ -17,7 +18,9 @@ class PostController extends Controller
     {
         $posts = Post::active()->latest()->paginate(Press::pagination());
 
-        return theme('posts.index', compact('posts'));
+        $series = Series::orderBy('title')->with('posts')->get();
+
+        return theme('posts.index', compact('posts', 'series'));
     }
 
     /**
@@ -35,6 +38,8 @@ class PostController extends Controller
         $post->recordVisit();
         Press::meta($post);
 
-        return theme('posts.show', compact('post'));
+        $series = Series::orderBy('title')->with('posts')->get();
+
+        return theme('posts.show', compact('post', 'series'));
     }
 }

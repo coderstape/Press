@@ -108,8 +108,12 @@ class Press
      * @return array|mixed|string
      * @throws \ReflectionException
      */
-    public function meta($attributes)
+    public function meta($attributes = null)
     {
+        if (is_null($attributes)) {
+            return $this->meta;
+        }
+
         if (is_array($attributes)) {
             return $this->meta = array_merge($this->meta, $attributes);
         }

@@ -3,7 +3,7 @@
 namespace coderstape\Press\Console;
 
 use Illuminate\Console\Command;
-use coderstape\Press\Press;
+use coderstape\Press\Facades\Press;
 
 class ProcessCommand extends Command
 {
@@ -35,9 +35,7 @@ class ProcessCommand extends Command
 
         try {
 
-            $posts = Press::driver()->fetchPosts();
-
-            if ($posts && Press::database()->savePosts($posts)) {
+            if (Press::process()) {
                 return $this->info('Press process complete.');
             }
 

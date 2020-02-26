@@ -3,7 +3,6 @@
 namespace coderstape\Press\Http\Controllers;
 
 use coderstape\Press\Blog;
-use coderstape\Press\Series;
 use Illuminate\Routing\Controller;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\Post;

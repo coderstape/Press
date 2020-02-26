@@ -20,8 +20,11 @@ class Date extends FieldContract
     {
         try {
 
+            $publishedAt = Carbon::createFromFormat('M d Y', $fieldValue)->startOfDay();
+
             return [
-                'published_at' => Carbon::createFromFormat('M d Y', $fieldValue)->startOfDay()
+                'published_at' => $publishedAt,
+                'active' => ! $publishedAt->isFuture(),
             ];
 
         }

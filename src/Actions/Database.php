@@ -27,6 +27,7 @@ class Database
                     'body' => $post['body'],
                     'extra' => $post['extra'],
                     'series_id' => (isset($post['series_id'])) ? $post['series_id'] : null,
+                    'active' => $post['active'],
                     'published_at' => $post['published_at'],
                 ]
             )->tags()->sync($post['tag_ids']);

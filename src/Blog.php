@@ -20,4 +20,14 @@ class Blog extends Model
     {
         return url(Press::path() . "/admin/posts/{$this->id}");
     }
+
+    /**
+     * Returns the post associated with this raw blog record.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function post()
+    {
+        return $this->hasOne(Post::class, 'identifier');
+    }
 }

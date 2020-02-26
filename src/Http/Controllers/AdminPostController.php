@@ -35,10 +35,8 @@ class AdminPostController extends Controller
 
         $blog = Blog::create($data);
 
-        $posts = Press::driver()->fetchPosts();
-
-        if ($posts && Press::database()->savePosts($posts)) {
-            return redirect()->to(Press::path() . '/admin/posts/'.$blog->id.'/edit');
+        if (Press::process()) {
+            return redirect()->to($this->path() . '/admin/posts/'.$blog->id.'/edit');
         }
 
         return 'error';
@@ -88,6 +86,8 @@ class AdminPostController extends Controller
             ->first();
 
         $post->update($data);
+
+        Press::process();
 
         return redirect()->back();
     }

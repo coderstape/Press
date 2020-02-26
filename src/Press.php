@@ -61,6 +61,18 @@ class Press
     }
 
     /**
+     * Processes any posts in the current driver.
+     *
+     * @return bool
+     */
+    public function process()
+    {
+        $posts = $this->driver()->fetchPosts();
+
+        return !! $posts && $this->database()->savePosts($posts);
+    }
+
+    /**
      * Returns a collection of tending posts.
      *
      * @param null $limit

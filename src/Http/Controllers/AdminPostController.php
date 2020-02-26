@@ -27,15 +27,31 @@ class AdminPostController extends Controller
         return theme('admin.posts.index', compact('posts'));
     }
 
+    public function store()
+    {
+        $data = request()->validate([
+            'data' => 'required',
+        ]);
+
+        $blog = Blog::create($data);
+
+        $posts = Press::driver()->fetchPosts();
+
+        if ($posts && Press::database()->savePosts($posts)) {
+            return redirect()->to(Press::path() . '/admin/posts/'.$blog->id.'/edit');
+        }
+
+        return 'error';
+    }
+
     /**
      * Show the edit form for a given post.
      *
      * @param $post
-     * @param $slug
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($post, $slug)
+    public function edit($post)
     {
         $post = Blog::where('id', $post)
             ->first();
@@ -43,6 +59,16 @@ class AdminPostController extends Controller
         Press::meta($post);
 
         return theme('admin.posts.edit', compact('post'));
+    }
+
+    /**
+     * Create a new post.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function create()
+    {
+        return theme('admin.posts.create');
     }
 
     /**

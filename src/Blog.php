@@ -18,6 +18,6 @@ class Blog extends Model
      */
     public function path()
     {
-        return url(Press::path() . "/blog/{$this->id}");
+        return url(Press::path() . "/admin/posts/{$this->id}");
     }
 }

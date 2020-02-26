@@ -35,7 +35,7 @@ class AdminPostController extends Controller
         $blog = Blog::create($data);
 
         if (Press::process()) {
-            return redirect()->to($this->path() . '/admin/posts/'.$blog->id.'/edit');
+            return redirect()->to(Press::path() . '/admin/posts/'.$blog->id.'/edit');
         }
 
         return 'error';

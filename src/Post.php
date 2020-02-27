@@ -67,6 +67,10 @@ class Post extends Model
      */
     public function scopeActive($query)
     {
+        if (Press::isEditor()) {
+            return $query;
+        }
+
         return $query->where('active', 1);
     }
 

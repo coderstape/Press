@@ -21,7 +21,7 @@ class AdminPostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->paginate(Press::pagination());
+        $posts = Post::orderBy('published_at', 'DESC')->paginate(Press::pagination());
 
         return theme('admin.posts.index', compact('posts'));
     }

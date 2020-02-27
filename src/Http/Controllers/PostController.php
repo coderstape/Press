@@ -16,7 +16,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::active()->latest()->paginate(Press::pagination());
+        $posts = Post::active()->orderBy('published_at', 'DESC')->paginate(Press::pagination());
 
         $series = Series::orderBy('title')->with('posts')->get();
 

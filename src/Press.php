@@ -89,10 +89,10 @@ class Press
         $trending = Trending::orderBy('id', 'desc')
             ->groupBy('post_id')
             ->limit(config('press.trending_limit'))
-            ->whereHas('post')
-            ->with('post', function ($query) {
+            ->whereHas('post', function ($query) {
                 $query->where('active', 1);
             })
+            ->with('post')
             ->get();
 
         return ($limit) ? $trending->take($limit) : $trending;

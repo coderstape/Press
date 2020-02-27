@@ -51,7 +51,7 @@ class AdminPostController extends Controller
     public function edit($post)
     {
         $post = Blog::where('id', $post)
-            ->first();
+            ->firstOrFail();
 
         Press::meta($post);
 
@@ -82,7 +82,7 @@ class AdminPostController extends Controller
         ]);
 
         $post = Blog::where('id', $post)
-            ->first();
+            ->firstOrFail();
 
         $post->update($data);
 

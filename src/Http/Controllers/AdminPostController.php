@@ -3,9 +3,9 @@
 namespace coderstape\Press\Http\Controllers;
 
 use coderstape\Press\Blog;
-use Illuminate\Routing\Controller;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\Post;
+use Illuminate\Routing\Controller;
 
 class AdminPostController extends Controller
 {

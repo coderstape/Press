@@ -145,3 +145,9 @@ public function show($post)
     // Controller stuff here...
 }
 ~~~
+
+## Project Roadmap
+
++ Views for admin pages
++ Command for generating blog stubs
++ User management & teams

@@ -18,6 +18,11 @@ class Press
     protected $fields = [];
 
     /**
+     * @var array
+     */
+    protected $editors = [];
+
+    /**
      * Press constructor.
      */
     public function __construct()
@@ -163,5 +168,29 @@ class Press
     public function availableFields()
     {
         return $this->fields;
+    }
+
+    /**
+     * Bootstrap editors.
+     *
+     * @param array $editors
+     */
+    public function editors(array $editors)
+    {
+        $this->editors = array_merge($this->editors, $editors);
+    }
+
+    /**
+     * Currently authenticated user is an editor.
+     *
+     * @return boolean
+     */
+    public function isEditor()
+    {
+        if (auth()->guest()) {
+            return false;
+        }
+
+        return in_array(auth()->user()->email, $this->editors);
     }
 }

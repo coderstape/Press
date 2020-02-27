@@ -30,7 +30,7 @@ class SeriesController extends Controller
      */
     public function show($series, $slug)
     {
-        $series = Series::with('posts')->whereId($series)->whereSlug($slug)->first();
+        $series = Series::with('posts')->whereId($series)->whereSlug($slug)->firstOrFail();
 
         Press::meta($series);
 

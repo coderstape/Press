@@ -30,7 +30,7 @@ class TagController extends Controller
      */
     public function show($tag, $slug)
     {
-        $tag = Tag::with('posts')->whereId($tag)->whereSlug($slug)->first();
+        $tag = Tag::with('posts')->whereId($tag)->whereSlug($slug)->firstOrFail();
 
         Press::meta($tag);
 

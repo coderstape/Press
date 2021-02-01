@@ -2,7 +2,7 @@
 
 namespace coderstape\Press\Drivers;
 
-use Zttp\Zttp;
+use Illuminate\Support\Facades\Http;
 
 class GistDriver extends Driver
 {
@@ -54,7 +54,7 @@ class GistDriver extends Driver
      */
     private function getGist($gistId)
     {
-        $response = Zttp::get($this->gistsApi() . $gistId)->json();
+        $response = Http::get($this->gistsApi() . $gistId)->json();
         if (isset($response['message'])) {
             return false;
         }

@@ -7,10 +7,10 @@
         "markdown"
     ],
     "require": {
-        "php": "^7.2.0",
+        "php": "^7.3.0",
         "ext-json": "*",
         "erusev/parsedown": "^1.7",
-        "kitetail/zttp": "^0.4.0",
+        "kitetail/zttp": "^0.6.0",
         "laravel/framework": "^6.0|^7.0|^8.0"
     },
     "require-dev": {

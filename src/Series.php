@@ -42,4 +42,14 @@ class Series extends Model
     {
         return $this->hasMany(Post::class);
     }
+
+    /**
+     * Get the posts that belong to this series.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function activePosts()
+    {
+        return $this->hasMany(Post::class)->active();
+    }
 }

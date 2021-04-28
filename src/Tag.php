@@ -30,4 +30,14 @@ class Tag extends Model
     {
         return $this->belongsToMany(Post::class, $this->prefix . 'post_tag');
     }
+
+    /**
+     * Get all of the posts for this Tag.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function activePosts()
+    {
+        return $this->belongsToMany(Post::class, $this->prefix . 'post_tag')->active();
+    }
 }

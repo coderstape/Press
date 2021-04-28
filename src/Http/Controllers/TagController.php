@@ -15,7 +15,7 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::whereHas('posts')->with('posts')->get();
+        $tags = Tag::whereHas('activePosts')->with('activePosts')->get();
 
         return theme('tags.index', compact('tags'));
     }
@@ -30,7 +30,7 @@ class TagController extends Controller
      */
     public function show($tag, $slug)
     {
-        $tag = Tag::with('posts')->whereId($tag)->whereSlug($slug)->firstOrFail();
+        $tag = Tag::with('activePosts')->whereId($tag)->whereSlug($slug)->firstOrFail();
 
         Press::meta($tag);
 

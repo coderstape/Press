@@ -15,7 +15,7 @@ class Tag implements Transformer
     {
         return [
             'title' => $tag->name,
-            'description' => 'Showing all posts associated with the tag ' . $tag->name,
+            'description' => 'Now showing only posts that are associated and filtered by the tag ' . $tag->name,
             'keywords' => str_replace(' ', ', ', $tag->name),
             'url' => $tag->path(),
         ];

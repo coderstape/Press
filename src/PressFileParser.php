@@ -57,7 +57,7 @@ class PressFileParser
             $class = $this->class($fieldType);
             $class = array_pop($class);
 
-            if ( ! class_exists($class) && ! method_exists($class, 'process')) {
+            if ( ! class_exists($class) || ! method_exists($class, 'process')) {
                 $class = 'coderstape\\Press\\Field\\Extra';
             }
 

@@ -16,7 +16,9 @@ class Post extends Model
      *
      * @var array
      */
-    protected $dates = ['published_at'];
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
 
     /**
      * Get the fully qualified path to this post.

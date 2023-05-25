@@ -16,9 +16,15 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::active()->orderBy('published_at', 'DESC')->paginate(Press::pagination());
+        $posts = Post::active()->orderBy('published_at', 'DESC');
+
+        if (request('search')) {
+            $posts->where('title', 'LIKE', '%' . request('search').'%')
+                ->orWhere('body', 'LIKE', '%' . request('search').'%');
+        }
 
         $series = Series::orderBy('title')->with('posts')->get();
+        $posts = $posts->paginate(Press::pagination());
 
         return theme('posts.index', compact('posts', 'series'));
     }

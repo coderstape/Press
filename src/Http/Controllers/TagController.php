@@ -30,10 +30,12 @@ class TagController extends Controller
      */
     public function show($tag, $slug)
     {
-        $tag = Tag::with('activePosts')->whereId($tag)->whereSlug($slug)->firstOrFail();
+        $tag = Tag::whereId($tag)->whereSlug($slug)->firstOrFail();
+
+        $posts = $tag->activePosts()->paginate(Press::pagination());
 
         Press::meta($tag);
 
-        return theme('tags.show', compact('tag'));
+        return theme('tags.show', compact('tag', 'posts'));
     }
 }

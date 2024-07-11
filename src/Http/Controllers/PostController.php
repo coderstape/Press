@@ -39,7 +39,11 @@ class PostController extends Controller
      */
     public function show($post, $slug)
     {
-        $post = Post::active()->with(['tags', 'series'])->whereId($post)->whereSlug($slug)->firstOrFail();
+        if (request()->has('preview')) {
+            $post = Post::with(['tags', 'series'])->whereId($post)->whereSlug($slug)->firstOrFail();
+        } else {
+            $post = Post::active()->with(['tags', 'series'])->whereId($post)->whereSlug($slug)->firstOrFail();
+        }
 
         $post->recordVisit();
         Press::meta($post);

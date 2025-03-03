@@ -18,9 +18,9 @@ class DatabaseDriver extends Driver
         $blogs = Blog::all();
 
         $blogs->each(function ($blog) {
-            if ($blog->updated_at > now()->subDay(7)) {
+//            if ($blog->updated_at > now()->subDay(7)) {
                 $this->parse($blog->data, $blog->id);
-            }
+//            }
         });
 
         return $this->posts;

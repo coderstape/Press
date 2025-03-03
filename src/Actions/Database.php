@@ -33,7 +33,7 @@ class Database
             )->tags()->sync($post['tag_ids']);
         }
 
-        $this->cleanPosts(\Arr::pluck($posts, 'identifier'));
+//        $this->cleanPosts(\Arr::pluck($posts, 'identifier'));
         $this->cleanSeries(\Arr::pluck($posts, 'series'));
         $this->cleanTags();
 
@@ -66,15 +66,21 @@ class Database
      */
     protected function cleanSeries($series)
     {
-        $series = array_map(function ($series) {
-            return \Str::slug($series);
-        }, $series);
-
-        return Series::whereNotIn('slug', $series)
+        return Series::doesntHave('posts')
             ->get()
             ->each(function ($series) {
                 $series->delete();
             });
+
+//        $series = array_map(function ($series) {
+//            return \Str::slug($series);
+//        }, $series);
+//
+//        return Series::whereNotIn('slug', $series)
+//            ->get()
+//            ->each(function ($series) {
+//                $series->delete();
+//            });
     }
 
     /**

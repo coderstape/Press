@@ -15,7 +15,7 @@ class SeriesController extends Controller
      */
     public function index()
     {
-        $series = Series::with('activePosts')->get();
+        $series = Series::with('activePosts')->orderBy('title')->get();
 
         return theme('series.index', compact('series'));
     }

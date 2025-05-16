@@ -50,6 +50,16 @@ class PostController extends Controller
 
         $series = Series::orderBy('title')->with('posts')->get();
 
-        return theme('posts.show', compact('post', 'series'));
+        if ($tags = $post->tags->pluck('id')->toArray()) {
+            $related = Post::whereHas('tags', function ($query) use ($tags) {
+                $query->whereIn('id', $tags);
+            })
+                ->where('id', '!=', $post->id)
+                ->active()
+                ->inRandomOrder()
+                ->limit(3)->get();
+        }
+
+        return theme('posts.show', compact('post', 'series', 'related'));
     }
 }

@@ -36,9 +36,9 @@ abstract class Driver
      * @param $content
      * @param $identifier
      */
-    protected function parse($content, $identifier)
+    public function parse($content, $identifier)
     {
-        $this->posts[] = array_merge(
+        return $this->posts[] = array_merge(
             (new PressFileParser($content))->getData(),
             ['identifier' => \Str::slug($identifier)]
         );

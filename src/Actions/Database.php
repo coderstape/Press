@@ -8,6 +8,22 @@ use coderstape\Press\Tag;
 
 class Database
 {
+    public function savePost($post)
+    {
+        return Post::updateOrCreate(
+            ['identifier' => $post['identifier']],
+            [
+                'slug' => $post['slug'],
+                'title' => $post['title'],
+                'body' => $post['body'],
+                'extra' => $post['extra'],
+                'series_id' => (isset($post['series_id'])) ? $post['series_id'] : null,
+                'active' => $post['active'],
+                'published_at' => $post['published_at'],
+            ]
+        )->tags()->sync($post['tag_ids']);
+    }
+
     /**
      * Takes an array of posts and persists them to the database.
      *
@@ -18,19 +34,7 @@ class Database
     public function savePosts($posts)
     {
         foreach ($posts as $post) {
-
-            Post::updateOrCreate(
-                ['identifier' => $post['identifier']],
-                [
-                    'slug' => $post['slug'],
-                    'title' => $post['title'],
-                    'body' => $post['body'],
-                    'extra' => $post['extra'],
-                    'series_id' => (isset($post['series_id'])) ? $post['series_id'] : null,
-                    'active' => $post['active'],
-                    'published_at' => $post['published_at'],
-                ]
-            )->tags()->sync($post['tag_ids']);
+            $this->savePost($post);
         }
 
         $this->cleanPosts(\Arr::pluck($posts, 'identifier'));

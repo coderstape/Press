@@ -86,7 +86,7 @@ class AdminPostController extends Controller
 
         $post->update($data);
 
-        Press::process();
+        Press::database()->savePost(Press::driver()->parse($post->data, $post->id));
 
         return redirect()->back();
     }

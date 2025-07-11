@@ -18,6 +18,7 @@ class Database
                 'body' => $post['body'],
                 'extra' => $post['extra'],
                 'series_id' => (isset($post['series_id'])) ? $post['series_id'] : null,
+                'author_id' => (isset($post['author_id'])) ? $post['author_id'] : null,
                 'active' => $post['active'],
                 'published_at' => $post['published_at'],
             ]

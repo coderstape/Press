@@ -39,6 +39,6 @@ class Author extends Model
      */
     public function activePosts()
     {
-        return $this->hasMany(Post::class)->active();
+        return $this->hasMany(Post::class)->active()->orderBy('published_at', 'desc');
     }
 }

@@ -19,7 +19,7 @@ class Author extends Model
      */
     public function path()
     {
-        return url(Press::path() . "/author/{$this->id}-" . Str::slug($this->name));
+        return url(Press::path() . "/authors/{$this->id}-" . Str::slug($this->name));
     }
 
     /**

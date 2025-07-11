@@ -5,6 +5,9 @@ use coderstape\Press\Facades\Press;
 Route::get('series', 'SeriesController@index');
 Route::get('series/{series}-{slug}', 'SeriesController@show');
 
+Route::get('authors', 'AuthorController@index');
+Route::get('authors/{author}-{slug}', 'AuthorController@show');
+
 Route::get('tags', 'TagController@index');
 Route::get('tags/{tag}-{slug}', 'TagController@show');
 

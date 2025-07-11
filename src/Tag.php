@@ -38,6 +38,6 @@ class Tag extends Model
      */
     public function activePosts()
     {
-        return $this->belongsToMany(Post::class, $this->prefix . 'post_tag')->active();
+        return $this->belongsToMany(Post::class, $this->prefix . 'post_tag')->active()->orderBy('published_at', 'desc');
     }
 }

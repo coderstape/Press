@@ -11,8 +11,7 @@ class FileDriverTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_throws_an_exception_if_file_directory_is_not_found()
+    public function test_it_throws_an_exception_if_file_directory_is_not_found()
     {
         config(['press.file' => [
             'path' => 'some/fake/path',
@@ -23,8 +22,7 @@ class FileDriverTest extends TestCase
         new FileDriver();
     }
 
-    /** @test */
-    public function file_driver_can_fetch_posts()
+    public function test_file_driver_can_fetch_posts()
     {
         config(['press.file' => [
             'path' => __DIR__ . '/../stubs',

@@ -12,8 +12,7 @@ class GistDriverTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_fetch_the_gist_source()
+    public function test_it_can_fetch_the_gist_source()
     {
         config(['press.gist' => [
             'source' => '056ebe80f90f268bcae560d70f2c2508',

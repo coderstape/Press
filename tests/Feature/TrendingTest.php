@@ -11,8 +11,7 @@ class TrendingTest extends TestCase
 {
     use RefreshDatabase;
     
-    /** @test */
-    public function a_visit_gets_recorded_when_a_post_is_visited()
+    public function test_a_visit_gets_recorded_when_a_post_is_visited()
     {
         $post = factory(Post::class)->create();
 
@@ -24,8 +23,7 @@ class TrendingTest extends TestCase
         $this->assertEquals($post->id, $trendings->first()->id);
     }
     
-    /** @test */
-    public function trendings_posts_can_be_fetched()
+    public function test_trendings_posts_can_be_fetched()
     {
         factory(Trending::class)->create();
 
@@ -34,8 +32,7 @@ class TrendingTest extends TestCase
         $this->assertEquals(Post::first()->id, $trending->first()->post_id);
     }
     
-    /** @test */
-    public function trendings_can_be_limited()
+    public function test_trendings_can_be_limited()
     {
         factory(Trending::class, 100)->create();
 

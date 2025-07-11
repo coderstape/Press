@@ -13,8 +13,7 @@ class DatabaseDriverTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_throws_an_exception_if_the_db_table_is_not_found()
+    public function test_it_throws_an_exception_if_the_db_table_is_not_found()
     {
         config(['press.database' => [
             'table' => 'fake_table_name',
@@ -25,8 +24,7 @@ class DatabaseDriverTest extends TestCase
         new DatabaseDriver();
     }
 
-    /** @test */
-    public function database_driver_can_fetch_posts()
+    public function test_database_driver_can_fetch_posts()
     {
         config([
             'press.database' => [

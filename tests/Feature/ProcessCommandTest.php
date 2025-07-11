@@ -10,8 +10,7 @@ class ProcessCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function command_is_available()
+    public function test_command_is_available()
     {
         try {
             $this->artisan('press:process');
@@ -21,8 +20,7 @@ class ProcessCommandTest extends TestCase
         }
     }
     
-    /** @test */
-    public function it_adds_the_stub_posts_to_db()
+    public function test_it_adds_the_stub_posts_to_db()
     {
         config(['press.file' => [
             'path' => __DIR__ . '/../stubs',

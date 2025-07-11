@@ -12,8 +12,7 @@ class PressTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function it_can_store_meta_information()
+    public function test_it_can_store_meta_information()
     {
         config(['press.blog' => [
             'field1' => 'test1',
@@ -26,8 +25,7 @@ class PressTest extends TestCase
         $this->assertEquals('test2', $press->meta('field2'));
     }
 
-    /** @test */
-    public function it_can_set_a_parameter_with_an_array()
+    public function test_it_can_set_a_parameter_with_an_array()
     {
         config(['press.blog' => [
             'field1' => 'test1',
@@ -40,8 +38,7 @@ class PressTest extends TestCase
         $this->assertEquals('test3', $press->meta('field3'));
     }
 
-    /** @test */
-    public function it_can_overwrite_an_existing_field()
+    public function test_it_can_overwrite_an_existing_field()
     {
         config(['press.blog' => [
             'field1' => 'test1',
@@ -54,8 +51,7 @@ class PressTest extends TestCase
         $this->assertEquals('new value', $press->meta('field1'));
     }
 
-    /** @test */
-    public function it_can_parse_a_post_model_and_override_meta_tags()
+    public function test_it_can_parse_a_post_model_and_override_meta_tags()
     {
         $post = factory(Post::class)->create();
 
@@ -69,8 +65,7 @@ class PressTest extends TestCase
         $this->assertEquals($post->path(), $press->meta('url'));
     }
 
-    /** @test */
-    public function it_can_parse_a_tag_and_override_meta_tags()
+    public function test_it_can_parse_a_tag_and_override_meta_tags()
     {
         $tag = factory(Tag::class)->create();
 
@@ -79,15 +74,14 @@ class PressTest extends TestCase
 
         $this->assertEquals($tag->name, $press->meta('title'));
         $this->assertEquals(
-            'Showing all posts associated with the tag ' . $tag->name,
+            'Now showing only posts that are associated and filtered by the tag ' . $tag->name,
             $press->meta('description')
         );
         $this->assertEquals(str_replace(' ', ', ', $tag->name), $press->meta('keywords'));
         $this->assertEquals($tag->path(), $press->meta('url'));
     }
 
-    /** @test */
-    public function it_can_parse_a_series_and_override_meta_tags()
+    public function test_it_can_parse_a_series_and_override_meta_tags()
     {
         $series = factory(Series::class)->create();
 

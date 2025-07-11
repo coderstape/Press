@@ -16,7 +16,7 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $authors = Author::with('activePosts')->orderBy('name')->get();
+        $authors = Author::whereHas('activePosts')->orderBy('name')->get();
 
         return theme('authors.index', compact('authors'));
     }
@@ -31,7 +31,7 @@ class AuthorController extends Controller
      */
     public function show($author, $slug)
     {
-        $author = Author::with('activePosts')->whereId($author)->firstOrFail();
+        $author = Author::whereHas('activePosts')->whereId($author)->firstOrFail();
 
         Press::meta($author);
 

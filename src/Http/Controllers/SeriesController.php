@@ -15,7 +15,7 @@ class SeriesController extends Controller
      */
     public function index()
     {
-        $series = Series::with('activePosts')->orderBy('title')->get();
+        $series = Series::whereHas('activePosts')->orderBy('title')->get();
 
         return theme('series.index', compact('series'));
     }
@@ -30,7 +30,7 @@ class SeriesController extends Controller
      */
     public function show($series, $slug)
     {
-        $series = Series::with('activePosts')->whereId($series)->whereSlug($slug)->firstOrFail();
+        $series = Series::whereHas('activePosts')->whereId($series)->whereSlug($slug)->firstOrFail();
 
         Press::meta($series);
 

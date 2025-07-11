@@ -79,6 +79,7 @@ class PressBaseServiceProvider extends ServiceProvider
             Field\Identifier::class,
             Field\Permalink::class,
             Field\Series::class,
+            Field\Author::class,
             Field\Tags::class,
             Field\Title::class,
         ]);

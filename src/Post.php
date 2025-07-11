@@ -11,6 +11,8 @@ class Post extends Model
      */
     protected $guarded = [];
 
+    protected $appends = ['author'];
+
     /**
      * The attributes that should be typecasted as an instance of Carbon.
      *

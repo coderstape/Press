@@ -87,6 +87,16 @@ class Post extends Model
     }
 
     /**
+     * Get the author that this post belongs to.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function author()
+    {
+        return $this->belongsTo(Author::class);
+    }
+
+    /**
      * Get the tags that this post is tagged with.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

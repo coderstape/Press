@@ -23,6 +23,10 @@ class PostController extends Controller
                 ->orWhere('body', 'LIKE', '%' . request('search').'%');
         }
 
+        if (request('draft')) {
+            $posts->where('active', '0');
+        }
+
         $series = Series::orderBy('title')->with('posts')->get();
         $posts = $posts->paginate(Press::pagination());
 

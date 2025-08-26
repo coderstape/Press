@@ -131,7 +131,7 @@ class Post extends Model
     /**
      * Returns the morphed relationship of follow up.
      */
-    public function contentable(): MorphOne
+    public function contentable()
     {
         return $this->morphOne(\App\Models\AIContent::class, 'contentable');
     }

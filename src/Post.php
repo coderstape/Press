@@ -133,6 +133,6 @@ class Post extends Model
      */
     public function contentable(): MorphOne
     {
-        return $this->morphOne(AIContent::class, 'contentable');
+        return $this->morphOne(\App\Models\AIContent::class, 'contentable');
     }
 }

@@ -11,7 +11,7 @@ class Post extends Model
      */
     protected $guarded = [];
 
-    protected $appends = ['author'];
+    protected $appends = ['author', 'contentable'];
 
     /**
      * The attributes that should be typecasted as an instance of Carbon.
@@ -126,5 +126,13 @@ class Post extends Model
     public function blog()
     {
         return $this->belongsTo(Blog::class, 'identifier');
+    }
+
+    /**
+     * Returns the morphed relationship of follow up.
+     */
+    public function contentable(): MorphOne
+    {
+        return $this->morphOne(AIContent::class, 'contentable');
     }
 }

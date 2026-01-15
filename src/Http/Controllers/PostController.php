@@ -3,6 +3,7 @@
 namespace coderstape\Press\Http\Controllers;
 
 use coderstape\Press\Series;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Routing\Controller;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\Post;

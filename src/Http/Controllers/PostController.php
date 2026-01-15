@@ -20,7 +20,10 @@ class PostController extends Controller
 
         if (request('search')) {
             $posts->where('title', 'LIKE', '%' . request('search').'%')
-                ->orWhere('body', 'LIKE', '%' . request('search').'%');
+                ->orWhere('body', 'LIKE', '%' . request('search').'%')
+                ->orWhereHas('author', function (Builder $query) {
+                    $query->where('name', 'LIKE', '%'.request('search').'%');
+                });
         }
 
         if (request('draft')) {

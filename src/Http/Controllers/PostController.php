@@ -65,7 +65,7 @@ class PostController extends Controller
                 ->where('id', '!=', $post->id)
                 ->active()
                 ->inRandomOrder()
-                ->limit(3)->get();
+                ->limit(4)->get();
         }
 
         return theme('posts.show', compact('post', 'series', 'related'));

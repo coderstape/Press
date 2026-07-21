@@ -33,6 +33,25 @@ class Post extends Model
     }
 
     /**
+     * The stored body is Parsedown output from ingest; @imagin(...)
+     * directives survive it as literal text and MUST be expanded at
+     * request time -- Imagin markup is auth-dependent and cache-
+     * invalidated, so it can never be baked in at ingest, and running
+     * the stored body through Blade's compiler only produces dead
+     * <?php text (see ImaginShortcode). Admin editing is unaffected:
+     * it edits the raw Blog.data source, and this derived column is
+     * regenerated from it.
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    public function getBodyAttribute($value)
+    {
+        return ImaginShortcode::expand((string) $value);
+    }
+
+    /**
      * Parse the 'extra' column and return the appropriate field.
      *
      * @param $field

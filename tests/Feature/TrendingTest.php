@@ -3,6 +3,7 @@
 namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Press;
 use coderstape\Press\Post;
 use coderstape\Press\Trending;
@@ -11,9 +12,10 @@ class TrendingTest extends TestCase
 {
     use RefreshDatabase;
     
-    public function test_a_visit_gets_recorded_when_a_post_is_visited()
+    #[Test]
+    public function a_visit_gets_recorded_when_a_post_is_visited()
     {
-        $post = factory(Post::class)->create();
+        $post = Post::factory()->create();
 
         $this->get($post->path());
 
@@ -23,18 +25,20 @@ class TrendingTest extends TestCase
         $this->assertEquals($post->id, $trendings->first()->id);
     }
     
-    public function test_trendings_posts_can_be_fetched()
+    #[Test]
+    public function trendings_posts_can_be_fetched()
     {
-        factory(Trending::class)->create();
+        Trending::factory()->create();
 
         $trending = press::trending();
 
         $this->assertEquals(Post::first()->id, $trending->first()->post_id);
     }
     
-    public function test_trendings_can_be_limited()
+    #[Test]
+    public function trendings_can_be_limited()
     {
-        factory(Trending::class, 100)->create();
+        Trending::factory()->count(100)->create();
 
         $trending = press::trending(10);
 

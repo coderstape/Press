@@ -1,12 +1,22 @@
 <?php
 
+namespace coderstape\Press\Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use coderstape\Press\Series;
 
-$factory->define(Series::class, function (Faker\Generator $faker) {
-    $title = $faker->sentence(4);
+class SeriesFactory extends Factory
+{
+    protected $model = Series::class;
 
-    return [
-        'title' => $title,
-        'slug' => \Str::slug($title),
-    ];
-});
+    public function definition(): array
+    {
+        $title = $this->faker->sentence(4);
+
+        return [
+            'title' => $title,
+            'slug' => Str::slug($title),
+        ];
+    }
+}

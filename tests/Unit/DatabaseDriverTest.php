@@ -4,6 +4,7 @@ namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
+use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Blog;
 use coderstape\Press\Drivers\DatabaseDriver;
 use coderstape\Press\Drivers\FileDriver;
@@ -13,7 +14,8 @@ class DatabaseDriverTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_throws_an_exception_if_the_db_table_is_not_found()
+    #[Test]
+    public function it_throws_an_exception_if_the_db_table_is_not_found()
     {
         config(['press.database' => [
             'table' => 'fake_table_name',
@@ -24,7 +26,8 @@ class DatabaseDriverTest extends TestCase
         new DatabaseDriver();
     }
 
-    public function test_database_driver_can_fetch_posts()
+    #[Test]
+    public function database_driver_can_fetch_posts()
     {
         config([
             'press.database' => [

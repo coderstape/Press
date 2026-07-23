@@ -1,12 +1,19 @@
 <?php
 
+namespace coderstape\Press\Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
 use coderstape\Press\Post;
 use coderstape\Press\Trending;
 
-$factory->define(Trending::class, function (Faker\Generator $faker) {
-    return [
-        'post_id' => function () {
-            return (factory(Post::class)->create())->id;
-        }
-    ];
-});
+class TrendingFactory extends Factory
+{
+    protected $model = Trending::class;
+
+    public function definition(): array
+    {
+        return [
+            'post_id' => Post::factory(),
+        ];
+    }
+}

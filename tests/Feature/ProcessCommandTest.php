@@ -3,6 +3,7 @@
 namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
 use coderstape\Press\Post;
 
@@ -10,7 +11,8 @@ class ProcessCommandTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_command_is_available()
+    #[Test]
+    public function command_is_available()
     {
         try {
             $this->artisan('press:process');
@@ -20,7 +22,8 @@ class ProcessCommandTest extends TestCase
         }
     }
     
-    public function test_it_adds_the_stub_posts_to_db()
+    #[Test]
+    public function it_adds_the_stub_posts_to_db()
     {
         config(['press.file' => [
             'path' => __DIR__ . '/../stubs',

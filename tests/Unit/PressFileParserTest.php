@@ -4,6 +4,7 @@ namespace coderstape\Press\Tests;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\Field\FieldContract;
 use coderstape\Press\PressFileParser;
@@ -13,7 +14,8 @@ class PressFileParserTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_can_parse_the_head()
+    #[Test]
+    public function it_can_parse_the_head()
     {
         $data = $this->getSampleMarkdownParser()->getData();
 
@@ -26,7 +28,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('https://via.placeholder.com/500x140', $data['img']);
     }
 
-    public function test_it_parse_the_date_into_a_carbon_instance()
+    #[Test]
+    public function it_parse_the_date_into_a_carbon_instance()
     {
         $data = $this->getSampleMarkdownParser()->getData();
 
@@ -34,7 +37,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('1988-05-14 00:00:00', $data['published_at']->toDatetimeString());
     }
 
-    public function test_it_sets_a_default_published_at_of_now_if_it_cant_parse()
+    #[Test]
+    public function it_sets_a_default_published_at_of_now_if_it_cant_parse()
     {
         $data = (new PressFileParser("---\nDate: Gibberish---\nSomething"))->getData();
 
@@ -42,7 +46,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals(Carbon::now()->startOfDay(), $data['published_at']->toDatetimeString());
     }
 
-    public function test_it_parses_permalink_into_slug_with_fallback()
+    #[Test]
+    public function it_parses_permalink_into_slug_with_fallback()
     {
         $data = (new PressFileParser("---\nPermalink: some-random-string-here---\nSomething"))->getData();
         $this->assertEquals('some-random-string-here', $data['slug']);
@@ -51,7 +56,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('another-random-string', $data['slug']);
     }
 
-    public function test_a_title_is_used_as_default_slug()
+    #[Test]
+    public function a_title_is_used_as_default_slug()
     {
         $data = (new PressFileParser("---\nTitle: A Cool Title---\nSomething"))->getData();
         $this->assertEquals('a-cool-title', $data['slug']);
@@ -63,7 +69,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('something-else', $data['slug']);
     }
     
-    public function test_the_series_get_added_to_the_db()
+    #[Test]
+    public function the_series_get_added_to_the_db()
     {
         $data = (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
 
@@ -73,7 +80,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('Adventure', $series->first()->title);
     }
 
-    public function test_it_doesnt_add_duplicate_series()
+    #[Test]
+    public function it_doesnt_add_duplicate_series()
     {
         $data = (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
 
@@ -84,7 +92,8 @@ class PressFileParserTest extends TestCase
         $this->assertCount(1, Series::all()->fresh());
     }
     
-    public function test_series_edge_cases_with_different_case()
+    #[Test]
+    public function series_edge_cases_with_different_case()
     {
         (new PressFileParser("---\nSeries: Adventure---\nSomething"))->getData();
         $this->assertCount(1, Series::all());
@@ -96,14 +105,16 @@ class PressFileParserTest extends TestCase
         $this->assertCount(1, Series::all()->fresh());
     }
 
-    public function test_single_extra_field_is_parsed_into_a_json()
+    #[Test]
+    public function single_extra_field_is_parsed_into_a_json()
     {
         $data = (new PressFileParser("---\nCustom Field: Some data---\nSomething"))->getData();
 
         $this->assertEquals(json_encode(['Custom Field' => 'Some data']), $data['extra']);
     }
 
-    public function test_two_or_more_extra_fields_are_parsed_into_a_json()
+    #[Test]
+    public function two_or_more_extra_fields_are_parsed_into_a_json()
     {
         $data = (new PressFileParser("---\nCustom Field: Some data\nKeywords: one, two, three\nimages: img/path/file.jpg---\nSomething"))->getData();
 
@@ -115,20 +126,23 @@ class PressFileParserTest extends TestCase
         $this->assertEquals(json_encode($expectedArray), $data['extra']);
     }
 
-    public function test_an_explicit_identifier_gets_added()
+    #[Test]
+    public function an_explicit_identifier_gets_added()
     {
         $data = (new PressFileParser("---\nIdentifier: 123456---\nSomething"))->getData();
 
         $this->assertEquals('123456', $data['identifier']);
     }
 
-    public function test_the_body_gets_markdown_parsed()
+    #[Test]
+    public function the_body_gets_markdown_parsed()
     {
         $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();
         $this->assertEquals('<h1>Title Here</h1>', $data['body']);
     }
 
-    public function test_it_can_use_a_users_class()
+    #[Test]
+    public function it_can_use_a_users_class()
     {
         press::fields(['\coderstape\Press\Tests\Other']);
 
@@ -136,7 +150,8 @@ class PressFileParserTest extends TestCase
         $this->assertEquals('A Cool Title', $data['other']);
     }
 
-    public function test_it_fulfills_the_full_class_name()
+    #[Test]
+    public function it_fulfills_the_full_class_name()
     {
         press::fields(['\coderstape\Press\Tests\TitleTitle']);
 

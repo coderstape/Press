@@ -2,10 +2,14 @@
 
 namespace coderstape\Press;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use coderstape\Press\Database\Factories\TagFactory;
 use coderstape\Press\Facades\Press;
 
 class Tag extends Model
 {
+    use HasFactory;
+
     /**
      * @var array
      */
@@ -39,5 +43,18 @@ class Tag extends Model
     public function activePosts()
     {
         return $this->belongsToMany(Post::class, $this->prefix . 'post_tag')->active()->orderBy('published_at', 'desc');
+    }
+
+    /**
+     * Bind the class-based factory explicitly (the package namespace
+     * doesn't match Laravel's Database\Factories convention). The
+     * factory classes are autoload-dev only: ::factory() is a
+     * test-time API and is never called in production.
+     *
+     * @return TagFactory
+     */
+    protected static function newFactory(): TagFactory
+    {
+        return TagFactory::new();
     }
 }

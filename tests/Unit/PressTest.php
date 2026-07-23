@@ -3,6 +3,7 @@
 namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Press;
 use coderstape\Press\Post;
 use coderstape\Press\Series;
@@ -12,7 +13,8 @@ class PressTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_can_store_meta_information()
+    #[Test]
+    public function it_can_store_meta_information()
     {
         config(['press.blog' => [
             'field1' => 'test1',
@@ -25,7 +27,8 @@ class PressTest extends TestCase
         $this->assertEquals('test2', $press->meta('field2'));
     }
 
-    public function test_it_can_set_a_parameter_with_an_array()
+    #[Test]
+    public function it_can_set_a_parameter_with_an_array()
     {
         config(['press.blog' => [
             'field1' => 'test1',
@@ -38,7 +41,8 @@ class PressTest extends TestCase
         $this->assertEquals('test3', $press->meta('field3'));
     }
 
-    public function test_it_can_overwrite_an_existing_field()
+    #[Test]
+    public function it_can_overwrite_an_existing_field()
     {
         config(['press.blog' => [
             'field1' => 'test1',
@@ -51,9 +55,10 @@ class PressTest extends TestCase
         $this->assertEquals('new value', $press->meta('field1'));
     }
 
-    public function test_it_can_parse_a_post_model_and_override_meta_tags()
+    #[Test]
+    public function it_can_parse_a_post_model_and_override_meta_tags()
     {
-        $post = factory(Post::class)->create();
+        $post = Post::factory()->create();
 
         $press = new Press();
         $press->meta($post);
@@ -65,9 +70,10 @@ class PressTest extends TestCase
         $this->assertEquals($post->path(), $press->meta('url'));
     }
 
-    public function test_it_can_parse_a_tag_and_override_meta_tags()
+    #[Test]
+    public function it_can_parse_a_tag_and_override_meta_tags()
     {
-        $tag = factory(Tag::class)->create();
+        $tag = Tag::factory()->create();
 
         $press = new Press();
         $press->meta($tag);
@@ -81,9 +87,10 @@ class PressTest extends TestCase
         $this->assertEquals($tag->path(), $press->meta('url'));
     }
 
-    public function test_it_can_parse_a_series_and_override_meta_tags()
+    #[Test]
+    public function it_can_parse_a_series_and_override_meta_tags()
     {
-        $series = factory(Series::class)->create();
+        $series = Series::factory()->create();
 
         $press = new Press();
         $press->meta($series);

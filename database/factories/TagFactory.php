@@ -1,12 +1,22 @@
 <?php
 
+namespace coderstape\Press\Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 use coderstape\Press\Tag;
 
-$factory->define(Tag::class, function (Faker\Generator $faker) {
-    $name = $faker->sentence(4);
+class TagFactory extends Factory
+{
+    protected $model = Tag::class;
 
-    return [
-        'name' => $name,
-        'slug' => \Str::slug($name),
-    ];
-});
+    public function definition(): array
+    {
+        $name = $this->faker->sentence(4);
+
+        return [
+            'name' => $name,
+            'slug' => Str::slug($name),
+        ];
+    }
+}

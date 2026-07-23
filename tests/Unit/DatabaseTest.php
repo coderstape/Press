@@ -3,6 +3,7 @@
 namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Actions\Database;
 use coderstape\Press\Post;
 use coderstape\Press\PressFileParser;
@@ -13,7 +14,8 @@ class DatabaseTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_a_post_can_be_created()
+    #[Test]
+    public function a_post_can_be_created()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -25,7 +27,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(1, Post::all());
     }
 
-    public function test_a_post_is_updated_and_not_duplicated()
+    #[Test]
+    public function a_post_is_updated_and_not_duplicated()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -39,7 +42,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(1, Post::all());
     }
     
-    public function test_a_post_gets_deactivated_if_not_present()
+    #[Test]
+    public function a_post_gets_deactivated_if_not_present()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -54,7 +58,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(0, Post::active()->get());
     }
 
-    public function test_a_series_gets_added_and_associated()
+    #[Test]
+    public function a_series_gets_added_and_associated()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -67,7 +72,8 @@ class DatabaseTest extends TestCase
         $this->assertEquals('my-first-post', Post::first()->series->slug);
     }
 
-    public function test_series_are_removed_if_no_longer_used()
+    #[Test]
+    public function series_are_removed_if_no_longer_used()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -82,7 +88,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(0, Series::all());
     }
     
-    public function test_a_post_without_a_series_can_still_be_added()
+    #[Test]
+    public function a_post_without_a_series_can_still_be_added()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile2.md'))
             ->getData();
@@ -94,7 +101,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(1, Post::all());
     }
 
-    public function test_tags_get_added_and_associated()
+    #[Test]
+    public function tags_get_added_and_associated()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -108,7 +116,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(2, Post::first()->tags);
     }
     
-    public function test_tags_dont_get_duplicated()
+    #[Test]
+    public function tags_dont_get_duplicated()
     {
         $post1 = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();
@@ -118,7 +127,8 @@ class DatabaseTest extends TestCase
         $this->assertCount(3, Tag::all());
     }
 
-    public function test_tags_are_removed_if_no_longer_used()
+    #[Test]
+    public function tags_are_removed_if_no_longer_used()
     {
         $post = (new PressFileParser(__DIR__ . '/../stubs/MarkFile1.md'))
             ->getData();

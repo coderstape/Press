@@ -3,6 +3,7 @@
 namespace coderstape\Press\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\ImaginShortcode;
 use coderstape\Press\Post;
 
@@ -27,7 +28,8 @@ class ImaginShortcodeTest extends TestCase
         };
     }
 
-    public function test_a_stored_directive_is_expanded_at_render_time()
+    #[Test]
+    public function a_stored_directive_is_expanded_at_render_time()
     {
         // Exactly what Parsedown stores at ingest: the directive as
         // literal paragraph text, => escaped to =&gt; (irregular
@@ -56,7 +58,8 @@ class ImaginShortcodeTest extends TestCase
         $this->assertStringContainsString('<p>Following paragraph.</p>', $expanded);
     }
 
-    public function test_the_wrapping_paragraph_is_unwrapped()
+    #[Test]
+    public function the_wrapping_paragraph_is_unwrapped()
     {
         // Parsedown wraps the directive in <p>. Imagin's empty-location
         // placeholder is a <div>, which may not sit inside a paragraph
@@ -71,7 +74,8 @@ class ImaginShortcodeTest extends TestCase
         $this->assertStringNotContainsString('<p>', $expanded);
     }
 
-    public function test_unescaped_arrows_and_inline_directives_also_expand()
+    #[Test]
+    public function unescaped_arrows_and_inline_directives_also_expand()
     {
         // Bodies stored by a different pipeline (or hand-edited) may
         // carry a raw =>, and a directive may sit mid-paragraph; an
@@ -88,7 +92,8 @@ class ImaginShortcodeTest extends TestCase
         );
     }
 
-    public function test_values_may_contain_parentheses()
+    #[Test]
+    public function values_may_contain_parentheses()
     {
         $body = "<p>@imagin('location' =&gt; 'x', 'alt' =&gt; 'The Open (402) at speed')</p>";
 
@@ -98,7 +103,8 @@ class ImaginShortcodeTest extends TestCase
         $this->assertEquals('The Open (402) at speed', $captured[0]['alt']);
     }
 
-    public function test_non_literal_expressions_are_left_untouched_and_never_evaluated()
+    #[Test]
+    public function non_literal_expressions_are_left_untouched_and_never_evaluated()
     {
         // Runtime variables and arbitrary code are Blade-view features;
         // inside a stored body there is nothing to resolve them against,
@@ -119,7 +125,8 @@ class ImaginShortcodeTest extends TestCase
         }
     }
 
-    public function test_unknown_keys_never_reach_the_renderer()
+    #[Test]
+    public function unknown_keys_never_reach_the_renderer()
     {
         // Attribute values are escaped when Imagin spreads them into
         // markup, but attribute NAMES are not -- and here the names come
@@ -135,7 +142,8 @@ class ImaginShortcodeTest extends TestCase
         $this->assertEquals(['location' => 'x', 'class' => 'ok'], $captured[0]);
     }
 
-    public function test_multiple_directives_expand_independently()
+    #[Test]
+    public function multiple_directives_expand_independently()
     {
         $body = "<p>@imagin('location' =&gt; 'one')</p>\n"
             . "<p>Text between.</p>\n"
@@ -149,7 +157,8 @@ class ImaginShortcodeTest extends TestCase
         $this->assertStringContainsString("data-rendered='two'", $expanded);
     }
 
-    public function test_bodies_pass_through_unchanged_when_no_renderer_is_available()
+    #[Test]
+    public function bodies_pass_through_unchanged_when_no_renderer_is_available()
     {
         // Press does not depend on Imagin. Without the facade and
         // without an injected renderer, expansion is a no-op.
@@ -158,13 +167,14 @@ class ImaginShortcodeTest extends TestCase
         $this->assertEquals($body, ImaginShortcode::expand($body));
     }
 
-    public function test_the_post_body_accessor_expands_directives()
+    #[Test]
+    public function the_post_body_accessor_expands_directives()
     {
         ImaginShortcode::$renderer = function (array $params) {
             return "<div data-rendered='" . $params['location'] . "'></div>";
         };
 
-        $post = factory(Post::class)->create([
+        $post = Post::factory()->create([
             'body' => "<p>@imagin('location' =&gt; 'accessor-loc')</p>",
         ]);
 

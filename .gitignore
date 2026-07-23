@@ -15,3 +15,5 @@ yarn-error.log
 ._.DS_Store
 /public
 .idea/vcs.xml
+.phpunit.result.cache
+/.phpunit.cache

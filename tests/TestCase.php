@@ -6,13 +6,6 @@ use coderstape\Press\PressBaseServiceProvider;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->withFactories(__DIR__.'/../database/factories');
-    }
-
     /**
      * Bootstrap any service providers here.
      *
@@ -49,6 +42,15 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function getEnvironmentSetUp($app)
     {
+        // Testbench 11 no longer reliably populates app.key on the
+        // TestCase path, and the one HTTP test here (TrendingTest's
+        // visit recording) runs the web middleware group, whose
+        // EncryptCookies throws MissingAppKeyException without it.
+        // Set it explicitly rather than depending on Testbench's
+        // defaulting internals -- Testbench's own encryption tests
+        // do the same. 32 chars = a valid AES-256-CBC key.
+        $app['config']->set('app.key', 'AckfSECXIvnK5r28GVIWUAxmbBSjTsmF');
+
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testdb');
         $app['config']->set('database.connections.testdb', [

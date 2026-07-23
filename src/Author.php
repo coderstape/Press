@@ -2,11 +2,15 @@
 
 namespace coderstape\Press;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use coderstape\Press\Database\Factories\AuthorFactory;
 use coderstape\Press\Facades\Press;
 use Illuminate\Support\Str;
 
 class Author extends Model
 {
+    use HasFactory;
+
     /**
      * @var array
      */
@@ -40,5 +44,18 @@ class Author extends Model
     public function activePosts()
     {
         return $this->hasMany(Post::class)->active()->orderBy('published_at', 'desc');
+    }
+
+    /**
+     * Bind the class-based factory explicitly (the package namespace
+     * doesn't match Laravel's Database\Factories convention). The
+     * factory classes are autoload-dev only: ::factory() is a
+     * test-time API and is never called in production.
+     *
+     * @return AuthorFactory
+     */
+    protected static function newFactory(): AuthorFactory
+    {
+        return AuthorFactory::new();
     }
 }

@@ -2,8 +2,14 @@
 
 namespace coderstape\Press\Tests;
 
+use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use coderstape\Press\Actions\Database;
+use coderstape\Press\Author;
+use coderstape\Press\Drivers\DatabaseDriver;
+use coderstape\Press\Drivers\FileDriver;
+use coderstape\Press\Drivers\GistDriver;
 use coderstape\Press\Press;
 use coderstape\Press\Post;
 use coderstape\Press\Series;
@@ -102,5 +108,116 @@ class PressTest extends TestCase
         );
         $this->assertEquals(str_replace(' ', ', ', $series->title), $press->meta('keywords'));
         $this->assertEquals($series->path(), $press->meta('url'));
+    }
+
+    #[Test]
+    public function driver_resolves_the_class_matching_the_configured_driver()
+    {
+        config(['press.driver' => 'file', 'press.file' => ['path' => __DIR__ . '/../stubs']]);
+        $this->assertInstanceOf(FileDriver::class, Press::driver());
+
+        config(['press.driver' => 'database', 'press.database' => ['table' => 'blogs']]);
+        $this->assertInstanceOf(DatabaseDriver::class, Press::driver());
+
+        config(['press.driver' => 'gist', 'press.gist' => ['source' => '']]);
+        $this->assertInstanceOf(GistDriver::class, Press::driver());
+
+        $this->assertInstanceOf(Database::class, Press::database());
+    }
+
+    #[Test]
+    public function config_not_published_reports_a_missing_press_config()
+    {
+        // The provider deliberately does NOT mergeConfigFrom: a site
+        // without the published config has config('press') === null,
+        // which is what press:process warns about.
+        $this->assertFalse(Press::configNotPublished());
+
+        config(['press' => null]);
+
+        $this->assertTrue(Press::configNotPublished());
+    }
+
+    #[Test]
+    public function path_and_pagination_fall_back_to_defaults_when_unconfigured()
+    {
+        // The TestCase env sets neither key. Note the pagination
+        // default is the STRING '15' -- pinned as-is; paginate()
+        // accepts it, but don't tighten to int without checking
+        // callers that might strict-compare.
+        $press = new Press();
+
+        $this->assertSame('/blog', $press->path());
+        $this->assertSame('15', $press->pagination());
+    }
+
+    #[Test]
+    public function meta_returns_the_whole_array_with_no_arguments_and_empty_string_for_unknown_keys()
+    {
+        config(['press.blog' => ['field1' => 'test1'], 'press.path' => '/blog']);
+
+        $press = new Press();
+
+        $this->assertEquals('test1', $press->meta()['field1']);
+        $this->assertEquals('http://localhost/blog', $press->meta()['url']);
+        $this->assertSame('', $press->meta('nope'));
+    }
+
+    #[Test]
+    public function the_meta_url_falls_back_to_the_blog_path_default_when_press_path_is_unset()
+    {
+        // The constructor builds meta['url'] through path(), so an
+        // unpublished press.path yields the same /blog default the
+        // routes use. (Historically it read the config directly with
+        // no default and produced the bare app URL here.)
+        config(['press.blog' => []]);
+
+        $press = new Press();
+
+        $this->assertEquals('http://localhost/blog', $press->meta()['url']);
+    }
+
+    #[Test]
+    public function meta_with_an_object_lacking_a_transformer_is_a_silent_no_op()
+    {
+        // Author (and Blog) have no Transformers class, so
+        // AuthorController's Press::meta($author) quietly leaves the
+        // default meta in place and returns null. If author pages ever
+        // need real meta, the fix is a Transformers\Author class, not
+        // loosening the guard.
+        config(['press.blog' => ['title' => 'Default Title']]);
+
+        $press = new Press();
+        $author = Author::factory()->create(['name' => 'John Doe']);
+
+        $this->assertNull($press->meta($author));
+        $this->assertEquals('Default Title', $press->meta('title'));
+    }
+
+    #[Test]
+    public function fields_merge_into_the_available_fields_list()
+    {
+        $press = new Press();
+        $press->fields(['FieldA']);
+        $press->fields(['FieldB']);
+
+        $this->assertEquals(['FieldA', 'FieldB'], $press->availableFields());
+    }
+
+    #[Test]
+    public function is_editor_is_false_for_guests_and_unlisted_users_and_true_for_listed_editors()
+    {
+        config(['press.blog' => []]);
+
+        $press = new Press();
+        $press->editors(['editor@example.com']);
+
+        $this->assertFalse($press->isEditor());
+
+        $this->actingAs(new GenericUser(['id' => 1, 'email' => 'someone@example.com']));
+        $this->assertFalse($press->isEditor());
+
+        $this->actingAs(new GenericUser(['id' => 2, 'email' => 'editor@example.com']));
+        $this->assertTrue($press->isEditor());
     }
 }

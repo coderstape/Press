@@ -29,7 +29,11 @@ class Press
     {
         $this->meta = config('press.blog');
 
-        $this->meta['url'] = url(config('press.path'));
+        // Same fallback path() applies -- these two must agree, or an
+        // unpublished press.path serves routes at /blog while meta
+        // urls point at the bare app root (shipped that way for years;
+        // pinned in PressTest).
+        $this->meta['url'] = url($this->path());
     }
 
     /**
@@ -142,7 +146,12 @@ class Press
         if (is_object($attributes)) {
             $class = 'coderstape\\Press\\Transformers\\' . (new ReflectionClass($attributes))->getShortName();
 
-            if ( ! class_exists($class) && ! method_exists($class, 'transform')) {
+            // Skip quietly when no transformer exists for this model
+            // (author and admin-blog pages hit this on every request
+            // and fall back to default meta -- pinned in PressTest).
+            // Was '&&' historically, which only worked because a class
+            // implementing Transformer can't lack transform().
+            if ( ! class_exists($class) || ! method_exists($class, 'transform')) {
                 return;
             }
 

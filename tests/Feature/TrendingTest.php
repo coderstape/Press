@@ -22,7 +22,9 @@ class TrendingTest extends TestCase
         $trendings = Trending::all();
 
         $this->assertCount(1, $trendings);
-        $this->assertEquals($post->id, $trendings->first()->id);
+        // post_id, not id: the old pin compared the trending row's own
+        // id and only passed because both happened to be 1.
+        $this->assertEquals($post->id, $trendings->first()->post_id);
     }
     
     #[Test]
@@ -43,5 +45,27 @@ class TrendingTest extends TestCase
         $trending = press::trending(10);
 
         $this->assertCount(10, $trending);
+    }
+
+    #[Test]
+    public function a_trending_row_belongs_to_its_post()
+    {
+        $trending = Trending::factory()->create();
+
+        $this->assertTrue($trending->post->is(Post::first()));
+    }
+
+    #[Test]
+    public function trending_excludes_posts_that_are_no_longer_active()
+    {
+        Trending::factory()->create();
+        Trending::factory()->create([
+            'post_id' => Post::factory()->create(['active' => 0])->id,
+        ]);
+
+        $trending = press::trending();
+
+        $this->assertCount(1, $trending);
+        $this->assertEquals(1, $trending->first()->post->active);
     }
 }

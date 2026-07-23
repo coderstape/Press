@@ -16,13 +16,18 @@ class Database
                 'slug' => $post['slug'],
                 'title' => $post['title'],
                 'body' => $post['body'],
-                'extra' => $post['extra'],
-                'series_id' => (isset($post['series_id'])) ? $post['series_id'] : null,
-                'author_id' => (isset($post['author_id'])) ? $post['author_id'] : null,
-                'active' => $post['active'],
-                'published_at' => $post['published_at'],
+                'extra' => $post['extra'] ?? json_encode([]),
+                'series_id' => $post['series_id'] ?? null,
+                'author_id' => $post['author_id'] ?? null,
+                // Defaults are judgment values (veto ok): a post with
+                // no date head publishes immediately (matches the
+                // posts.active column default of 1); no tags head
+                // syncs to none. Hard indexes here used to crash
+                // ingest for any post missing an optional head.
+                'active' => $post['active'] ?? 1,
+                'published_at' => $post['published_at'] ?? now(),
             ]
-        )->tags()->sync($post['tag_ids']);
+        )->tags()->sync($post['tag_ids'] ?? []);
     }
 
     /**
@@ -39,7 +44,13 @@ class Database
         }
 
         $this->cleanPosts(\Arr::pluck($posts, 'identifier'));
-        $this->cleanSeries(\Arr::pluck($posts, 'series'));
+        // Head keys keep their authored casing ('series' vs 'Series' --
+        // the parser accepts both), so a case-sensitive pluck missed
+        // capitalized heads and deleted their series as "unused" on the
+        // next run. Pinned in DatabaseTest.
+        $this->cleanSeries(array_map(function ($post) {
+            return $post['series'] ?? $post['Series'] ?? null;
+        }, $posts));
         $this->cleanTags();
 
         return true;

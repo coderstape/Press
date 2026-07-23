@@ -143,4 +143,41 @@ class DatabaseTest extends TestCase
         (new Database())->savePosts([]);
         $this->assertCount(0, Tag::all()->fresh());
     }
+
+    #[Test]
+    public function a_capitalized_series_head_survives_the_cleanup_pass()
+    {
+        // Regression pin: cleanSeries used to pluck the lowercase
+        // 'series' key only, so 'Series:'-authored posts had their
+        // series deleted as "unused" in the same savePosts run.
+        $post = (new PressFileParser("---\nTitle: Cap\nSeries: Kept Series---\nBody"))
+            ->getData();
+
+        (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'cap'])]
+        );
+
+        $this->assertCount(1, Series::all());
+        $this->assertEquals('Kept Series', Post::first()->series->title);
+    }
+
+    #[Test]
+    public function a_minimal_post_with_only_a_title_and_body_can_be_ingested()
+    {
+        // Regression pin: savePost hard-indexed active/tag_ids/etc.,
+        // so a post authored without a date or tags head crashed
+        // ingest. Defaults: publish now, no tags.
+        $post = (new PressFileParser("---\nTitle: Bare Minimum---\nBody"))->getData();
+
+        (new Database())->savePosts(
+            [array_merge($post, ['identifier' => 'bare'])]
+        );
+
+        $saved = Post::first();
+
+        $this->assertEquals('Bare Minimum', $saved->title);
+        $this->assertEquals(1, $saved->active);
+        $this->assertNotNull($saved->published_at);
+        $this->assertCount(0, $saved->tags);
+    }
 }

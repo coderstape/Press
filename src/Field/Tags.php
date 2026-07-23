@@ -37,9 +37,14 @@ class Tags extends FieldContract
      */
     private static function getOrCreateTag($tag)
     {
-        return Tag::firstOrCreate([
-            'slug' => \Str::slug($tag),
-            'name' => $tag,
-        ]);
+        // Match on slug ONLY (it's unique in the schema). Matching on
+        // name too meant a case-variant tag ('Laravel' after 'laravel')
+        // missed the lookup and crashed ingest on the duplicate-slug
+        // insert. First spelling wins the display name -- same rule as
+        // Field\Series. Pinned in FieldsTest.
+        return Tag::firstOrCreate(
+            ['slug' => \Str::slug($tag)],
+            ['name' => $tag]
+        );
     }
 }

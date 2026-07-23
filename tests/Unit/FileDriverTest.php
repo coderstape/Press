@@ -35,4 +35,17 @@ class FileDriverTest extends TestCase
 
         $this->assertCount(count(File::files(__DIR__ . '/../stubs')), $driver->fetchPosts());
     }
+
+    #[Test]
+    public function identifiers_are_the_slugged_filenames()
+    {
+        config(['press.file' => [
+            'path' => __DIR__ . '/../stubs',
+        ]]);
+
+        $posts = (new FileDriver())->fetchPosts();
+
+        // Str::slug('MarkFile1.md') -- the extension's dot is dropped.
+        $this->assertEquals(['markfile1md', 'markfile2md'], array_column($posts, 'identifier'));
+    }
 }

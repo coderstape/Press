@@ -2,13 +2,17 @@
 
 @section('content')
 
-    <h1>Authors</h1>
+    {{-- Restored: the authors/ and series/ view directories shipped
+         with their contents SWAPPED -- this file held the authors
+         markup (undefined $authors fatal) and the real series markup
+         sat in authors/index. Neither page had ever rendered. --}}
+    <h1>Series</h1>
 
     <ul>
-        @foreach ($authors as $author)
+        @foreach ($series as $series)
             <li>
-                <a href="{{ $author->path() }}">
-                    {{ $author->title }}
+                <a href="{{ $series->path() }}">
+                    {{ $series->title }}
                 </a>
             </li>
         @endforeach

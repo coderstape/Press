@@ -20,11 +20,16 @@ class PostController extends Controller
         $posts = Post::active()->orderBy('published_at', 'DESC');
 
         if (request('search')) {
-            $posts->where('title', 'LIKE', '%' . request('search').'%')
-                ->orWhere('body', 'LIKE', '%' . request('search').'%')
-                ->orWhereHas('author', function (Builder $query) {
-                    $query->where('name', 'LIKE', '%'.request('search').'%');
-                });
+            // The OR chain must be grouped, or it escapes the active()
+            // constraint above and a search hit on a draft's body
+            // publishes the draft. Pinned in PostControllerTest.
+            $posts->where(function (Builder $query) {
+                $query->where('title', 'LIKE', '%' . request('search').'%')
+                    ->orWhere('body', 'LIKE', '%' . request('search').'%')
+                    ->orWhereHas('author', function (Builder $query) {
+                        $query->where('name', 'LIKE', '%'.request('search').'%');
+                    });
+            });
         }
 
         if (request('draft')) {
@@ -57,6 +62,10 @@ class PostController extends Controller
         Press::meta($post);
 
         $series = Series::orderBy('title')->with('posts')->get();
+
+        // Initialized so a tag-less post doesn't hand compact() an
+        // undefined variable (site-published views may read $related).
+        $related = collect();
 
         if ($tags = $post->tags->pluck('id')->toArray()) {
             $related = Post::whereHas('tags', function ($query) use ($tags) {

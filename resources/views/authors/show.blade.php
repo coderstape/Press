@@ -2,12 +2,16 @@
 
 @section('content')
 
-    <h1>SERIES: {{ $series->title }}</h1>
-    <p><a href="{{ url(config('press.path') . '/posts') }}">All posts</a></p>
+    {{-- Was a copy of the series show view referencing an undefined
+         $series -- the controller passes only $author, so this page
+         had never rendered (same incident as the authors index).
+         Content mirrors the sibling views; judgment call, veto ok. --}}
+    <h1>{{ $author->name }}</h1>
+    <p><a href="{{ url(Press::path() . '/posts') }}">All posts</a></p>
 
     <h3>Posts</h3>
     <ul>
-        @foreach ($series->posts as $post)
+        @foreach ($author->activePosts as $post)
             <li>
                 <a href="{{ $post->path() }}">
                     {{ $post->title }}

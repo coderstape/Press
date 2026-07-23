@@ -2,13 +2,13 @@
 
 @section('content')
 
-    <h1>Series</h1>
+    <h1>Authors</h1>
 
     <ul>
-        @foreach ($series as $series)
+        @foreach ($authors as $author)
             <li>
-                <a href="{{ $series->path() }}">
-                    {{ $series->title }}
+                <a href="{{ $author->path() }}">
+                    {{ $author->name }}
                 </a>
             </li>
         @endforeach

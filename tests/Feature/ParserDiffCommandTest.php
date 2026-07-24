@@ -85,6 +85,30 @@ class ParserDiffCommandTest extends TestCase
     }
 
     #[Test]
+    public function a_bare_url_is_not_reported_as_a_difference()
+    {
+        // Parsedown autolinks bare URLs and CommonMark core does not,
+        // so without the Autolink extension registered this post looks
+        // like it loses a link. It is a parser-configuration gap, not
+        // content breakage -- 16 real posts were mis-reported this way.
+        $report = $this->reportFor(
+            "---\ntitle: Bare URL---\nRetrieved from https://example.com/some/page for details."
+        );
+
+        // The report carries FULL context, not just changed lines, so
+        // the URL appears in it either way -- an earlier version of
+        // this test asserted its absence from the whole file and could
+        // never have passed. What matters is that it never shows up on
+        // a CHANGED line.
+        $changed = array_filter(
+            explode("\n", $report),
+            fn ($line) => str_starts_with($line, '- ') || str_starts_with($line, '+ ')
+        );
+
+        $this->assertStringNotContainsString('example.com', implode("\n", $changed));
+    }
+
+    #[Test]
     public function the_command_leaves_the_renderer_seam_clean()
     {
         Blog::factory()->create();

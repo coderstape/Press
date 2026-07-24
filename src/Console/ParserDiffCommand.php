@@ -4,7 +4,10 @@ namespace coderstape\Press\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\Autolink\AutolinkExtension;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\MarkdownConverter;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\MarkdownParser;
 
@@ -55,7 +58,7 @@ class ParserDiffCommand extends Command
                 ' \'php artisan vendor:publish --tag=press-config\'');
         }
 
-        if ( ! class_exists(CommonMarkConverter::class)) {
+        if ( ! class_exists(MarkdownConverter::class)) {
             return $this->error(
                 'league/commonmark is not installed. Run ' .
                 '\'composer require league/commonmark\' -- note Laravel already ' .
@@ -108,10 +111,23 @@ class ParserDiffCommand extends Command
         // Press has today (Parsedown with safe mode off). Making the
         // raw-HTML decision visible is a standing requirement -- see
         // the briefing's rejected-items list.
-        $converter = new CommonMarkConverter([
+        $environment = new Environment([
             'html_input' => 'allow',
             'allow_unsafe_links' => true,
         ]);
+
+        $environment->addExtension(new CommonMarkCoreExtension());
+
+        // Autolink is NOT optional for a fair comparison. Parsedown
+        // turns a bare 'https://example.com' into a link; CommonMark
+        // core does not, because autolinking is a GFM extension. Without
+        // this, 16 posts in the real corpus appeared to LOSE links --
+        // reported as content breakage when the only difference was an
+        // unregistered extension. Any real migration wants this on for
+        // the same reason.
+        $environment->addExtension(new AutolinkExtension());
+
+        $converter = new MarkdownConverter($environment);
 
         MarkdownParser::$renderer = function ($text) use (&$sources, $converter) {
             $sources[] = $text;

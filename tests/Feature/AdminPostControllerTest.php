@@ -173,7 +173,7 @@ class AdminPostControllerTest extends TestCase
         $blog = Blog::first();
 
         $response = $this->patch("/blog/admin/posts/{$blog->id}", [
-            'data' => "---\ntitle: Second Version---\n#New Heading",
+            'data' => "---\ntitle: Second Version---\n# New Heading",
         ]);
 
         $response->assertRedirect();

@@ -10,7 +10,8 @@
         "php": "^8.3",
         "ext-json": "*",
         "erusev/parsedown": "^1.7",
-        "illuminate/support": "^13.0"
+        "illuminate/support": "^13.0",
+        "league/commonmark": "^2.8"
     },
     "require-dev": {
         "mockery/mockery": "^1.6",
@@ -27,9 +28,6 @@
             "coderstape\\Press\\Tests\\": "tests/",
             "coderstape\\Press\\Database\\Factories\\": "database/factories/"
         }
-    },
-    "suggest": {
-        "league/commonmark": "Required only by press:parser-diff, which compares Parsedown output against it. Laravel already requires this, so it is normally present."
     },
     "license": "MIT",
     "authors": [

@@ -16,6 +16,16 @@ class NormalizeSourceCommandTest extends TestCase
         parent::setUp();
 
         config(['press.driver' => 'database', 'press.database' => ['table' => 'blogs']]);
+
+        // press:normalize-source is a PRE-migration tool: it proves its
+        // edits are no-ops against the CURRENTLY configured parser, so
+        // on a commonmark install it correctly holds back the very
+        // fixes it exists to make (the heading rules turn a paragraph
+        // back into a heading -- a rendering change by definition).
+        // These tests therefore run in the configuration the tool is
+        // meant for. Same constraint the config file documents as
+        // 'step 2 before step 3'.
+        config(['press.parser' => 'parsedown']);
     }
 
     #[Test]

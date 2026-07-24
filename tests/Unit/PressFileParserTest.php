@@ -137,7 +137,9 @@ class PressFileParserTest extends TestCase
     #[Test]
     public function the_body_gets_markdown_parsed()
     {
-        $data = (new PressFileParser("---\nTitle: A Cool Title---\n#Title Here"))->getData();
+        // '# Title Here' with the space: CommonMark requires it, and
+        // the fixture relied on Parsedown accepting '#Title Here'.
+        $data = (new PressFileParser("---\nTitle: A Cool Title---\n# Title Here"))->getData();
         $this->assertEquals('<h1>Title Here</h1>', $data['body']);
     }
 

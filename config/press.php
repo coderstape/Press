@@ -170,4 +170,31 @@ return [
     'authorized' => [
         //
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Markdown Parser
+    |--------------------------------------------------------------------------
+    |
+    | Which markdown implementation renders post bodies at INGEST.
+    | 'commonmark' is spec-compliant and actively maintained. 'parsedown'
+    | is the historical default, kept selectable so an existing blog is
+    | migrated deliberately rather than on its next composer update.
+    |
+    | ORDER MATTERS when migrating an existing blog:
+    |
+    |   1. 'php artisan press:parser-diff'      -- see what would change
+    |   2. 'php artisan press:normalize-source' -- fix the sources
+    |   3. switch this key to 'commonmark'
+    |   4. 'php artisan press:process'          -- re-render every post
+    |
+    | Step 2 must happen BEFORE step 3. normalize-source proves its edits
+    | are no-ops against the CURRENTLY configured parser; run it after the
+    | switch and it will hold back the very fixes it exists to make.
+    |
+    | Supported: "commonmark", "parsedown"
+    |
+    */
+
+    'parser' => 'commonmark',
 ];

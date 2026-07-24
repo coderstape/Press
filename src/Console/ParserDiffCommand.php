@@ -8,6 +8,7 @@ use League\CommonMark\Environment\Environment;
 use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
 use League\CommonMark\MarkdownConverter;
+use Parsedown;
 use coderstape\Press\Facades\Press;
 use coderstape\Press\MarkdownParser;
 
@@ -90,9 +91,19 @@ class ParserDiffCommand extends Command
      */
     protected function parsedownPass()
     {
-        MarkdownParser::$renderer = null;
+        // Parsedown is INJECTED, not left to the config. Clearing the
+        // seam and taking whatever 'press.parser' happens to say was a
+        // real bug: once commonmark became the default, this compared
+        // CommonMark against itself and cheerfully reported zero
+        // differences. The command's whole purpose is the Parsedown ->
+        // CommonMark comparison, so it names both sides explicitly.
+        MarkdownParser::$renderer = fn ($text) => Parsedown::instance()->text($text);
 
-        return Press::driver()->fetchPosts() ?: [];
+        try {
+            return Press::driver()->fetchPosts() ?: [];
+        } finally {
+            MarkdownParser::$renderer = null;
+        }
     }
 
     /**

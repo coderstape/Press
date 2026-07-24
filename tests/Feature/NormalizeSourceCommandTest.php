@@ -87,6 +87,20 @@ class NormalizeSourceCommandTest extends TestCase
     }
 
     #[Test]
+    public function the_trailing_hash_rule_works_on_crlf_sources()
+    {
+        // Regression pin: with Windows line endings the \r sits between
+        // the closing hashes and end-of-line, and the first cut of this
+        // rule matched neither -- it skipped the affected post entirely
+        // while reporting success.
+        Blog::factory()->create(['data' => "---\r\ntitle: CRLF---\r\n## Compact Offshore Performer##\r\nBody."]);
+
+        $this->artisan('press:normalize-source', ['--apply' => true])->assertExitCode(0);
+
+        $this->assertStringNotContainsString('Performer##', Blog::first()->data);
+    }
+
+    #[Test]
     public function the_emphasis_rule_trims_inner_space_on_either_side_without_merging_pairs()
     {
         // Regression pin. The first cut of this rule only handled a

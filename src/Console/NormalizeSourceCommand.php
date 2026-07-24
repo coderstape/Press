@@ -186,7 +186,14 @@ class NormalizeSourceCommand extends Command
             // otherwise the hashes render as literal text at the end of
             // the heading. Parsedown strips them either way, which is
             // why removing them is a no-op today.
-            $source = preg_replace('/^(\s{0,3}#{1,6}\s+.*?[^\s#])#+[ \t]*$/m', '$1', $source);
+            // \r is in the trailing class and the leading gap is
+            // [ \t] rather than \s: on CRLF sources the carriage return
+            // sits between the closing hashes and end-of-line, and the
+            // first cut of this rule silently skipped every such line
+            // (found on a real post whose source came in with Windows
+            // line endings). \s would also let the leading gap span
+            // lines, which it must not.
+            $source = preg_replace('/^(\s{0,3}#{1,6}[ \t]+.*?[^\s#])#+[ \t\r]*$/m', '$1', $source);
         }
 
         if (in_array('emphasis', $rules, true)) {

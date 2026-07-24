@@ -4,25 +4,35 @@ Supersedes the briefing seeded from the Imagin/blog bug-fix session.
 That version folded in the modernization + full-coverage session
 (PHPUnit 12 / Testbench 11 / Laravel 13 upgrade, coverage batches
 A–D, the crossed-session incident, and the view-swap discovery).
-THIS version folds in the hardening session: review-fix batch E,
-CI batch F, and the authorization model in batches G–H — the last of
-which is deployed to production.
+That version folded in the hardening session: review-fix batch E, CI
+batch F, and the authorization model in batches G–H.
+THIS version folds in the parser-migration session: the diagnostic
+commands (batches I–J), their bug fixes (K–N), and the CommonMark
+swap itself (O–P). **Press now renders markdown with
+league/commonmark by default.**
 Counts and file facts below are hints; **the repo is authoritative**.
 
 **OPENING TASK for next session (spot-verify against the fresh zip):**
-- Test count: expect **145 total / 144 run** (1 excluded via the
+- Test count: expect **165 total / 164 run** (1 excluded via the
   `integration` group — GistDriverTest hits the live GitHub API).
-  Derive by `grep -rc "#\[Test\]" tests/`.
+  Derive by `grep -rc "#\[Test\]" tests/`. Last confirmed green:
+  164 tests, 343 assertions.
 - composer: `php ^8.3`, `illuminate/support ^13.0` only,
+  `erusev/parsedown ^1.7`, `league/commonmark ^2.8`,
   `orchestra/testbench ^11.0`, `phpunit/phpunit ^12.5`, NO
-  laravel/legacy-factories anywhere.
+  laravel/legacy-factories anywhere. BOTH parsers are required on
+  purpose — see the parser section below.
 - `ImaginShortcode::ALLOWED_KEYS` = exactly: location, width,
   height, alt, class, style, loading, decoding, fetchpriority,
   sizes.
 - Config defaults: driver `file`, prefix `press_`, path `/blog`,
-  trending_limit `1000`, pagination `15`, `authorized` present and
-  EMPTY in the package copy (the site's published copy holds the
-  real list).
+  trending_limit `1000`, pagination `15`, `parser` `commonmark`,
+  `authorized` present and EMPTY in the package copy (the site's
+  published copy holds the real list).
+- Three commands registered: `press:process`, `press:parser-diff`,
+  `press:normalize-source`.
+- `MarkdownParser::parse()` trims its output on every path, and
+  `MarkdownParser::$renderer` is the injectable seam.
 - `.github/workflows/tests.yml` exists: 6 jobs, PHP 8.3/8.4/8.5 ×
   highest/lowest, weekly Monday cron.
 - `AdminPostController::__construct()` registers `'auth'` THEN
@@ -48,6 +58,10 @@ a newline-separated INDEX of gist ids; each of those holds one
 post's markdown; `array_pop` takes the LAST file of a multi-file
 gist — pinned).
 
+Post bodies are rendered at INGEST by league/commonmark (core +
+Autolink extensions); Parsedown remains selectable via
+`config('press.parser')` for blogs that have not migrated yet.
+
 Authoring through the admin routes is gated on an authorized-user
 list (`config('press.authorized')`, unioned with anything registered
 at runtime via `Press::editors()`); the same list governs draft
@@ -63,6 +77,41 @@ illuminate/support ^13.0 (single-version support is deliberate —
 single consumer), Testbench ^11, PHPUnit ^12.5 (12.5.31 locally),
 erusev/parsedown ^1.7 (abandoned upstream; migration is a roadmap
 item).
+
+## Commands
+
+    php artisan press:process
+
+Ingests from the configured driver and rewrites `posts`. The only
+command that regenerates stored bodies.
+
+    php artisan press:parser-diff [--report=PATH] [--show=N]
+
+READ-ONLY. Renders every post's source through Parsedown AND
+league/commonmark and reports categorized differences. Both sides are
+named EXPLICITLY — it does not use `config('press.parser')` for its
+baseline, because once commonmark became the default that made it
+compare CommonMark against itself and report zero differences.
+`--show=0` keeps the console to the summary table; `--report` writes
+full diffs (with FULL CONTEXT, not just changed lines — assertions
+against that file must filter for `- `/`+ ` prefixes).
+Categories, trivial → structural: `identical`,
+`trailing-whitespace-only`, `whitespace-only`,
+`imagin-directive-changed` (hard STOP), `atx-heading-needs-space`,
+`list-marker-needs-space`, `raw-html-block`, `blockquote-needs-space`,
+`uncategorized`. The trivial tiers return ALONE by design.
+
+    php artisan press:normalize-source [--rule=R]... [--apply]
+                                       [--allow-visible-change] [--log=PATH]
+
+Fixes authored markdown that only works by Parsedown's leniency.
+**Dry run unless `--apply`.** Database driver only. Proves every edit
+is a no-op against the currently configured parser and HOLDS BACK
+anything whose rendering changes. Rules: `headings`, `html-blocks`,
+`heading-close` (safe tier) and `emphasis` (needs
+`--allow-visible-change`; it drops a space inside `<strong>`).
+Idempotent, so it can be run repeatedly and in stages.
+**Must run BEFORE switching the parser.**
 
 ## The big decisions (do not relitigate)
 
@@ -113,6 +162,46 @@ CALL time (unlike the boot-cached meta array), so in-test `config()`
 changes do reach it. An empty list on both sides authorizes NOBODY —
 the safe direction, but it means a site that registers no list
 locks itself out of its own admin.
+
+**The markdown parser (parser-migration session, shipped).** Default
+is **league/commonmark**, selected by `config('press.parser')`, with
+`'parsedown'` still valid. Both live in composer `require` and
+neither is going away: Parsedown is the baseline `press:parser-diff`
+compares against, and it is what an un-migrated blog still runs.
+The Environment is built once and cached (`MarkdownParser::converter()`)
+with `html_input => allow` and `allow_unsafe_links => true` stated
+explicitly rather than inherited, plus `CommonMarkCoreExtension` and
+`AutolinkExtension`.
+
+Autolink is **not optional**. Parsedown autolinks bare URLs and
+CommonMark core does not, because autolinking is a GFM extension —
+without it, 16 posts in the real corpus silently lost links. It also
+autolinks bare `www.` hosts (prefixing `http://`) and email addresses
+as `mailto:`, which Parsedown leaves as plain text. Victor chose to
+keep BOTH the URL and the email autolinker; 15 posts gain links as a
+result, and that is an accepted improvement, not a regression.
+
+`MarkdownParser::parse()` **trims on every path**, including the
+injected renderer. CommonMark terminates output with a newline and
+Parsedown does not; untrimmed, that single character would rewrite
+the stored body of every post on the first `press:process` after a
+swap and show up as a `trailing-whitespace-only` difference on a
+third of the blog. It has never been meaningful in HTML output.
+
+**MIGRATION ORDER — the constraint that bites (also in the config).**
+
+    1. php artisan press:parser-diff        see what would change
+    2. php artisan press:normalize-source   fix the sources
+    3. switch 'parser' to commonmark
+    4. php artisan press:process            re-render every post
+
+Step 2 MUST precede step 3. `normalize-source` proves its edits are
+no-ops against the CURRENTLY configured parser; run it after the
+switch and it correctly holds back the very fixes it exists to make,
+because under CommonMark a heading fix turns a paragraph back into a
+heading, which is a rendering change by definition. This was written
+into the config and then walked into anyway, in the same batch,
+breaking three tests.
 
 **Coverage program (the coverage session, complete).** Suite grew
 49 → 89 (A: models + Press core + transformers + theme helper)
@@ -204,7 +293,7 @@ percentage number.
     after the date passes. An unparseable date omits 'active'
     entirely and savePost's default (1) publishes immediately.
 
-## This session: hardening + CI (batches E–H)
+## The hardening session (batches E–H)
 
 Opened by spot-verifying the fresh zip against the previous
 briefing: 138/137, composer, ALLOWED_KEYS, config defaults, and both
@@ -269,6 +358,104 @@ config and runtime. Deployed to production and behavior confirmed.
 `{!! $post->body !!}`: a raw echo, not a Blade compile. No
 `compileString`/`renderString`/`Blade::render` on the body. The
 template-injection surface carried since the Imagin batch is gone.
+
+## The parser-migration session (batches I–P)
+
+Started as a "side quest" to size roadmap 3 and ended up closing it.
+The whole thing ran through one seam.
+
+**The seam.** `MarkdownParser::$renderer`, a public static callable
+mirroring `ImaginShortcode::$renderer` down to the `tearDown()` reset
+discipline. Setting it swaps the markdown implementation without
+touching the ingest path — no driver changes, no `PressFileParser`
+changes. Everything below is built on it. ALWAYS restore it to null
+in a `finally`: it is static, so a leaked renderer silently changes
+every later ingest in the same process.
+
+**Batch I — `press:parser-diff`** (152/151). Renders every post's
+source through both parsers and reports categorized differences.
+READ-ONLY by construction and pinned as such. Categories run trivial
+→ structural, and the trivial tiers return ALONE so a trailing
+newline doesn't read as a hundred-percent regression. A change in the
+`@imagin` directive's shape is a hard `STOP`.
+
+**Batch J — `press:normalize-source`** (158/157). Fixes authored
+markdown that only works by Parsedown's leniency. Dry run by default;
+`--apply` is the only thing that writes. THE SAFETY PROPERTY: for
+every source it touches it renders the body before and after through
+the current parser and REFUSES to write anything whose rendering
+changes — a rule is proven per post, not trusted because it looked
+safe on a sample. Scoped to the `database` driver; rewriting source
+files or remote gists is deliberately out of scope. Rules:
+`headings`, `html-blocks`, `heading-close` (safe tier, must be
+provable no-ops) and `emphasis` (opt-in, requires
+`--allow-visible-change` because it genuinely alters current output).
+
+**Batches K–N — fixing those two commands.** K: the `emphasis` rule
+only handled a space after the OPENING delimiter and silently skipped
+`**text **`, the more common spelling in the real corpus; its first
+replacement over-matched across delimiter pairs (`**a** and *b*` →
+`**a**and*b*`). Both pinned. Also added `heading-close` for
+`## Heading##`. L: `heading-close` missed CRLF sources — `\r` sat
+between the closing hashes and end-of-line — so it skipped affected
+posts WHILE REPORTING SUCCESS. M: registered `AutolinkExtension`
+after discovering 16 posts appeared to lose links. N: a test
+assertion that could never pass (it asserted a URL was absent from a
+report that deliberately carries full context lines).
+
+**Batches O–P — the swap.** O added the `parser` config key, moved
+`league/commonmark` from suggest to require, and fixed four test
+fixtures that relied on Parsedown accepting `#Heading` with no space
+— the same bug class the corpus had. P fixed the six failures O
+caused: the trailing-newline trim, `ParserDiffCommand`'s baseline
+pass (it cleared the seam and used the CONFIGURED parser, so once
+commonmark became the default it compared CommonMark against itself
+and reported ZERO differences — a green light meaning nothing), and
+`NormalizeSourceCommandTest` needing `parser => parsedown`.
+
+## What the real corpus actually showed
+
+Numbers from Victor's production blog, ~600 posts. Worth keeping
+because they are the evidence roadmap 3 was decided on.
+
+| Stage | Posts with real content breakage |
+|---|---|
+| First run | 73 |
+| After heading + html-block normalization | 13 |
+| After the corrected emphasis rule | 4 |
+| After CRLF fix + manual work | 1 |
+| Final | 0 |
+
+`imagin-directive-changed` was **ZERO on every run** — six of them.
+Verified directly rather than by category count: 467 directives
+across 105 posts, all on unchanged context lines, with both facts the
+expander's regex needs (`<p>@imagin(` wrapper, `=&gt;` escaping)
+present under CommonMark.
+
+Final independent audits on the migrated corpus: block structure
+differs in **0 of 549**; visible text differs in **0 of 549** with
+entities normalised and escaped tags audited separately; newly
+escaped tags **0**. The ~549 posts still "differing" are entity
+encoding, tag nesting order, and `<p>`-wrapped images — the cosmetic
+floor, which was never going to reach zero.
+
+**The migration fixed live bugs.** Three section headings rendering
+as literal `## Florida`; a heading trapped inside an `<li>`; four
+product links showing as raw `<a href=…>` markup; several paragraphs
+of run-together text (`$33,000 in scholarshipsto student anglers`);
+and post 174's mangled nested anchors. All broken BEFORE any of this
+started. Parsedown's leniency had been hiding malformed source for
+years.
+
+**Causes worth recognizing again** (they will recur on the second
+blog): heading with no space after `#`; trailing `##` with no space
+before it; whitespace immediately inside an emphasis delimiter, on
+EITHER side; `text**bold**text` with no surrounding spaces (renders
+run-together TODAY); a void element (`<br>`, `<img>`, `<hr>`) on its
+own line immediately followed by markdown, which CommonMark swallows
+into the HTML block until a blank line; missing whitespace between
+HTML attributes (`"target=`); and curly quotes inside HTML
+attributes.
 
 ## The crossed-session incident (protocol now standing)
 
@@ -337,16 +524,59 @@ same briefing. Resolution that worked and is now the protocol:
 - **Follow the chain, not the link.** Batch G's finding needed four
   facts together (route group middleware, controller middleware,
   parser safe-mode, the site's echo). Any one alone looks fine.
+- **THE BIG ONE: hold analysis code to the same bar as shipped
+  code.** The parser-migration session had five failures and every
+  single one was in the ANALYSIS layer — throwaway triage scripts and
+  test assertions — never in `press:parser-diff` or
+  `press:normalize-source`, which were seam-viewed, anchor-asserted
+  and harnessed and were right each time. But Victor's DECISIONS
+  rested on the triage scripts. Specifically:
+    - `html.unescape(a) == html.unescape(b)` makes an ESCAPED tag
+      compare equal to a rendered one, so posts where CommonMark
+      escaped a link were filed as "cosmetic entity decoding" for FIVE
+      consecutive runs. Found only by grepping `&lt;` directly.
+    - Comparing visible text after `strip_tags` cannot see structure at
+      all: a heading becoming a paragraph, or a heading trapped inside
+      an `<li>`, shows identical text.
+    - The fix both times came from a DIFFERENT method (grep for
+      escaped tags; compare block-tag sequences), never from the
+      classifier getting smarter. Run independent audits; do not
+      iterate on the one that already fooled you.
+- **A tool reporting success is not a tool working.** The CRLF gap in
+  `heading-close` and the `emphasis` rule's missing side both SKIPPED
+  posts while reporting success. So did `ParserDiffCommand` comparing
+  CommonMark against itself. Silent-skip is the worst failure mode in
+  a safety tool; prefer designs that fail loudly.
+- **Knowing a constraint is not applying it.** The migration-order
+  constraint was written into the config file and walked into three
+  tests later, in the same batch.
+- **Don't declare victory early.** "Real breakage is zero" was said
+  three times before it was true. Each time the number came from a
+  classifier that had not been validated against a known-positive
+  case.
 
 ## Current state
 
-- Suite: **145 tests / 144 run, all green** on PHP 8.5.5, PHPUnit
-  12.5.31, Testbench 11. (Assertion counts by batch: 273 → 284 → 293
-  → …; derive rather than trust.)
+- Suite: **165 tests / 164 run / 343 assertions, all green** on PHP
+  8.5.5, PHPUnit 12.5.31, Testbench 11. (Assertion counts drift every
+  batch; derive rather than trust.)
 - CI green on all six matrix jobs (PHP 8.3/8.4/8.5 × highest/lowest).
 - The editor gate and the `authorized` config block are DEPLOYED to
   the Sportsman production site and confirmed working.
+- Default markdown parser is **league/commonmark**. The Sportsman
+  corpus is fully normalized: zero posts differ in block structure or
+  visible text between the parsers.
+- Sportsman deploy needs only steps 3–4 of the migration order
+  (`parser => commonmark`, then `press:process`) — its sources are
+  already normalized.
 - composer.lock regenerated on Victor's machine post-upgrade.
+
+**Victor has a SECOND blog** that has not been migrated. It gets the
+full four-step order. `press:parser-diff` and `press:normalize-source`
+are first-class, supported tooling because of it — not throwaway
+scripts. Note `normalize-source` is scoped to the `database` driver;
+if the second blog uses the file driver, that scope has to be widened
+first (its `fetchRaw`-equivalent walk does not exist for files yet).
 - Known debts: README predates everything; route definitions still
   use `'Controller@method'` strings with a namespace group
   (verified still supported in Laravel 13's RouteGroup/RouteAction
@@ -371,6 +601,16 @@ same briefing. Resolution that worked and is now the protocol:
 - The site consumes both packages; Press views changed in the
   coverage and hardening sessions (see site-side items) may be
   masked by published overrides.
+- `league/commonmark` is a HARD REQUIREMENT of laravel/framework
+  (`^2.8.1` in its composer `require`), so any Laravel app already
+  ships it — verified from the framework's composer.json.
+- CommonMark defaults, verified in its source: `html_input` is
+  `allow` and `allow_unsafe_links` is `true`, i.e. the same
+  raw-HTML posture Press already had. Press states them explicitly
+  anyway.
+- GitHub's UNAUTHENTICATED API rate-limits fast and returns shapes
+  that break naive parsing. `raw.githubusercontent.com` does not —
+  prefer fetching files over querying the API.
 - Assistant sandbox: runs as root, so `sudo` is ABSENT — call
   `apt-get update` then `apt-get install -y php-cli` directly (a
   stale-package 404 hits without the update; the nodesource repo
@@ -444,9 +684,10 @@ items keep their slot rather than being renumbered out.
    evidently tolerates it today; know which.
 2. ~~CI~~ — **CLOSED** (batch F). Coverage measurement still
    optional and still ungated (pcov locally: `pecl install pcov`).
-3. Parsedown (abandoned) → league/commonmark decision. A parser
-   swap MUST re-verify the ImaginShortcode stored-body pins (the
-   `<p>`-wrap and `=&gt;` facts are Parsedown-shaped).
+3. ~~Parsedown → league/commonmark~~ — **CLOSED** (batches I–P),
+   with the full evidence trail above. Parsedown remains selectable
+   and required; do not remove it while an un-migrated blog exists
+   or while `press:parser-diff` needs a baseline.
 4. **Preview gating decision** — HALF RESOLVED. The visit-recording
    half is decided and shipped (preview hits never record). Gating
    itself is still open: `?preview` remains UNGATED, so anyone with
@@ -458,9 +699,37 @@ items keep their slot rather than being renumbered out.
    output change; the transformer-less no-op is the pinned interim
    contract). Consider `Transformers\Blog` for admin edit at the
    same time.
-6. Shortcode decoupling decision (generic registry vs Imagin-aware
-   ImaginShortcode), jointly with Imagin's renderer-contract
-   roadmap item. `ImaginShortcode::$renderer` is already the seam.
+6. **`@imagin` as a real CommonMark node — THE NEXT BIG ONE**, and
+   the prize the parser swap was for. Victor has explicitly said he
+   wants to pursue the extension architecture.
+
+   Today the directive survives ingest BY ACCIDENT: the parser does
+   not recognize it, so it becomes paragraph text with `=>`
+   entity-escaped, and `ImaginShortcode` re-finds it at request time
+   with a regex against rendered HTML, unwrapping the `<p>` the
+   parser added and reversing the escaping. Every step is a
+   workaround for the parser not knowing about the directive.
+
+   league/commonmark lets you register a real inline parser:
+   `@imagin(` recognized at parse time, emitted as a dedicated node.
+   No escaping to reverse, no `<p>`-unwrapping, no regex against
+   HTML, and the key whitelist becomes STRUCTURAL rather than
+   regex-enforced. Its extension system also IS the generic
+   shortcode registry this item used to ask for, so the old
+   "speculative generality" objection is gone.
+
+   Hazards to respect when starting:
+    - Expansion must STAY at request time (auth- and cache-dependent).
+      The node emits a PLACEHOLDER into the stored body; it does not
+      bake Imagin markup at ingest. See the rejected-items list.
+    - It CHANGES the stored body format. Existing posts hold the old
+      literal-text form until re-ingested, so the request-time
+      expander must handle both during transition and every
+      ImaginShortcode pin needs re-deriving.
+    - Its own batch, after the swap beds in. Two format changes at
+      once destroys bisectability.
+    - `ImaginShortcode::$renderer` and `MarkdownParser::$renderer`
+      are both already seams; use them rather than adding a third.
 7. Housekeeping cluster, each its own decision: namespace/branding
    (BC implications for site imports and published config); composer
    `suggest` for grandeberg/imagin; README rewrite; route tuple
@@ -507,6 +776,16 @@ items keep their slot rather than being renumbered out.
   its source.
 - Don't gate `?preview` as a drive-by — see roadmap 4; the
   recording half is settled, the access half is not.
+- **Don't remove Parsedown.** It is the baseline `press:parser-diff`
+  compares against and what the un-migrated second blog runs.
+  Abandoned upstream is not the same as unwanted here.
+- **Don't disable either autolinker.** Victor explicitly chose to
+  keep both URL and email autolinking. Dropping `AutolinkExtension`
+  costs 16 posts their links outright.
+- **Don't run `press:normalize-source` after switching the parser.**
+  It holds back the fixes it exists to make. Step 2 before step 3.
+- **Don't trust one classifier's "zero differences."** Run an
+  independent audit by a different method before believing it.
 - Don't multi-session the same codebase without explicit
   coordination (crossed-session incident).
 
@@ -549,6 +828,13 @@ the load-bearing ones, with this package's incidents attached:
    green first run and all green first run — but F's three named
    uncertainties ALL passed, an over-hedge that became a review rule
    above. E's one named uncertainty (`getQueryLog()[0]`) held.
+   The parser-migration session's ledger, much worse: I and J green;
+   K, L, M each shipped to fix a defect in the batch before it; N
+   fixed an assertion that could never have passed; O was called
+   green and broke SIX tests; P fixed all six and was green. Four of
+   nine batches existed only to repair the previous one. Every defect
+   was in analysis or test code, never in the ingest path — which is
+   exactly the review rule above.
    Misses became the review rules above.
 8. **The briefing is merged at session end from the original
    document in hand, never rewritten from memory.** This document

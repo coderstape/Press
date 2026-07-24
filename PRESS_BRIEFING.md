@@ -1,13 +1,16 @@
 # Press — Project Briefing & Working Conventions (CANONICAL)
 
 Supersedes the briefing seeded from the Imagin/blog bug-fix session.
-This version folds in the modernization + full-coverage session
+That version folded in the modernization + full-coverage session
 (PHPUnit 12 / Testbench 11 / Laravel 13 upgrade, coverage batches
 A–D, the crossed-session incident, and the view-swap discovery).
+THIS version folds in the hardening session: review-fix batch E,
+CI batch F, and the authorization model in batches G–H — the last of
+which is deployed to production.
 Counts and file facts below are hints; **the repo is authoritative**.
 
 **OPENING TASK for next session (spot-verify against the fresh zip):**
-- Test count: expect **138 total / 137 run** (1 excluded via the
+- Test count: expect **145 total / 144 run** (1 excluded via the
   `integration` group — GistDriverTest hits the live GitHub API).
   Derive by `grep -rc "#\[Test\]" tests/`.
 - composer: `php ^8.3`, `illuminate/support ^13.0` only,
@@ -17,11 +20,18 @@ Counts and file facts below are hints; **the repo is authoritative**.
   height, alt, class, style, loading, decoding, fetchpriority,
   sizes.
 - Config defaults: driver `file`, prefix `press_`, path `/blog`,
-  trending_limit `1000`, pagination `15`.
+  trending_limit `1000`, pagination `15`, `authorized` present and
+  EMPTY in the package copy (the site's published copy holds the
+  real list).
+- `.github/workflows/tests.yml` exists: 6 jobs, PHP 8.3/8.4/8.5 ×
+  highest/lowest, weekly Monday cron.
+- `AdminPostController::__construct()` registers `'auth'` THEN
+  `EnsureUserIsEditor::class` — in that order.
 - Views: `authors/` and `series/` each render their OWN subject
   (see the view-swap incident) and every path link goes through
   `Press::path()`, never `config('press.path')` raw.
 - Site-side open items (bottom of Roadmap) — ask which have closed.
+  1a and roadmap 2 are CLOSED; don't re-ask those.
 
 ## What this is
 
@@ -38,12 +48,17 @@ a newline-separated INDEX of gist ids; each of those holds one
 post's markdown; `array_pop` takes the LAST file of a multi-file
 gist — pinned).
 
+Authoring through the admin routes is gated on an authorized-user
+list (`config('press.authorized')`, unioned with anything registered
+at runtime via `Press::editors()`); the same list governs draft
+visibility and the `?draft` filter.
+
 Sibling package to GrandeBerg Imagin (see IMAGIN_BRIEFING.md); the
 same production site runs both, and blog posts embed Imagin image
 slots. Package/consumer split: artisan steps and published
 config/views live in the SITE, never in this repo.
 
-Stack as of this session: PHP ^8.3 (Victor's machine runs 8.5.5),
+Stack as of the hardening session: PHP ^8.3 (Victor's machine runs 8.5.5),
 illuminate/support ^13.0 (single-version support is deliberate —
 single consumer), Testbench ^11, PHPUnit ^12.5 (12.5.31 locally),
 erusev/parsedown ^1.7 (abandoned upstream; migration is a roadmap
@@ -69,7 +84,7 @@ expanded via injected renderer. Admin editing is unaffected:
 `posts.body` is DERIVED from `Blog.data` and regenerated on update
 (pinned in AdminPostControllerTest).
 
-**Modernization (this session, Victor-approved).** Test suite moved
+**Modernization (the coverage session, Victor-approved).** Test suite moved
 to PHPUnit 12 attributes: `#[Test]` with prefix-free snake_case
 names (a return to this repo's original `@test`-era naming);
 `@group integration` became `#[Group('integration')]` because
@@ -84,7 +99,22 @@ uses the PHPUnit 12 schema (`convert*ToExceptions` attrs are fatal
 since PHPUnit 10), `<source>` on src/, cache in `.phpunit.cache`;
 `.phpunit.result.cache` is gitignored and no longer committed.
 
-**Coverage program (this session, complete).** Suite grew
+**The authorization model (hardening session, deployed).** Admin
+CRUD is editor-only, enforced by
+`Http\Middleware\EnsureUserIsEditor` registered in
+`AdminPostController::__construct()` AFTER `'auth'` — order is
+load-bearing: guests must get the login redirect, not a 403 they
+could never clear by signing in. A signed-in non-editor gets 403.
+The list lives in `config('press.authorized')`; `Press::editors()`
+survives as the runtime seam and the two are UNIONed, deliberately,
+so a consuming site can move its list without a cutover deploy where
+the gate is live and the list is empty. `isEditor()` reads config at
+CALL time (unlike the boot-cached meta array), so in-test `config()`
+changes do reach it. An empty list on both sides authorizes NOBODY —
+the safe direction, but it means a site that registers no list
+locks itself out of its own admin.
+
+**Coverage program (the coverage session, complete).** Suite grew
 49 → 89 (A: models + Press core + transformers + theme helper)
 → 105 (B: fields + drivers offline) → 125 (C: public HTTP layer)
 → 138 (D: admin + command + e2e). Policy decisions made once:
@@ -93,7 +123,7 @@ batch, always; the AIContent seam is an accepted coverage hole;
 coverage is judged functionally ("no large gaps"), not by a
 percentage number.
 
-## Bugs fixed this session (each pinned; mechanisms recorded)
+## Bugs fixed in the coverage session (each pinned; mechanisms recorded)
 
 1. **Search leaked drafts** — PostController::index's
    orWhere/orWhereHas chain wasn't grouped, so the OR escaped the
@@ -174,6 +204,72 @@ percentage number.
     after the date passes. An unparseable date omits 'active'
     entirely and savePost's default (1) publishes immediately.
 
+## This session: hardening + CI (batches E–H)
+
+Opened by spot-verifying the fresh zip against the previous
+briefing: 138/137, composer, ALLOWED_KEYS, config defaults, and both
+restored view directories all matched. The in-repo briefing was
+byte-identical to the uploaded one.
+
+**Batch E — review fixes (138 → 141 / 140 run).** Five findings from
+a fresh-eyes pass plus one Victor-decided change:
+1. `Press::driver()` had NO guard — a typo in `press.driver`
+   surfaced as a raw PHP `Error` naming a class the user never
+   typed. Now throws `UnsupportedDriverException` carrying the
+   config value, the resolved class, and the custom-driver namespace
+   rule. Also `\Str` → imported `Str`: the alias table belongs to
+   the consuming app and a package shouldn't lean on it.
+2. `trending_limit` was the ONLY config read in `Press` without an
+   inline default. `limit(null)` is a no-op in the query builder
+   (verified in framework source), so an unpublished config ran
+   completely unbounded rather than the documented 1000.
+3. **`?preview` recorded a visit** — preview traffic banked into
+   trending before a post was ever published. Victor's call: preview
+   hits never count, including `?preview` on an already-active post.
+   This changed what a preview hit RECORDS, not who may make one.
+4. `series/index.blade.php` shadowed the `$series` collection with
+   its own loop variable. Worked by accident (foreach evaluates its
+   subject once); fixed as a landmine, no behavioral delta, so the
+   existing index test was strengthened rather than a test added.
+5. `isEditor()` used non-strict `in_array` — hygiene only, PHP 8's
+   comparison rules already closed the hole.
+
+**Batch F — CI (no count change).** `.github/workflows/tests.yml`,
+mirroring Imagin's (Victor supplied that file). Press-specific
+deltas: PHP **8.5** added to the matrix (every local run has been on
+8.5, so 8.3/8.4 are what CI actually adds); extensions are
+mbstring/pdo_sqlite/sqlite3/json rather than Imagin's gd/exif; the
+fail-fast assertion checks mbstring + the sqlite PDO driver; and
+`--exclude-group integration` is passed ON THE CLI as well as set in
+phpunit.xml. That redundancy is deliberate — this suite has already
+been bitten once by the exclusion silently dying, and CI must never
+reach github.com regardless of what phpunit.xml says on a given day.
+All six jobs green first push, 21–27s each.
+
+**Batch G — the editor gate (141 → 143 / 142 run).** Found by
+running down roadmap 1a. Chain: the admin route group is
+`'middleware' => 'web'` only; `AdminPostController` added just
+`'auth'`; Parsedown runs with safe mode OFF so authored raw HTML
+(including `<script>`) passes into the stored body; the site renders
+with `{!! $post->body !!}`. Net effect: **any registered user could
+put arbitrary markup on the public blog.** Surfaced as a decision
+rather than fixed on sight (access-control rule), Victor approved,
+then shipped: `EnsureUserIsEditor`, the `actingAsAdmin()` helper now
+registers its email, one test renamed because the contract changed
+(`..._for_authenticated_users` → `..._for_editors`), and a new test
+asserting 403 on every admin verb.
+
+**Batch H — `authorized` moves to config (143 → 145 / 144 run).**
+The list had lived in the SITE's `PressServiceProvider` as a
+`Press::editors([...])` call. Now a documented `authorized` block in
+`config/press.php` mirroring Imagin's, with `isEditor()` unioning
+config and runtime. Deployed to production and behavior confirmed.
+
+**Roadmap 1a — CLOSED.** The Sportsman site displays the body with
+`{!! $post->body !!}`: a raw echo, not a Blade compile. No
+`compileString`/`renderString`/`Blade::render` on the body. The
+template-injection surface carried since the Imagin batch is gone.
+
 ## The crossed-session incident (protocol now standing)
 
 Mid-session, 16 files materialized in the assistant's sandbox that
@@ -207,7 +303,7 @@ same briefing. Resolution that worked and is now the protocol:
   the assistant briefly presented foreign comments as existing
   code. Provenance-check before attesting.
 
-## Review rules earned this session (assistant-side scar tissue)
+## Review rules earned (assistant-side scar tissue)
 
 - **Version-bump batches get an environment-dependency pass** over
   HTTP/middleware tests, not just an API-surface pass (the app.key
@@ -223,14 +319,34 @@ same briefing. Resolution that worked and is now the protocol:
   theory".
 - The seam-view-after-write rule caught its biggest fish yet: a
   fix zip about to ship with the same broken file it claimed to
-  fix.
+  fix. (It earned its keep again in batch E, catching a blank line
+  the guard clause had absorbed — trivial, but the rule found it.)
+- **Hedging is not calibration.** Batch F named three likely-red
+  items (`composer validate --strict`, testbench at `--prefer-lowest`,
+  PHP 8.3/8.4); all three passed. The list was padded because those
+  items were UNVERIFIABLE in the sandbox, not because there was
+  evidence of risk. "I couldn't check this" is the honest phrasing;
+  "this will probably fail" is not, and it trains the reader to
+  discount the warnings that matter.
+- **Verify the framework claim before reporting the bug.** Nearly
+  reported `$this->middleware()` in a controller constructor as
+  removed by the Laravel 11 controller-middleware overhaul. Fetched
+  `Illuminate\Routing\Controller` first: it is still there. That
+  would have been a confident, wrong bug report — same shape as the
+  "extraction mishap" misdiagnosis, same five-second cure.
+- **Follow the chain, not the link.** Batch G's finding needed four
+  facts together (route group middleware, controller middleware,
+  parser safe-mode, the site's echo). Any one alone looks fine.
 
 ## Current state
 
-- Suite: **138 tests / 137 run / 273 assertions, all green** on
-  PHP 8.5.5, PHPUnit 12.5.31, Testbench 11.
+- Suite: **145 tests / 144 run, all green** on PHP 8.5.5, PHPUnit
+  12.5.31, Testbench 11. (Assertion counts by batch: 273 → 284 → 293
+  → …; derive rather than trust.)
+- CI green on all six matrix jobs (PHP 8.3/8.4/8.5 × highest/lowest).
+- The editor gate and the `authorized` config block are DEPLOYED to
+  the Sportsman production site and confirmed working.
 - composer.lock regenerated on Victor's machine post-upgrade.
-- No CI yet (roadmap item 2).
 - Known debts: README predates everything; route definitions still
   use `'Controller@method'` strings with a namespace group
   (verified still supported in Laravel 13's RouteGroup/RouteAction
@@ -252,24 +368,38 @@ same briefing. Resolution that worked and is now the protocol:
   behavior seems wrong on the site, CHECK PUBLISHED COPIES FIRST —
   the view swap survived for years partly because overrides masked
   it.
-- The site consumes both packages; Press views changed this session
-  (see site-side items) may be masked by published overrides.
-- Assistant sandbox: `apt-get update` then `apt-get install -y
-  php-cli` (a stale-package 404 hits without the update; the
-  nodesource repo error is ignorable); `php-mbstring` needed for
-  slug harnesses; **no Packagist** — the assistant lints (php -l on
+- The site consumes both packages; Press views changed in the
+  coverage and hardening sessions (see site-side items) may be
+  masked by published overrides.
+- Assistant sandbox: runs as root, so `sudo` is ABSENT — call
+  `apt-get update` then `apt-get install -y php-cli` directly (a
+  stale-package 404 hits without the update; the nodesource repo
+  error is ignorable); `php-mbstring` needed for slug harnesses;
+  **pdo_sqlite is NOT available**, so nothing DB-backed can be
+  harnessed locally; **no Packagist** — the assistant lints (php -l on
   every shipped file), harnesses pure logic standalone, and fetches
-  real library source from GitHub raw for empirical verification
-  (done this session for Testbench constraints, WithFactories
+  real library source from GitHub raw for empirical verification.
+  Coverage session: Testbench constraints, WithFactories
   deprecation, RouteGroup namespace support, legacy-factories'
   illuminate ^13 support, EnsuresDefaultConfiguration, and
-  Str::slug — transcribed and executed to verify identifier pins).
+  Str::slug. Hardening session: `Str::title` (executed —
+  'mongo' → 'Mongo'), `Builder::limit(null)` (a genuine no-op),
+  `compileLimit` (inlines the int, so it is greppable in the SQL),
+  `Arr::get` (an explicitly-null key returns null, NOT the default —
+  which is why a config default can't be tested by setting the key
+  to null), `Illuminate\Routing\Controller::middleware()` (still
+  present), Parsedown 1.7.0 vs 1.7.4 (byte-identical on the Imagin
+  fixtures), Parsedown safe-mode off (raw HTML passthrough), and
+  league/commonmark's `html_input` default (ALLOW).
+  NOTE: GitHub's unauthenticated API rate-limits quickly; raw.
+  githubusercontent.com does not, so prefer fetching files over
+  querying the API.
   Victor runs the suite; failures get pasted back and traced to
   mechanism.
 - Sessions can cross (see incident). Fresh-zip reset + ledger
   byte-compare is the reconciliation tool.
 
-## House style (updated this session)
+## House style
 
 - Tests: `#[Test]` attribute, prefix-free snake_case method names,
   flat `coderstape\Press\Tests` namespace even under Unit/Feature,
@@ -287,18 +417,20 @@ same briefing. Resolution that worked and is now the protocol:
 
 ## Roadmap (agreed order)
 
-1. **Site-side verification sweep** (all open, carried or new):
-   a. Confirm the Sportsman app's Blade-compile-of-body call is
-   DELETED (grep `compileString` / `renderString` /
-   `Blade::render` on the post body) — STILL unconfirmed since
-   the Imagin batch; it's a template-injection surface.
+Numbering is STABLE — code comments reference these numbers. Closed
+items keep their slot rather than being renumbered out.
+
+1. **Site-side verification sweep**:
+   a. ~~Confirm the Blade-compile-of-body call is DELETED~~ —
+   **CLOSED**: the site renders `{!! $post->body !!}`, a raw echo.
    b. Grep the site for `factory(` on Press models before its next
    composer update — the legacy `factory()` helper left with
    laravel/legacy-factories (which had been a production
    require).
    c. Check `resources/views/vendor/press/` for published copies of
-   the six views changed this session (nav, posts/show,
-   series/index, series/show, authors/index, authors/show) —
+   the SEVEN views changed across sessions (nav, posts/show,
+   series/index, series/show, authors/index, authors/show; plus
+   series/index again for the loop-shadow fix) —
    published copies mask the swap fix AND retain the url(null)
    landmine; mirror `Press::path()` into them.
    d. Run `press:process` once after the release lands and confirm
@@ -310,17 +442,18 @@ same briefing. Resolution that worked and is now the protocol:
    full select with groupBy('post_id') — fine on SQLite and
    lenient MySQL, fatal under strict group-by. Production
    evidently tolerates it today; know which.
-2. CI — mirror Imagin's Actions setup: matrix, weekly cron,
-   composer validate, php -l. Coverage measurement optional (pcov
-   locally: `pecl install pcov`, no threshold gating).
+2. ~~CI~~ — **CLOSED** (batch F). Coverage measurement still
+   optional and still ungated (pcov locally: `pecl install pcov`).
 3. Parsedown (abandoned) → league/commonmark decision. A parser
    swap MUST re-verify the ImaginShortcode stored-body pins (the
    `<p>`-wrap and `=&gt;` facts are Parsedown-shaped).
-4. **Preview gating decision**: `?preview` is UNGATED — anyone with
-   a draft's URL sees it (pinned as current behavior in
-   PostControllerTest with the decision named in a comment). May be
-   an intentional shareable-preview feature; gate behind
-   `isEditor()` only as a deliberate call.
+4. **Preview gating decision** — HALF RESOLVED. The visit-recording
+   half is decided and shipped (preview hits never record). Gating
+   itself is still open: `?preview` remains UNGATED, so anyone with
+   a draft's URL sees it. Now that `isEditor()` gates authoring,
+   gating preview behind the same check is the CONSISTENT call and
+   a one-liner — but it removes shareable draft links, so it stays a
+   deliberate decision, not a drive-by.
 5. `Transformers\Author` — real meta for author pages (public
    output change; the transformer-less no-op is the pinned interim
    contract). Consider `Transformers\Blog` for admin edit at the
@@ -363,6 +496,17 @@ same briefing. Resolution that worked and is now the protocol:
   session gets the full adoption review (claims verified against
   pristine sources, pins re-derived) before it goes out under a
   batch.
+- **Don't turn on Parsedown's safe mode.** Raw HTML passthrough is
+  spec-correct markdown, existing posts may rely on it for embeds,
+  and flipping it would silently mangle published bodies at the next
+  `press:process`. The answer to untrusted markup is WHO MAY AUTHOR
+  (the editor gate), not what may be authored. Any parser swap must
+  make this posture an explicit config choice rather than inherit
+  it — league/commonmark defaults `html_input` to ALLOW and
+  `allow_unsafe_links` to true, i.e. the same posture, verified in
+  its source.
+- Don't gate `?preview` as a drive-by — see roadmap 4; the
+  recording half is settled, the access half is not.
 - Don't multi-session the same codebase without explicit
   coordination (crossed-session incident).
 
@@ -382,7 +526,7 @@ the load-bearing ones, with this package's incidents attached:
    package-side/site-side deploy notes, and a commit message.
 3. **Scripted edits use anchor-asserted replacements and the seam
    gets viewed after writing.** The assertion refused a fix for a
-   misread this session, and the seam-view caught the swap before a
+   misread in the coverage session, and the seam-view caught the swap before a
    broken file shipped. Lint and count are necessary, never
    sufficient.
 4. **Diagnosis before code**: mechanism hypothesis, cheapest
@@ -395,12 +539,16 @@ the load-bearing ones, with this package's incidents attached:
 6. **Empirical verification over memory** for anything load-bearing:
    fetch the real library source and execute it (Str::slug,
    Testbench internals, Parsedown previously).
-7. **Predictions stated on the record, scored honestly** — this
-   session's ledger: modernization "green first run" missed
-   (app.key); coverage A green as predicted with named
+7. **Predictions stated on the record, scored honestly** — the
+   coverage session's ledger: modernization "green first run"
+   missed (app.key); coverage A green as predicted with named
    uncertainties holding; C's amendment-required call right but for
    the wrong file; C's clobber theory wrong and retracted; D's risk
    ranking inverted (expectsOutput held, route naming failed).
+   The hardening session's ledger: batches E, F, G and H all called
+   green first run and all green first run — but F's three named
+   uncertainties ALL passed, an over-hedge that became a review rule
+   above. E's one named uncertainty (`getQueryLog()[0]`) held.
    Misses became the review rules above.
 8. **The briefing is merged at session end from the original
    document in hand, never rewritten from memory.** This document

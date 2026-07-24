@@ -28,6 +28,26 @@ class TrendingTest extends TestCase
     }
     
     #[Test]
+    public function a_preview_hit_does_not_record_a_visit()
+    {
+        // Preview traffic used to bank visits into the trending table
+        // before a post was ever published. Holds for ?preview on an
+        // already-active post too (judgment call, veto ok).
+        $draft = Post::factory()->create(['active' => 0]);
+        $live = Post::factory()->create();
+
+        $this->get($draft->path() . '?preview=1')->assertOk();
+        $this->get($live->path() . '?preview=1')->assertOk();
+
+        $this->assertCount(0, Trending::all());
+
+        // ...and the ordinary path still does record one.
+        $this->get($live->path())->assertOk();
+
+        $this->assertCount(1, Trending::all());
+    }
+
+    #[Test]
     public function trendings_posts_can_be_fetched()
     {
         Trending::factory()->create();

@@ -4,16 +4,19 @@ namespace coderstape\Press\Tests;
 
 use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Actions\Database;
 use coderstape\Press\Author;
 use coderstape\Press\Drivers\DatabaseDriver;
 use coderstape\Press\Drivers\FileDriver;
 use coderstape\Press\Drivers\GistDriver;
+use coderstape\Press\Exceptions\UnsupportedDriverException;
 use coderstape\Press\Press;
 use coderstape\Press\Post;
 use coderstape\Press\Series;
 use coderstape\Press\Tag;
+use coderstape\Press\Trending;
 
 class PressTest extends TestCase
 {
@@ -219,5 +222,43 @@ class PressTest extends TestCase
 
         $this->actingAs(new GenericUser(['id' => 2, 'email' => 'editor@example.com']));
         $this->assertTrue($press->isEditor());
+    }
+
+    #[Test]
+    public function an_unsupported_driver_name_throws_a_named_exception()
+    {
+        // Was a raw PHP Error naming a class the config never
+        // mentioned. The message pins the class it looked for, which
+        // is also what makes the Str::title() casing legible to
+        // whoever typo'd the config.
+        config(['press.driver' => 'mongo']);
+
+        $this->expectException(UnsupportedDriverException::class);
+        $this->expectExceptionMessage('coderstape\Press\Drivers\MongoDriver');
+
+        Press::driver();
+    }
+
+    #[Test]
+    public function trending_limits_by_config_and_falls_back_to_the_documented_default()
+    {
+        Trending::factory()->count(3)->create();
+
+        // Default asserted FIRST and through the SQL, deliberately:
+        // the test env never sets trending_limit, and once config()
+        // sets a key there is no unsetting it (null is a VALUE --
+        // config()'s default only fires on a MISSING key). Proving
+        // 1000 behaviorally would mean 1001 rows.
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        Press::trending();
+        $sql = DB::getQueryLog()[0]['query'];
+        DB::disableQueryLog();
+
+        $this->assertStringContainsString('limit 1000', $sql);
+
+        config(['press.trending_limit' => 2]);
+
+        $this->assertCount(2, Press::trending());
     }
 }

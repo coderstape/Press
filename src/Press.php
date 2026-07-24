@@ -2,8 +2,10 @@
 
 namespace coderstape\Press;
 
+use Illuminate\Support\Str;
 use ReflectionClass;
 use coderstape\Press\Actions\Database;
+use coderstape\Press\Exceptions\UnsupportedDriverException;
 
 class Press
 {
@@ -50,11 +52,28 @@ class Press
      * Get an instance of the set driver.
      *
      * @return mixed
+     * @throws \coderstape\Press\Exceptions\UnsupportedDriverException
      */
     public static function driver()
     {
-        $driver = \Str::title(config('press.driver', 'file'));
+        // Str, not the \Str alias: the alias table is the consuming
+        // app's, and a package shouldn't depend on it being intact.
+        // Identical behavior -- \Str IS Illuminate\Support\Str.
+        $driver = Str::title(config('press.driver', 'file'));
         $class = "coderstape\\Press\\Drivers\\{$driver}Driver";
+
+        // Without this, a typo in the config's driver key surfaced as a
+        // raw PHP Error naming a class the user never typed. Custom
+        // drivers still work -- they just have to live in this
+        // namespace, which the message now says out loud.
+        if ( ! class_exists($class)) {
+            throw new UnsupportedDriverException(
+                'Unsupported press driver \'' . config('press.driver') . '\'. ' .
+                'Expected the class \'' . $class . '\' to exist. ' .
+                'The built-in drivers are \'file\', \'database\' and \'gist\'; ' .
+                'a custom driver must live in the ' . __NAMESPACE__ . '\\Drivers namespace.'
+            );
+        }
 
         return new $class;
     }
@@ -90,9 +109,15 @@ class Press
      */
     public static function trending($limit = null)
     {
+        // The default is inline here for the same reason it is on
+        // path() and pagination(): on an UNPUBLISHED config this read
+        // returned null, and limit(null) is a no-op in the query
+        // builder -- so the one code path with no config to read from
+        // ran completely unbounded instead of the 1000 the shipped
+        // config documents. Pinned in PressTest.
         $trending = Trending::orderBy('id', 'desc')
             ->groupBy('post_id')
-            ->limit(config('press.trending_limit'))
+            ->limit(config('press.trending_limit', 1000))
             ->whereHas('post', function ($query) {
                 $query->where('active', 1);
             })
@@ -202,6 +227,10 @@ class Press
             return false;
         }
 
-        return in_array(auth()->user()->email, $this->editors);
+        // Strict: editors are configured as strings and should only
+        // ever match strings. Hygiene rather than a fix -- PHP 8's
+        // comparison rules already closed the juggling hole this
+        // guards against on PHP 7.
+        return in_array(auth()->user()->email, $this->editors, true);
     }
 }

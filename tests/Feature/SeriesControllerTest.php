@@ -24,6 +24,10 @@ class SeriesControllerTest extends TestCase
 
         $response->assertOk();
         $this->assertEquals(['Used Series'], $response->viewData('series')->pluck('title')->all());
+        // Renders, not just passes data: the loop variable used to
+        // shadow the $series collection it was iterating.
+        $response->assertSee('Used Series');
+        $response->assertDontSee('Draft Series');
     }
 
     #[Test]

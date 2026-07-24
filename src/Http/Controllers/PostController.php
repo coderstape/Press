@@ -52,13 +52,26 @@ class PostController extends Controller
      */
     public function show($post, $slug)
     {
-        if (request()->has('preview')) {
+        $preview = request()->has('preview');
+
+        if ($preview) {
             $post = Post::with(['tags', 'series'])->whereId($post)->whereSlug($slug)->firstOrFail();
         } else {
             $post = Post::active()->with(['tags', 'series'])->whereId($post)->whereSlug($slug)->firstOrFail();
         }
 
-        $post->recordVisit();
+        // Preview traffic isn't real traffic: a draft reviewed a dozen
+        // times before publication used to arrive on the site with
+        // those visits already banked in the trending table. Applies
+        // to ?preview on an ALREADY-ACTIVE post too (judgment call,
+        // veto ok -- an editor re-checking a live post is still not a
+        // reader). This changes what a preview hit RECORDS, not who
+        // may make one; whether ?preview should be gated at all
+        // remains an open decision.
+        if ( ! $preview) {
+            $post->recordVisit();
+        }
+
         Press::meta($post);
 
         $series = Series::orderBy('title')->with('posts')->get();

@@ -131,6 +131,7 @@ class PressBaseServiceProvider extends ServiceProvider
     public function register()
     {
         $this->commands([
+            Console\NormalizeSourceCommand::class,
             Console\ParserDiffCommand::class,
             Console\ProcessCommand::class,
         ]);

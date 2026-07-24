@@ -225,6 +225,32 @@ class PressTest extends TestCase
     }
 
     #[Test]
+    public function editors_merge_across_calls_and_an_empty_list_authorizes_nobody()
+    {
+        config(['press.blog' => []]);
+
+        $press = new Press();
+
+        // Worth pinning now that authoring is editor-gated: with NO
+        // list registered, nobody is an editor. A site that never
+        // registers one locks itself out of its own admin rather than
+        // leaving it open -- the safe direction, but know it.
+        $this->actingAs(new GenericUser(['id' => 1, 'email' => 'first@example.com']));
+        $this->assertFalse($press->isEditor());
+
+        // editors() is additive, not replacing: a provider call and a
+        // later call both count. The gate depends on this, since the
+        // consuming site registers its list at boot.
+        $press->editors(['first@example.com']);
+        $press->editors(['second@example.com']);
+
+        $this->assertTrue($press->isEditor());
+
+        $this->actingAs(new GenericUser(['id' => 2, 'email' => 'second@example.com']));
+        $this->assertTrue($press->isEditor());
+    }
+
+    #[Test]
     public function an_unsupported_driver_name_throws_a_named_exception()
     {
         // Was a raw PHP Error naming a class the config never

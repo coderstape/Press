@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 use PHPUnit\Framework\Attributes\Test;
 use coderstape\Press\Blog;
+use coderstape\Press\Facades\Press;
 use coderstape\Press\Post;
 
 class AdminPostControllerTest extends TestCase
@@ -36,6 +37,10 @@ class AdminPostControllerTest extends TestCase
 
     protected function actingAsAdmin()
     {
+        // Authoring is editor-gated now, so the acting user has to be
+        // ON the list -- being authenticated stopped being enough.
+        Press::editors(['admin@example.com']);
+
         return $this->actingAs(new GenericUser(['id' => 1, 'email' => 'admin@example.com']));
     }
 
@@ -58,7 +63,7 @@ class AdminPostControllerTest extends TestCase
     }
 
     #[Test]
-    public function the_index_and_create_pages_render_for_authenticated_users()
+    public function the_index_and_create_pages_render_for_editors()
     {
         Post::factory()->count(2)->create();
 
@@ -66,6 +71,28 @@ class AdminPostControllerTest extends TestCase
 
         $this->get('/blog/admin/posts')->assertOk()->assertSee('admin index: 2');
         $this->get('/blog/admin/posts/create')->assertOk()->assertSee('admin create');
+    }
+
+    #[Test]
+    public function authenticated_non_editors_are_forbidden_from_every_admin_route()
+    {
+        // The gate 'auth' alone never provided. Every verb is asserted
+        // rather than one representative route: the gate is registered
+        // once in the constructor today, and this is what would catch
+        // a missed route if it ever moves to per-route middleware.
+        Press::editors(['editor@example.com']);
+        $blog = Blog::factory()->create();
+
+        $this->actingAs(new GenericUser(['id' => 2, 'email' => 'nobody@example.com']));
+
+        $this->get('/blog/admin/posts')->assertForbidden();
+        $this->get('/blog/admin/posts/create')->assertForbidden();
+        $this->post('/blog/admin/posts', ['data' => 'x'])->assertForbidden();
+        $this->get("/blog/admin/posts/{$blog->id}/edit")->assertForbidden();
+        $this->patch("/blog/admin/posts/{$blog->id}", ['data' => 'x'])->assertForbidden();
+
+        // Nothing was authored on the way through.
+        $this->assertCount(1, Blog::all());
     }
 
     #[Test]

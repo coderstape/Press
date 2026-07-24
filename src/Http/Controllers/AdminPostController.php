@@ -4,6 +4,7 @@ namespace coderstape\Press\Http\Controllers;
 
 use coderstape\Press\Blog;
 use coderstape\Press\Facades\Press;
+use coderstape\Press\Http\Middleware\EnsureUserIsEditor;
 use coderstape\Press\Post;
 use Illuminate\Routing\Controller;
 
@@ -12,6 +13,16 @@ class AdminPostController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        // Authoring is editor-only. 'auth' ALONE let any registered
+        // user create and edit posts, and post bodies reach the
+        // public blog through {!! !!} on the consuming site with
+        // Parsedown's raw-HTML passthrough intact -- so bare
+        // authentication was arbitrary markup on the public blog from
+        // any account. Registration order matters: 'auth' first, so a
+        // guest gets the login redirect rather than a 403 they could
+        // never clear by signing in.
+        $this->middleware(EnsureUserIsEditor::class);
     }
 
     /**

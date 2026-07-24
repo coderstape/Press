@@ -72,6 +72,48 @@ class NormalizeSourceCommandTest extends TestCase
     }
 
     #[Test]
+    public function a_trailing_hash_run_is_dropped_from_a_heading()
+    {
+        // '## Heading##' renders the trailing hashes as literal text
+        // under CommonMark, which only reads them as a closing sequence
+        // when whitespace precedes them. Parsedown strips them either
+        // way, so this is a safe-tier rule.
+        Blog::factory()->create(['data' => "---\ntitle: Close---\n## Best Offshore Performer##"]);
+
+        $this->artisan('press:normalize-source', ['--apply' => true])->assertExitCode(0);
+
+        $this->assertStringContainsString('## Best Offshore Performer', Blog::first()->data);
+        $this->assertStringNotContainsString('Performer##', Blog::first()->data);
+    }
+
+    #[Test]
+    public function the_emphasis_rule_trims_inner_space_on_either_side_without_merging_pairs()
+    {
+        // Regression pin. The first cut of this rule only handled a
+        // space after the OPENING delimiter, so '**text **' -- the more
+        // common spelling in the real corpus -- was silently skipped.
+        // Its replacement used one alternation for both sides and
+        // matched ACROSS delimiter pairs, turning '**a** and *b*' into
+        // '**a**and*b*'. Both failures are pinned here.
+        Blog::factory()->create([
+            'data' => "---\ntitle: Emph---\n**Dealer: Riverside ** and ** 1. Engine:** plus **fine** and *ok*",
+        ]);
+
+        $this->artisan('press:normalize-source', [
+            '--rule' => ['emphasis'],
+            '--allow-visible-change' => true,
+            '--apply' => true,
+        ])->assertExitCode(0);
+
+        $data = Blog::first()->data;
+
+        $this->assertStringContainsString('**Dealer: Riverside**', $data);
+        $this->assertStringContainsString('**1. Engine:**', $data);
+        // Correct markup is left exactly as it was.
+        $this->assertStringContainsString('**fine** and *ok*', $data);
+    }
+
+    #[Test]
     public function the_emphasis_rule_refuses_to_run_without_the_visible_change_flag()
     {
         $data = "---\ntitle: Emph---\n** 1. Engine:** text";

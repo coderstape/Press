@@ -45,7 +45,7 @@ class NormalizeSourceCommand extends Command
      *
      * @var array
      */
-    protected const SAFE_RULES = ['headings', 'html-blocks'];
+    protected const SAFE_RULES = ['headings', 'html-blocks', 'heading-close'];
 
     /**
      * Rules that knowingly change current rendering.
@@ -180,11 +180,38 @@ class NormalizeSourceCommand extends Command
             );
         }
 
+        if (in_array('heading-close', $rules, true)) {
+            // '## Heading##' -- CommonMark only reads a trailing # run
+            // as a CLOSING sequence when whitespace precedes it, so
+            // otherwise the hashes render as literal text at the end of
+            // the heading. Parsedown strips them either way, which is
+            // why removing them is a no-op today.
+            $source = preg_replace('/^(\s{0,3}#{1,6}\s+.*?[^\s#])#+[ \t]*$/m', '$1', $source);
+        }
+
         if (in_array('emphasis', $rules, true)) {
-            // '** text **' cannot open emphasis under the flanking
-            // rules: an opening delimiter may not be followed by
-            // whitespace. This one DOES change current output.
-            $source = preg_replace('/\*\*[ \t]+(.+?)[ \t]*\*\*/', '**$1**', $source);
+            // Whitespace immediately INSIDE a delimiter pair stops it
+            // forming emphasis under CommonMark's flanking rules -- on
+            // EITHER side. The first cut of this rule only handled a
+            // space after the OPENING delimiter and silently skipped
+            // '**text **', which turned out to be the more common
+            // spelling in the real corpus: it left 6 posts unfixed
+            // while reporting success. Trim both ends instead.
+            // Double first, then single. Inner content may not contain
+            // '*', and the single pass refuses a '*' adjacent to another,
+            // so '**bold**' is immune to the second pass. An earlier cut
+            // used one alternation for both and matched ACROSS delimiter
+            // pairs -- '**a** and *b*' came out as '**a**and*b*'.
+            $trim = function ($delimiter) {
+                return function ($match) use ($delimiter) {
+                    $inner = trim($match[1], " \t");
+
+                    return $inner === '' ? $match[0] : $delimiter . $inner . $delimiter;
+                };
+            };
+
+            $source = preg_replace_callback('/\*\*([^*\n]*?)\*\*/', $trim('**'), $source);
+            $source = preg_replace_callback('/(?<!\*)\*(?!\*)([^*\n]*?)\*(?!\*)/', $trim('*'), $source);
         }
 
         return $source;

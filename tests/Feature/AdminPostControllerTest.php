@@ -74,6 +74,19 @@ class AdminPostControllerTest extends TestCase
     }
 
     #[Test]
+    public function the_admin_gate_accepts_an_editor_listed_only_in_the_config()
+    {
+        // The refactor's whole point, end to end: a site can list its
+        // authors in config/press.php and never call Press::editors()
+        // at all. Note actingAsAdmin() is deliberately NOT used here.
+        config(['press.authorized' => ['config-only@example.com']]);
+
+        $this->actingAs(new GenericUser(['id' => 4, 'email' => 'config-only@example.com']));
+
+        $this->get('/blog/admin/posts')->assertOk();
+    }
+
+    #[Test]
     public function authenticated_non_editors_are_forbidden_from_every_admin_route()
     {
         // The gate 'auth' alone never provided. Every verb is asserted

@@ -227,10 +227,23 @@ class Press
             return false;
         }
 
+        // Union of the published config list and anything registered
+        // at runtime through editors(). The config block is the
+        // intended home (see 'authorized' in config/press.php);
+        // editors() stays as the runtime seam so a site can move its
+        // list at its own pace instead of in one cutover deploy, and
+        // so tests can register one without touching config.
+        //
+        // Note this reads config at CALL time, unlike the meta array
+        // the constructor caches at boot -- so an in-test config()
+        // change does reach it (the boot-time-singleton trap does not
+        // apply here).
+        $authorized = array_merge(config('press.authorized', []), $this->editors);
+
         // Strict: editors are configured as strings and should only
         // ever match strings. Hygiene rather than a fix -- PHP 8's
         // comparison rules already closed the juggling hole this
         // guards against on PHP 7.
-        return in_array(auth()->user()->email, $this->editors, true);
+        return in_array(auth()->user()->email, $authorized, true);
     }
 }

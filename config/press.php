@@ -149,4 +149,25 @@ return [
     */
 
     'pagination' => 15,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Authorized Users
+    |--------------------------------------------------------------------------
+    |
+    | Provide the email address of all users that are authorized to author
+    | blog posts. A signed-in user who is not on this list gets a 403 from
+    | every admin route; these users are also the ones who see drafts and
+    | the ?draft filter on the public pages.
+    |
+    | Leaving this empty authorizes NOBODY. If your site registers its list
+    | at runtime with Press::editors() instead -- the older home for it --
+    | that list is MERGED with this one, so either place works and you can
+    | move between them without a cutover deploy.
+    |
+    */
+
+    'authorized' => [
+        //
+    ],
 ];

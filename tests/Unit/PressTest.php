@@ -225,6 +225,24 @@ class PressTest extends TestCase
     }
 
     #[Test]
+    public function the_config_authorized_list_authorizes_and_merges_with_runtime_editors()
+    {
+        config(['press.blog' => [], 'press.authorized' => ['from-config@example.com']]);
+
+        $press = new Press();
+        $press->editors(['from-runtime@example.com']);
+
+        $this->actingAs(new GenericUser(['id' => 1, 'email' => 'from-config@example.com']));
+        $this->assertTrue($press->isEditor());
+
+        $this->actingAs(new GenericUser(['id' => 2, 'email' => 'from-runtime@example.com']));
+        $this->assertTrue($press->isEditor());
+
+        $this->actingAs(new GenericUser(['id' => 3, 'email' => 'neither@example.com']));
+        $this->assertFalse($press->isEditor());
+    }
+
+    #[Test]
     public function editors_merge_across_calls_and_an_empty_list_authorizes_nobody()
     {
         config(['press.blog' => []]);

@@ -28,6 +28,9 @@
             "coderstape\\Press\\Database\\Factories\\": "database/factories/"
         }
     },
+    "suggest": {
+        "league/commonmark": "Required only by press:parser-diff, which compares Parsedown output against it. Laravel already requires this, so it is normally present."
+    },
     "license": "MIT",
     "authors": [
         {

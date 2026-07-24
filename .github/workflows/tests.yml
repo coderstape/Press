@@ -1,0 +1,99 @@
+# coderstape/Press — CI
+#
+# Runs the full PHPUnit suite on every push, on demand, and weekly.
+# The weekly run matters because dependencies resolve fresh here (no
+# lock file is honored): it catches upstream breakage — a new
+# Testbench, PHPUnit, or Laravel release — before a work session does.
+# Note GitHub disables cron on repos idle for ~60 days; it emails you
+# and re-enabling is one click.
+#
+# Matrix:
+#   php:          8.3, 8.4 and 8.5. composer.json declares ^8.3 but
+#                 every local run of this suite has been on 8.5 — so
+#                 8.3 and 8.4 are the versions CI actually adds, and
+#                 8.5 is the one that reproduces the dev machine.
+#   dependencies: highest = normal `composer update`
+#                 lowest  = `--prefer-lowest`, proving the version
+#                 floors in composer.json are real. Testbench 11 pins
+#                 laravel/framework regardless, so the meaningful
+#                 floor check here is erusev/parsedown ^1.7 — verified
+#                 by hand: 1.7.0 and 1.7.4 render the @imagin
+#                 directive fixtures byte-identically, `<p>` wrap and
+#                 `=&gt;` escaping included, so the stored-body pins
+#                 hold on the floor.
+#
+# Deliberately NOT in the matrix: Laravel versions. illuminate/support
+# is constrained to ^13.0 on purpose (single consumer) — see briefing.
+
+name: tests
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '43 6 * * 1' # Mondays 06:43 UTC — offset from Imagin's
+                         # 06:17 so the two repos don't report together
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4', '8.5']
+        dependencies: [highest, lowest]
+    name: PHP ${{ matrix.php }} / ${{ matrix.dependencies }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          # mbstring: Str::title() and Str::slug() are load-bearing
+          # (driver resolution and post identifiers respectively).
+          # pdo_sqlite/sqlite3: the in-memory test database.
+          # json: composer declares ext-json a hard requirement.
+          extensions: mbstring, pdo_sqlite, sqlite3, json
+          ini-values: memory_limit=512M
+          coverage: none
+
+      # Str::title() is mb_convert_case() underneath and the whole
+      # suite runs against sqlite :memory:. Without either, the run
+      # fails as a confusing pile of unrelated errors — fail fast and
+      # loudly instead.
+      - name: Assert mbstring and the SQLite PDO driver are present
+        run: |
+          php -r 'exit((int) ! (function_exists("mb_convert_case") && in_array("sqlite", PDO::getAvailableDrivers(), true)));'
+
+      - name: Validate composer.json
+        run: composer validate --strict --no-check-lock
+
+      # Catches parse errors in files no test happens to load
+      # (config, migrations, routes, unexercised branches).
+      - name: Lint all PHP files
+        run: |
+          find src config database routes tests -name '*.php' -print0 \
+            | xargs -0 -n1 -P4 php -l > /dev/null
+
+      - name: Install dependencies (${{ matrix.dependencies }})
+        uses: ramsey/composer-install@v4
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: '--prefer-dist --no-progress'
+
+      # --exclude-group is redundant with phpunit.xml's <groups>
+      # exclusion and that is the point: GistDriverTest hits the LIVE
+      # GitHub API, and this suite has already been bitten once by the
+      # exclusion silently dying (PHPUnit 12 stopped reading the
+      # doc-comment @group, so the attribute had to be added). CI must
+      # never reach out to github.com regardless of what phpunit.xml
+      # says on a given day. Local and CI both run 140 of 141.
+      - name: Run test suite
+        run: vendor/bin/phpunit --exclude-group integration

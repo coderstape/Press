@@ -17,7 +17,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::active()->orderBy('published_at', 'DESC');
+        $posts = Post::active()->with(['tags', 'author'])->orderBy('published_at', 'DESC');
 
         if (request('search')) {
             // The OR chain must be grouped, or it escapes the active()

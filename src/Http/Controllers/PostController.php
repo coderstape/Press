@@ -36,7 +36,10 @@ class PostController extends Controller
             $posts->where('active', '0');
         }
 
-        $series = Series::orderBy('title')->with('posts')->get();
+        // withCount, not with('posts'): the sidebar only prints a count,
+        // and the eager load hydrated every post BODY of every series --
+        // then the blade counted a DIFFERENT relation (activePosts) lazily.
+        $series = Series::orderBy('title')->withCount('activePosts')->get();
         $posts = $posts->paginate(Press::pagination());
 
         return theme('posts.index', compact('posts', 'series'));
@@ -74,7 +77,10 @@ class PostController extends Controller
 
         Press::meta($post);
 
-        $series = Series::orderBy('title')->with('posts')->get();
+        // withCount, not with('posts'): the sidebar only prints a count,
+        // and the eager load hydrated every post BODY of every series --
+        // then the blade counted a DIFFERENT relation (activePosts) lazily.
+        $series = Series::orderBy('title')->withCount('activePosts')->get();
 
         // Initialized so a tag-less post doesn't hand compact() an
         // undefined variable (site-published views may read $related).

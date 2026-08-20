@@ -16,7 +16,7 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        $authors = Author::whereHas('activePosts')->orderBy('name')->get();
+        $authors = Author::whereHas('activePosts')->withCount('activePosts')->orderBy('name')->get();
 
         return theme('authors.index', compact('authors'));
     }

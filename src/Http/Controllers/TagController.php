@@ -15,7 +15,10 @@ class TagController extends Controller
      */
     public function index()
     {
-        $tags = Tag::whereHas('activePosts')->with('activePosts')->orderBy('name')->get();
+        // whereHas keeps the filter; the with('activePosts') that rode along
+        // hydrated every active post's full body per tag for a page that
+        // renders only tag names.
+        $tags = Tag::whereHas('activePosts')->orderBy('name')->get();
 
         return theme('tags.index', compact('tags'));
     }

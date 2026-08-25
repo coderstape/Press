@@ -156,7 +156,7 @@ class Post extends Model
      */
     public function contentable()
     {
-        return $this->morphOne(\App\Models\AIContent::class, 'contentable');
+        return $this->morphOne(AIContent::class, 'contentable');
     }
 
     /**

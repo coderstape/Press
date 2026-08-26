@@ -582,14 +582,26 @@ first (its `fetchRaw`-equivalent walk does not exist for files yet).
   (verified still supported in Laravel 13's RouteGroup/RouteAction
   — tuple modernization is roadmap, not required); Parsedown
   abandoned upstream.
-- The AIContent seam: `Post::contentable()` morphs to
+- ~~The AIContent seam: `Post::contentable()` morphs to
   `\App\Models\AIContent` and sits in `$appends` — a hard reference
   to the consuming app inside the package. Any Post serialization
   (toArray/JSON) fatals in package context. ACCEPTED as a coverage
   hole (Victor's call); views access attributes directly so the
   suite survives. Config-driven morph class with a class_exists
   guard (the ImaginShortcode pattern) is the roadmap shape if it
-  ever matters.
+  ever matters.~~ **OVERTURNED — both halves, v1.0.1.** The `App\`
+  reference died in 7670301 (AIContent moved into the package, so
+  no config-driven morph class is needed at all). The serialization
+  fatal was NOT merely a coverage hole and NOT caused by the morph:
+  it was `$appends = ['author', 'contentable']` with no accessor
+  behind EITHER key, so `mutateAttribute()` called an undefined
+  `getAuthorAttribute()` and every toArray/toJson threw
+  BadMethodCallException. It predates the AIContent work by a year
+  (9ba75cf, 2025-07-11, "append author" — measured identical on
+  v1.0.0 and 03d7419). `$appends` is now GONE; see the block comment
+  on Post explaining why writing the accessors would have been the
+  worse repair, and `PostTest::a_post_serializes_without_blowing_up_
+  on_a_phantom_appended_key` for the guard.
 
 ## Environment facts (learned the hard way)
 
@@ -733,9 +745,10 @@ items keep their slot rather than being renumbered out.
 7. Housekeeping cluster, each its own decision: namespace/branding
    (BC implications for site imports and published config); composer
    `suggest` for grandeberg/imagin; README rewrite; route tuple
-   syntax; AIContent seam (config-driven morph class); audit
+   syntax; ~~AIContent seam (config-driven morph class); audit
    `$appends = ['author', 'contentable']` (serialization cost and
-   the app coupling); align `pagination` default's string-'15'
+   the app coupling)~~ **both DONE — 7670301 and v1.0.1; the audit
+   found a hard fatal, not a cost**; align `pagination` default's string-'15'
    quirk if ever annoying (pinned with assertSame).
 
 ## Out of scope / already rejected (grows monotonically)

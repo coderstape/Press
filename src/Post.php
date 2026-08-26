@@ -15,7 +15,29 @@ class Post extends Model
      */
     protected $guarded = [];
 
-    protected $appends = ['author', 'contentable'];
+    /*
+     * ★ THERE IS DELIBERATELY NO $appends ON THIS MODEL. `protected
+     * $appends = ['author', 'contentable']` sat here from 9ba75cf
+     * ("append author", 2025-07-11) until v1.0.1 with NO accessor behind
+     * either key. Eloquent resolves an appended key through
+     * mutateAttributeForArray() -> mutateAttribute(), which calls
+     * get{Studly}Attribute() unconditionally, so every serialization of
+     * a Post -- toArray(), toJson(), response()->json($post), an API
+     * resource, a queued job payload, an event carrying a Post -- threw
+     * BadMethodCallException. Blade pages never noticed, which is why it
+     * survived a year: templates read $post->author as a relation.
+     *
+     * ★★ ADDING THE MISSING ACCESSORS WOULD BE WORSE THAN THE BUG.
+     * hasGetMutator('author') is tested in getAttribute() BEFORE
+     * getRelationValue() is reached, so a getAuthorAttribute() would
+     * shadow the author() relation below and take {{ $post->author->name }}
+     * down with it in both consuming sites.
+     *
+     * ★ NOTHING CONSUMED THE APPENDED KEYS -- nothing could have, since
+     * the path producing them has never once returned. Eager-loaded
+     * relations still serialize normally, so PostController's
+     * ->with(['tags', 'author']) puts `author` in the array anyway.
+     */
 
     /**
      * The attributes that should be typecasted as an instance of Carbon.

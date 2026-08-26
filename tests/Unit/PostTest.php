@@ -5,6 +5,7 @@ namespace coderstape\Press\Tests;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
+use coderstape\Press\AIContent;
 use coderstape\Press\Author;
 use coderstape\Press\Blog;
 use coderstape\Press\Facades\Press;
@@ -124,5 +125,57 @@ class PostTest extends TestCase
         $post = Post::factory()->create(['identifier' => (string) $blog->id]);
 
         $this->assertTrue($post->blog->is($blog));
+    }
+
+    /**
+     * ★ THE REGRESSION GUARD FOR THE $appends BUG. Until v1.0.1 Post
+     * carried `protected $appends = ['author', 'contentable']` with no
+     * getAuthorAttribute() / getContentableAttribute() behind it, so
+     * every one of these three calls threw BadMethodCallException. Put
+     * that property back and this test fails at the first line of the
+     * try block -- which is the only reason it is worth having.
+     */
+    #[Test]
+    public function a_post_serializes_without_blowing_up_on_a_phantom_appended_key()
+    {
+        $post = Post::factory()->create(['slug' => 'serialize-me']);
+
+        $array = $post->toArray();
+        $encoded = json_encode($post);
+        $json = $post->toJson();
+
+        $this->assertIsArray($array);
+        $this->assertIsString($encoded);
+        $this->assertSame(JSON_ERROR_NONE, json_last_error());
+        $this->assertEquals($array, json_decode($json, true));
+
+        // The real columns are all still there.
+        $this->assertSame('serialize-me', $array['slug']);
+        $this->assertArrayHasKey('title', $array);
+        $this->assertArrayHasKey('published_at', $array);
+
+        // And the two accessorless keys are gone rather than fatal. An
+        // unloaded relation is simply absent from Eloquent's output.
+        $this->assertArrayNotHasKey('author', $array);
+        $this->assertArrayNotHasKey('contentable', $array);
+    }
+
+    /**
+     * Removing them from $appends costs the serialized output nothing
+     * that was ever actually reachable: an eager-loaded relation
+     * serializes on its own, which is the path PostController already
+     * takes with ->with(['tags', 'author']).
+     */
+    #[Test]
+    public function eager_loaded_relations_still_reach_the_serialized_output()
+    {
+        $author = Author::factory()->create(['name' => 'Ada Lovelace']);
+        $post = Post::factory()->create(['author_id' => $author->id]);
+        $post->contentable()->create(['data' => ['first takeaway']]);
+
+        $array = Post::with(['author', 'contentable'])->find($post->id)->toArray();
+
+        $this->assertSame('Ada Lovelace', $array['author']['name']);
+        $this->assertSame(['first takeaway'], $array['contentable']['data']);
     }
 }

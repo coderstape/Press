@@ -655,8 +655,11 @@ same briefing. Resolution that worked and is now the protocol:
   8.5.5, PHPUnit 12.5.31, Testbench 11. (Assertion counts drift every
   batch; derive rather than trust.)
 - Consumers on 2026-09-07: Sportsman and Phenom both bumped to v1.1.0
-  in their working trees (committed, NOT pushed while this was
-  written -- a host push is a deploy; verify on the boxes).
+  ~~in their working trees (committed, NOT pushed while this was
+  written -- a host push is a deploy; verify on the boxes).~~ PUSHED
+  2026-09-07 (Sportsman 1aceddcd4, Phenom 54e62d4b) after Victor set
+  PRESS_AI_KEY on both boxes (confirmed non-empty, names only). The
+  deploys and the first six-hourly runs have NOT been read yet.
 - CI green on all six matrix jobs (PHP 8.3/8.4/8.5 × highest/lowest).
 - The editor gate and the `authorized` config block are DEPLOYED to
   the Sportsman production site and confirmed working.

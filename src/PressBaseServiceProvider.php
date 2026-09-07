@@ -134,6 +134,7 @@ class PressBaseServiceProvider extends ServiceProvider
             Console\NormalizeSourceCommand::class,
             Console\ParserDiffCommand::class,
             Console\ProcessCommand::class,
+            Console\TakeawaysCommand::class,
         ]);
     }
 }

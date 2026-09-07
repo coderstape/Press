@@ -197,4 +197,30 @@ return [
     */
 
     'parser' => 'commonmark',
+
+    /*
+    |--------------------------------------------------------------------------
+    | AI Key Takeaways
+    |--------------------------------------------------------------------------
+    |
+    | `php artisan press:takeaways` writes the "Key Takeaways" list under
+    | active posts that have none, through the driver named here. The
+    | shipped driver is Claude via anthropic-ai/sdk, a SUGGESTED dependency:
+    | the layer stays off until the SDK is installed and a key is set.
+    |
+    | The key is the blog's OWN (PRESS_AI_KEY), falling back to the account
+    | key, so its usage shows up as its own line at the vendor.
+    |
+    | `takeaways` is how many the model is asked for and how many are kept;
+    | `batch` is how many posts one run writes. The host schedules the run.
+    |
+    */
+
+    'ai' => [
+        'driver' => \coderstape\Press\Ai\AnthropicTakeaways::class,
+        'key' => env('PRESS_AI_KEY', env('ANTHROPIC_API_KEY')),
+        'model' => env('PRESS_AI_MODEL', 'claude-opus-5'),
+        'takeaways' => 3,
+        'batch' => 5,
+    ],
 ];

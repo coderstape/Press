@@ -14,6 +14,7 @@
         "league/commonmark": "^2.8"
     },
     "require-dev": {
+        "anthropic-ai/sdk": "^0.40.0",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^11.0",
         "phpunit/phpunit": "^12.5"
@@ -28,6 +29,9 @@
             "coderstape\\Press\\Tests\\": "tests/",
             "coderstape\\Press\\Database\\Factories\\": "database/factories/"
         }
+    },
+    "suggest": {
+        "anthropic-ai/sdk": "Required for press:takeaways, the AI key-takeaways writer (press.ai.*)."
     },
     "license": "MIT",
     "authors": [

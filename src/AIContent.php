@@ -55,4 +55,33 @@ class AIContent extends Model
     {
         return $this->morphTo();
     }
+
+    /**
+     * The takeaways as a list of strings, whichever shape the row holds.
+     *
+     * ★ The rows are DOUBLE-ENCODED: `data` is cast to json, and the writer
+     * (the old OpenAI command, then press:takeaways) stores the model's JSON
+     * TEXT, so the column holds a JSON string containing a JSON array and
+     * `$this->data` comes back as that string. Sportsman's blog view reads it
+     * with json_decode($post->contentable->data) -- 543 rows on 2026-09-07,
+     * every one a string. This reads that shape and a plain array alike, so a
+     * view can move to it without a data migration. Do not "fix" the writer
+     * to store an array while any view still json_decodes the attribute.
+     *
+     * @return list<string>
+     */
+    public function takeaways(): array
+    {
+        $data = $this->data;
+
+        if (is_string($data)) {
+            $data = json_decode($data, true);
+        }
+
+        if (! is_array($data)) {
+            return [];
+        }
+
+        return array_values(array_filter($data, fn ($t) => is_string($t) && $t !== ''));
+    }
 }

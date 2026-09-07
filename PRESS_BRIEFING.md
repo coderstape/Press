@@ -6,17 +6,23 @@ That version folded in the modernization + full-coverage session
 A–D, the crossed-session incident, and the view-swap discovery).
 That version folded in the hardening session: review-fix batch E, CI
 batch F, and the authorization model in batches G–H.
-THIS version folds in the parser-migration session: the diagnostic
+That version folded in the parser-migration session: the diagnostic
 commands (batches I–J), their bug fixes (K–N), and the CommonMark
 swap itself (O–P). **Press now renders markdown with
 league/commonmark by default.**
+THIS version (2026-09-07) folds in the TAKEAWAYS session: v1.1.0,
+`press:takeaways` -- the AI key-takeaways writer moved into the
+package and onto Claude, with a provider seam, a key of its own and
+both consumers adopted (see "The takeaways session").
 Counts and file facts below are hints; **the repo is authoritative**.
 
 **OPENING TASK for next session (spot-verify against the fresh zip):**
-- Test count: expect **165 total / 164 run** (1 excluded via the
-  `integration` group — GistDriverTest hits the live GitHub API).
-  Derive by `grep -rc "#\[Test\]" tests/`. Last confirmed green:
-  164 tests, 343 assertions.
+- Test count: ~~expect **165 total / 164 run**~~ **182 run, 426
+  assertions, green 2026-09-07** (v1.1.0 added 14; the repo already
+  ran 168/360 at v1.0.1 while this line still said 165 -- the count
+  had drifted a session before anyone re-derived it). 1 excluded via
+  the `integration` group — GistDriverTest hits the live GitHub API.
+  Derive by `grep -rc "#\[Test\]" tests/`.
 - composer: `php ^8.3`, `illuminate/support ^13.0` only,
   `erusev/parsedown ^1.7`, `league/commonmark ^2.8`,
   `orchestra/testbench ^11.0`, `phpunit/phpunit ^12.5`, NO
@@ -29,8 +35,12 @@ Counts and file facts below are hints; **the repo is authoritative**.
   trending_limit `1000`, pagination `15`, `parser` `commonmark`,
   `authorized` present and EMPTY in the package copy (the site's
   published copy holds the real list).
-- Three commands registered: `press:process`, `press:parser-diff`,
-  `press:normalize-source`.
+- ~~Three~~ FOUR commands registered: `press:process`, `press:parser-diff`,
+  `press:normalize-source`, `press:takeaways` (v1.1.0).
+- Config has an `ai` block: driver `AnthropicTakeaways::class`, key
+  `env('PRESS_AI_KEY', env('ANTHROPIC_API_KEY'))`, model
+  `claude-opus-5`, takeaways 3, batch 5. `anthropic-ai/sdk ^0.40.0`
+  is in require-dev and `suggest`, never `require`.
 - `MarkdownParser::parse()` trims its output on every path, and
   `MarkdownParser::$renderer` is the injectable seam.
 - `.github/workflows/tests.yml` exists: 6 jobs, PHP 8.3/8.4/8.5 ×
@@ -112,6 +122,18 @@ anything whose rendering changes. Rules: `headings`, `html-blocks`,
 `--allow-visible-change`; it drops a space inside `<strong>`).
 Idempotent, so it can be run repeatedly and in stages.
 **Must run BEFORE switching the parser.**
+
+    php artisan press:takeaways [--limit=N]
+
+v1.1.0. Writes the AI "Key Takeaways" list (an `AIContent` row) for
+ACTIVE posts that have none, oldest id first, `press.ai.batch` per
+run (5; `--limit` overrides), through the `Ai\TakeawaysWriter` named
+in `press.ai.driver`. Per-post isolation: one failure is warned and
+counted, the rest of the batch still writes, and the run exits 1 so
+the host's scheduler reports it. Pending posts with no key or no SDK:
+one error line, exit 1, nothing written. Nothing pending: exit 0,
+whatever the key says. The host schedules it (both consumers: every
+six hours).
 
 ## The big decisions (do not relitigate)
 
@@ -457,6 +479,77 @@ into the HTML block until a blank line; missing whitespace between
 HTML attributes (`"target=`); and curly quotes inside HTML
 attributes.
 
+## The takeaways session (v1.1.0, 2026-09-07)
+
+Victor brought in Sportsman's overnight errors: `smn:ai-key-takeaways-
+on-blog` (OpenAI, gpt-5-nano, every six hours since 6b11cfbfa) had
+failed EVERY run from 2026-09-06 00:00 through 2026-09-07 12:00 on
+"Request rate limit has been exceeded" -- seven runs, 3 posts pending
+of 546, a 17 KB body, no error code in the log. It threw out of its
+first post each time and left the other four untouched. Victor: "port
+that command to Claude since we are using that in Sportsman through
+Imagin now. It should have a key and cover it with tests. This is a
+Press package change."
+
+**What shipped.** `Ai\TakeawaysWriter` (enabled / write, Imagin's
+Describer shape so the two packages read alike on a site);
+`Ai\AnthropicTakeaways` (anthropic-ai/sdk, structured output
+`{takeaways: string[]}`, pure `requestParams()` and `parse()` pinned
+without a network, `claude-opus-5` unless `press.ai.model` says
+otherwise -- Imagin runs haiku for alt text, a high-volume low-stakes
+task; three sentences under a post are neither, so the default is the
+capable model and the site can step down); `press:takeaways`; the
+`press.ai` config block; `AIContent::takeaways()`. The system prompt
+keeps the one rule of the old prompt worth keeping: no Oxford commas.
+
+**★★ THE STORED SHAPE IS DOUBLE-ENCODED AND STAYS THAT WAY.** `AIContent`
+casts `data` to json; the OpenAI command stored the model's raw JSON
+TEXT; so every one of Sportsman's 543 rows (read raw on 2026-09-07:
+543 start with `"`, 0 with `[`) holds a JSON string containing a JSON
+array, and the site's blog-theme view reads it with
+`json_decode($post->contentable->data)`. The new command stores the
+same shape on purpose (rule 16: one change at a time). Storing a PHP
+array would have put a bare array in the column, an array on the
+attribute, and a TypeError in the view on every new post -- the pin
+`it_writes_takeaways_for_active_posts_in_the_shape_the_blog_view_reads`
+asserts the raw column, the attribute type and the decode, and the
+mutation was run (red). `AIContent::takeaways()` reads both shapes, so
+a view can move to it (Phenom's did, in the same session) and the
+writer can change later, in that order.
+
+**★ THE FIRST TEST RUN FOUND A DEFECT THIS BRIEFING ALREADY DESCRIBED.**
+`config('press.ai.model', 'claude-opus-5')` returned null when the
+test set the key to null: `Arr::get` returns an explicitly-null key,
+not the default. Environment facts below has said so since the
+hardening session ("a config default can't be tested by setting the
+key to null"); it was read after, not before. The reads are `?:` now
+-- a published block whose `env()` resolves to nothing still means
+the default. Three reads fixed (model, count, batch, driver).
+
+**Verified end to end**, not by bytes returned: one local run on the
+Sportsman copy against Claude (the Imagin key, a cleared row) wrote
+post 756 in 6 s, three sentences, raw column starting `"[`, decodable
+by the view and by the helper. On the live boxes the run cannot start
+until `PRESS_AI_KEY` is set: both sites' published config falls back to
+`ANTHROPIC_API_KEY`, and neither box has either (2026-09-07; both
+have `IMAGIN_AI_KEY`).
+
+**Consumers.** Sportsman: Press v1.0.0 → v1.1.0, the `ai` block, the
+Kernel slot, the app command DELETED, `.env.example`; 1,955 tests.
+`openai-php/laravel` STAYS: `DealerLogSummaryCommand` still uses it.
+Phenom: v1.0.1 → v1.1.0, the same three, plus a "Key Takeaways" block
+in its own `blog-theme/posts/show` (Phenom had no display at all --
+its `a_i_contents` table exists from the guarded migration with 0
+rows), reading `AIContent::takeaways()`, never `json_decode` on the
+attribute. Phenom's published config has NO `parser` key, so it has
+rendered with commonmark (the code default) since the swap landed --
+whether its sources were normalized first is not known from here and
+belongs to the second-blog item in Current state.
+
+**Ledger.** Package batch called green before the run; it was red on
+one test, for the reason above. Mutations: three, three red. Phenom's
+view: driven by a feature test, not by eye.
+
 ## The crossed-session incident (protocol now standing)
 
 Mid-session, 16 files materialized in the assistant's sandbox that
@@ -557,9 +650,13 @@ same briefing. Resolution that worked and is now the protocol:
 
 ## Current state
 
-- Suite: **165 tests / 164 run / 343 assertions, all green** on PHP
+- Suite: ~~**165 tests / 164 run / 343 assertions, all green**~~ **182
+  run / 426 assertions, all green 2026-09-07 (v1.1.0)** on PHP
   8.5.5, PHPUnit 12.5.31, Testbench 11. (Assertion counts drift every
   batch; derive rather than trust.)
+- Consumers on 2026-09-07: Sportsman and Phenom both bumped to v1.1.0
+  in their working trees (committed, NOT pushed while this was
+  written -- a host push is a deploy; verify on the boxes).
 - CI green on all six matrix jobs (PHP 8.3/8.4/8.5 × highest/lowest).
 - The editor gate and the `authorized` config block are DEPLOYED to
   the Sportsman production site and confirmed working.
@@ -801,6 +898,12 @@ items keep their slot rather than being renumbered out.
   independent audit by a different method before believing it.
 - Don't multi-session the same codebase without explicit
   coordination (crossed-session incident).
+- **Don't store the takeaways as a PHP array while any view
+  json_decodes the attribute.** The column's shape is a JSON string
+  (543 production rows); `AIContent::takeaways()` is the read path
+  that lets the shape change later, views first.
+- **Don't put `anthropic-ai/sdk` in `require`.** Suggested + require-dev,
+  Imagin's precedent; the layer reports itself off without it.
 
 ## How we work (self-contained conventions layer)
 
